@@ -1,7 +1,7 @@
 package team.chisel.ctm.client.util;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.profiling.InactiveProfiler;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,8 +9,9 @@ public class ProfileUtil {
     
     private static final ThreadLocal<ProfilerFiller> profiler = ThreadLocal.withInitial(() -> {
         if (Thread.currentThread().threadId() == 1) {
-            return Minecraft.getInstance().getProfiler();
+            return Profiler.get();
         } else {
+            // TODO Check if good to always return Profiler.get()
             return InactiveProfiler.INSTANCE;
         }
     });

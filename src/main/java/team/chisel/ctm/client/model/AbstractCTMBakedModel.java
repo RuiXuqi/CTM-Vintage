@@ -12,7 +12,10 @@ import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import net.minecraft.client.renderer.block.model.BakedOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
@@ -31,7 +34,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -60,7 +62,7 @@ import team.chisel.ctm.client.util.ProfileUtil;
 
 public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel> {
 
-    private static final Cache<ModelResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder()
+    private static final Cache<ResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.SECONDS)
             .build();
     private static final Cache<State, AbstractCTMBakedModel> modelcache = CacheBuilder.newBuilder()
@@ -75,16 +77,17 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
     }
 
     @ParametersAreNonnullByDefault
-    private class Overrides extends ItemOverrides {
+    private class Overrides extends BakedOverrides {
                 
         public Overrides() {
         }
 
+		@Nullable
         @Override
         @SneakyThrows
-        public BakedModel resolve(BakedModel originalModel, ItemStack stack, ClientLevel world, LivingEntity entity, int unknown) {
-            ModelResourceLocation mrl = ModelUtil.getMesh(stack);
-            if (mrl == ModelBakery.MISSING_MODEL_VARIANT) {
+        public BakedModel findOverride(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+            ResourceLocation mrl = stack.get(DataComponents.ITEM_MODEL);
+            if (mrl == null) {
                 // this must be a missing/invalid model
                 return Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getModelManager().getMissingModel();
             }
@@ -128,7 +131,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
     
     @Getter
     private final @NotNull IModelCTM model;
-    private final @NotNull Overrides overrides = new Overrides();
+    private final @NotNull BakedOverrides overrides = new Overrides();
 
     private final @Nullable RenderType layer;
     protected final List<BakedQuad> genQuads = new ArrayList<>();
@@ -204,15 +207,15 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
     }
 
     @Override
-    public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack, boolean fabulous) {
-        List<RenderType> ret = new ArrayList<>(super.getRenderTypes(itemStack, fabulous));
+    public List<RenderType> getRenderTypes(@NotNull ItemStack itemStack) {
+        List<RenderType> ret = new ArrayList<>(super.getRenderTypes(itemStack));
         if (this.layer != null) {
             if (!ret.contains(layer)) {
                 ret.add(layer);
             }
         } else {
             //Note: Uses this model as opposed to parent so that any layers added by CTM can be checked as well
-            var type = RenderTypeHelper.getFallbackItemRenderType(itemStack, this, false);
+            var type = RenderTypeHelper.getFallbackItemRenderType(itemStack, this);
             if (!ret.contains(type)) {
                 ret.add(type);
             }
@@ -230,7 +233,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
     }
 
     @Override
-    public List<BakedModel> getRenderPasses(@NotNull ItemStack stack, boolean fabulous) {
+    public List<BakedModel> getRenderPasses(@NotNull ItemStack stack) {
         //Make sure our model is the one that gets rendered rather than the internal one
         return List.of(this);
     }
@@ -255,7 +258,8 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
     @NotNull
     public BakedModel getParent(RandomSource rand) {
         if (getParent() instanceof WeightedBakedModel weightedBakedModel) {
-            Optional<WeightedEntry.Wrapper<BakedModel>> model = WeightedRandom.getWeightedItem(weightedBakedModel.list, Math.abs((int)rand.nextLong()) % weightedBakedModel.totalWeight);
+            // Optional<WeightedEntry.Wrapper<BakedModel>> model = weightedBakedModel.list.getRandom(rand);
+            Optional<WeightedEntry.Wrapper<BakedModel>> model = WeightedRandom.getWeightedItem(weightedBakedModel.list.unwrap(), Math.abs((int)rand.nextLong()) % weightedBakedModel.list.totalWeight);
             if (model.isPresent()) {
                 return model.get().data();
             }
@@ -267,12 +271,17 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
     public BakedModel getParent() {
         return originalModel;
     }
-    
+
     @Override
-    public @NotNull ItemOverrides getOverrides() {
+    public @NotNull BakedOverrides overrides() {
         return overrides;
     }
-    
+
+    @Override
+    public ItemTransforms getTransforms() {
+        return super.getTransforms();
+    }
+
     protected abstract AbstractCTMBakedModel createModel(BlockState state, @NotNull IModelCTM model, BakedModel parent, RenderContextList ctx, RandomSource rand, ModelData data, @Nullable RenderType layer);
 
     @Nullable

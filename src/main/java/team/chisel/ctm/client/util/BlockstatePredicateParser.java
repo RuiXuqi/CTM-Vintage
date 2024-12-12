@@ -132,7 +132,7 @@ public class BlockstatePredicateParser {
         public Predicate<BlockState> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             if (json.isJsonObject()) {
                 JsonObject obj = json.getAsJsonObject();
-                Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(GsonHelper.getAsString(obj, "block")));
+                Block block = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(GsonHelper.getAsString(obj, "block")));
                 if (block == Blocks.AIR) {
                     return EMPTY;
                 }

@@ -112,7 +112,7 @@ public enum TextureMetadataHandler {
         ModelBakery modelBakery = event.getModelBakery();
         for (Map.Entry<ModelResourceLocation, BakedModel> entry : event.getModels().entrySet()) {
             ModelResourceLocation mrl = entry.getKey();
-            UnbakedModel rootModel = modelBakery.topLevelModels.get(mrl);
+            UnbakedModel rootModel = modelBakery.topModels.get(mrl);
             if (rootModel != null) {
             	BakedModel baked = entry.getValue();
             	if (baked instanceof AbstractCTMBakedModel) {
@@ -132,7 +132,8 @@ public enum TextureMetadataHandler {
                     ResourceLocation dep = dependencies.pop();
                     UnbakedModel model;
                     try {
-                        model = dep == rl ? rootModel : modelBakery.getModel(dep);
+                        // model = dep == rl ? rootModel : modelBakery.getModel(dep); FIXME the getModel() call in 1.21.1 used to check for any unloaded models
+                        model = dep == rl ? rootModel : modelBakery.unbakedModels.get(dep);
                     } catch (Exception e) {
                         continue;
                     }

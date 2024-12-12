@@ -8,6 +8,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -310,7 +311,7 @@ public class Quad {
         var n2 = positions[2].sub(origin, new Vector3f());
         var normalVec = n1.cross(n2, new Vector3f()).normalize();
 
-        Direction normal = Direction.getNearest(normalVec.x, normalVec.y, normalVec.z);
+        Direction normal = Direction.getApproximateNearest(new Vec3(normalVec));
         TextureAtlasSprite sprite = getUvs().getSprite();
 
         var xy = new float[positions.length][2];

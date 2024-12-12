@@ -55,10 +55,7 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
             // getting the block's model directly and then trying to render it, such as from within an ItemStackBlockEntityRender
             ItemStack stack = new ItemStack(state.getBlock());
             if (!stack.isEmpty()) {
-                //Some of these may be duplicate, but we need to check it as both fabulous and not as we don't have a display context
-                // available in order to check if it is a gui or first person
-                return finalParent.getRenderTypes(stack, false).contains(layer) ||
-                       finalParent.getRenderTypes(stack, true).contains(layer);
+                return finalParent.getRenderTypes(stack).contains(layer);
             }
             return false;
         });

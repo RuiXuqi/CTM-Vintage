@@ -52,7 +52,7 @@ public class TestBlockGetter implements BlockAndTintGetter {
     }
 
     @Override
-    public int getMinBuildHeight() {
+    public int getMinY() {
         return 0;
     }
 

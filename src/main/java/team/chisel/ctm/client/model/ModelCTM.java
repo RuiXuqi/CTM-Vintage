@@ -27,15 +27,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
@@ -104,9 +99,9 @@ public class ModelCTM implements IModelCTM {
         
         this.textureDependencies.removeIf(rl -> rl.getPath().startsWith("#"));
 	}
-	
+
 	@Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+	public BakedModel bake(IGeometryBakingContext context, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, List<ItemOverride> list) {
 		return bake(bakery, spriteGetter, modelState);
 	}
 
@@ -114,8 +109,8 @@ public class ModelCTM implements IModelCTM {
 
 	public BakedModel bake(ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform) {
         BakedModel parent;
-        if (modelinfo != null && modelinfo.getRootModel() == ModelBakery.GENERATION_MARKER) { // Apply same special case that ModelBakery does
-            return ITEM_MODEL_GENERATOR.generateBlockModel(spriteGetter, modelinfo).bake(bakery, modelinfo, spriteGetter, modelTransform, false);
+        if (modelinfo != null && modelinfo.getRootModel() == SpecialModels.GENERATED_MARKER) { // Apply same special case that ModelBakery does
+            return ITEM_MODEL_GENERATOR.generateBlockModel(spriteGetter, modelinfo).bake(spriteGetter, modelTransform, false);
         } else {
             initializeOverrides(spriteGetter);
             this.textureDependencies.forEach(t -> initializeTexture(new Material(TextureAtlas.LOCATION_BLOCKS, t), spriteGetter));
@@ -218,10 +213,5 @@ public class ModelCTM implements IModelCTM {
     @Nullable
     public ICTMTexture<?> getOverrideTexture(int tintIndex, ResourceLocation sprite) {
         return textureOverrides.get(Pair.of(tintIndex, sprite));
-    }
-
-    @Override
-    public void resolveParents(@NotNull Function<ResourceLocation, UnbakedModel> modelGetter, @NotNull IGeometryBakingContext context) {
-        vanillamodel.resolveParents(modelGetter);
     }
 }
