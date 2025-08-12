@@ -1,13 +1,6 @@
 package team.chisel.ctm.client.util;
 
-import java.lang.ref.WeakReference;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.common.base.Preconditions;
-
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.state.IBlockState;
@@ -17,6 +10,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.lang.ref.WeakReference;
 
 /**
  * Used by render state creation to avoid unnecessary block lookups through the world.

@@ -1,17 +1,8 @@
 package team.chisel.ctm.api.util;
 
+import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenCustomHashMap;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
-import com.google.common.collect.Maps;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -21,6 +12,12 @@ import team.chisel.ctm.api.texture.ITextureType;
 import team.chisel.ctm.client.util.IdentityStrategy;
 import team.chisel.ctm.client.util.ProfileUtil;
 import team.chisel.ctm.client.util.RegionCache;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * List of IBlockRenderContext's

@@ -1,103 +1,116 @@
-1.0.2:
-Fixes
+# Changelog
+
+## [1.0.2]
+
+### Fixes
 - #115 Fix CTM models using the no-layer cache on the incorrect model, should fix the iChisel's preview mode
 
-1.0.1:
-Changes
+## [1.0.1]
+
+### Changes
 - If no layer is specified, the default will now be null (same as textures with no metadata) rather than SOLID
 - Now requires forge 2807 at a minimum (for item lighting fixes)
-Fixes
+### Fixes
 - Eliminated unnecessary memory overhead from model loading (asiekierka)
 - Fix ctm models having duplicate quads when rendered as an item and containing null-layer quads
 - Cache quad subsets for no-layer cases a bit, should speed up item model rendering marginally
 
-1.0.0:
-New
+## [1.0.0]
+
+### New
 - Added 'use_actual_state' flag to allow connected textures to compare contextual states (such as glass panes)
-Changes
+### Changes
 - Remove deprecated APIs
-Fixes
+### Fixes
 - Fix models with CTM overrides not inheriting from texture data
 - Fix disableCTM config not doing anything
 - Fix CTM models not working properly with forge blockstate features (retexture, uvlock, etc.)
 - #89 Fix CTM models not considering item overrides
 
-0.3.3:
-New
-- Models with light data will now render properly in item form. NOTE: This requires Forge 2781 or higher!
-Fixes
+## [0.3.3]
+
+### New
+- Models with light data will now render properly in item form. NOTE] This requires Forge 2781 or higher!
+### Fixes
 - Model texture discovery is now more thorough, more types of models should now be supported through texture metadata only
 
-0.3.2:
-Changes
+## [0.3.2]
+
+### Changes
 - Further optimized render caches
 - Changed all occurrences of "chisel" to "ctm"
 - Added a few new profiler sections, and cleaned up the names all around
-Fixes
+### Fixes
 - #70 occasional crash from rendering due to race condition
 
-0.3.1:
-Changes
+## [0.3.1]
+
+### Changes
 - Move away from trove collections, this may increase performance slightly
-Fixes
+### Fixes
 - Fix compatibility with forge versions >=2718
 - Fix a slow memory leak caused by render caches (covers1624)
 
-0.3.0:
-New
+## [0.3.0]
+
+### New
 - Added the ability to use offsets for map texture types
 - Added support for proxy textures with no metadata
 - Added ASM patch to fix animated textures not interpolating alpha
-Changes
+### Changes
 - Add a second BlockPos parameter to IFacade
 - Optimization pass, should be faster in general
 - Removed the check for culled model sides
 - Better method of getting item mesh for caching
-Fixes
+### Fixes
 - Patched some potential resource leaks
 - #54 reloading resources causes some textures to go missing
 - Fixed some issues that could occur when using meta overrides and forge blockstates
 
-0.2.3:
-New
+## [0.2.3]
+
+### New
 - New render type, eldritch! This was used on Chisel's temple brick back in the day, and now it is back once more, to strike horror in the minds of all who gaze upon it!
-Changes
+### Changes
 - CTM models (those with ctm_version) can now be used as parents to vanilla models
 - CTM models will now respect blockstate texture overrides
 - Slight performance boost by reusing the world cache between texture types
-Fixes
+### Fixes
 - Fix incorrect corner logic on +Z axis for edges/edges_full
 - Fix z-fighting when edges_full is used as an overlay/underlay
 - Fix issues with CTM models using inheritance (this fixes Chisel bookshelves)
 
-0.2.2:
-Changes
+## [0.2.2]
+
+### Changes
 - Obscuring check now uses the connect_to data
-Fixes
+### Fixes
 - Fix small corner case with edges/edges_full
 - Fix #19 item model cache not being sensitive to NBT variants (thommy101)
 - Fix issue that arose when using multiple metadata overrides in a single model
 - Fix #21 z-fighting when edges_full is used as an overlay on a ctm texture
 - Fix #22 connections not working properly when one CTM model is used for multiple blockstates
 
-0.2.1:
-New
+## [0.2.1]
+
+### New
 - Two new render types, edges and edges_full, which can be used to change appearances when adjacent to other certain blocks.
 - CTM (and all CTM subtypes, including edges and edges_full) now support "connect_to" in their extra{} data. See the wiki for documentation on this new feature.
-Changes
+### Changes
 - All texture type names have been changed. Old names will still work, for now. Notable changes: R->random, V->pattern, CTMH->ctm_horizontal, CTMV->pillar. All others were just lowercased.
-Fixes
+### Fixes
 - Fix crash when shift+F3 was used while a CTM-rendered item was visible.
- 
-0.2.0:
-New
+
+## [0.2.0]
+
+### New
 - CTM (and CTM subtypes, CTMH etc.) now support "ignoreStates" and "connectInside" for their extra{} data.
 - All texture metadata can now specify a "proxy" which is to be used if CTM is present.
-Changes
+### Changes
 - CTMH has been reworked, now only requires one texture
 - If no ctm_version is found inside a metadata section, the texture will fail to load
 - Improved error handling, and a model will fail to load if the wrong number of textures are provided for a type.
-Fixes
+### Fixes
 - Fix cache collision when multiple types serialize to the same value
 - Fix overrides with metadata using wrong sprite
 - Fix overriden sprites having incorrect UVs
@@ -105,11 +118,13 @@ Fixes
 - Fix Chisel-Team/Chisel#474 crash when CTM is applied to pure item model
 - Fix handlePerspective breaking item models
 
-0.1.1:
-Fixes
+## [0.1.1]
+
+### Fixes
 - Fix issues with certain mods' blocks (EIO facades, Mekanism cables, etc)
 - Fix crash when resource pack contains invalid metadata files
 
-0.1.0:
-New
+## [0.1.0]
+
+### New
 - Initial beta release

@@ -1,31 +1,22 @@
 package team.chisel.ctm.client.util;
 
-import static team.chisel.ctm.client.util.Dir.BOTTOM;
-import static team.chisel.ctm.client.util.Dir.BOTTOM_LEFT;
-import static team.chisel.ctm.client.util.Dir.BOTTOM_RIGHT;
-import static team.chisel.ctm.client.util.Dir.LEFT;
-import static team.chisel.ctm.client.util.Dir.RIGHT;
-import static team.chisel.ctm.client.util.Dir.TOP;
-import static team.chisel.ctm.client.util.Dir.TOP_LEFT;
-import static team.chisel.ctm.client.util.Dir.TOP_RIGHT;
-
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.IBlockAccess;
 import team.chisel.ctm.Configurations;
 import team.chisel.ctm.api.IFacade;
 import team.chisel.ctm.api.texture.ISubmap;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
+import java.util.Optional;
+
+import static team.chisel.ctm.client.util.Dir.*;
 
 // @formatter:off
 /**

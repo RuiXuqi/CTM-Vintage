@@ -1,15 +1,12 @@
 package team.chisel.ctm.client.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents all the different spot for connection locations for a ctm block

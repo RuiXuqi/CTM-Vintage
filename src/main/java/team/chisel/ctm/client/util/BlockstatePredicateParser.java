@@ -1,34 +1,7 @@
 package team.chisel.ctm.client.util;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.IntPredicate;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
@@ -41,6 +14,17 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class BlockstatePredicateParser {
     

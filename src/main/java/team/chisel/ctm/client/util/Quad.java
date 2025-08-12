@@ -1,26 +1,10 @@
 package team.chisel.ctm.client.util;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.util.vector.Vector;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MultimapBuilder;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.Value;
+import lombok.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -33,8 +17,17 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.util.vector.Vector;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.util.NonnullType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 @ParametersAreNonnullByDefault
 @ToString(of = { "vertPos", "vertUv" })

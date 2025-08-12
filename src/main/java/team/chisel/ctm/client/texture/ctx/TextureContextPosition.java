@@ -1,10 +1,10 @@
 package team.chisel.ctm.client.texture.ctx;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import team.chisel.ctm.api.texture.ITextureContext;
+
+import javax.annotation.Nonnull;
 
 public class TextureContextPosition implements ITextureContext {
 

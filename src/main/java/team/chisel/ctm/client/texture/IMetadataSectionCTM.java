@@ -1,22 +1,7 @@
 package team.chisel.ctm.client.texture;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Function;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.common.collect.ObjectArrays;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-
+import com.google.gson.*;
 import lombok.Getter;
 import lombok.ToString;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -30,6 +15,15 @@ import team.chisel.ctm.api.texture.ITextureType;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.type.TextureTypeRegistry;
 import team.chisel.ctm.client.util.ResourceUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Function;
 
 @ParametersAreNonnullByDefault
 public interface IMetadataSectionCTM extends IMetadataSection {

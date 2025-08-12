@@ -1,7 +1,5 @@
 package team.chisel.ctm.client.asm;
 
-import javax.annotation.Nonnull;
-
 import lombok.SneakyThrows;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -10,13 +8,15 @@ import net.minecraft.client.renderer.block.model.WeightedBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraftforge.common.MinecraftForge;
-import team.chisel.ctm.api.event.TextureCollectedEvent;
 import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.common.MinecraftForge;
 import team.chisel.ctm.CTM;
+import team.chisel.ctm.api.event.TextureCollectedEvent;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 import team.chisel.ctm.client.util.ProfileUtil;
+
+import javax.annotation.Nonnull;
 
 public class CTMCoreMethods {
     

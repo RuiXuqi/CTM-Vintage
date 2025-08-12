@@ -1,14 +1,11 @@
 package team.chisel.ctm.client.texture.type;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
@@ -19,6 +16,8 @@ import team.chisel.ctm.client.texture.ctx.TextureContextCTM;
 import team.chisel.ctm.client.texture.render.TextureEdges;
 import team.chisel.ctm.client.util.CTMLogic;
 import team.chisel.ctm.client.util.Dir;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @TextureType("edges")
 public class TextureTypeEdges extends TextureTypeCTM {

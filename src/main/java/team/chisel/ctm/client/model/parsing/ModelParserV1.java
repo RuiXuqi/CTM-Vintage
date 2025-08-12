@@ -1,16 +1,9 @@
 package team.chisel.ctm.client.model.parsing;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.Nonnull;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.SneakyThrows;
@@ -22,6 +15,11 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.model.IModelParser;
 import team.chisel.ctm.client.model.ModelCTM;
+
+import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @SuppressWarnings("unchecked")
 public class ModelParserV1 implements IModelParser {

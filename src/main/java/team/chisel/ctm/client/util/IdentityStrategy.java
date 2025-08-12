@@ -1,8 +1,8 @@
 package team.chisel.ctm.client.util;
 
-import java.util.Objects;
-
 import it.unimi.dsi.fastutil.Hash.Strategy;
+
+import java.util.Objects;
 
 public class IdentityStrategy<K> implements Strategy<K> {
 

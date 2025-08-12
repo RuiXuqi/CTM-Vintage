@@ -1,14 +1,12 @@
 package team.chisel.ctm.api.util;
 
-import java.util.Optional;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.gson.JsonObject;
-
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
 import team.chisel.ctm.api.texture.ICTMTexture;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 
 /**
  * Bean to hold information that the IBlockRenderType should use to make an {@link ICTMTexture}

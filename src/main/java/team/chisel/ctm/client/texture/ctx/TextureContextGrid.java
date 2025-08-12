@@ -35,7 +35,7 @@ public abstract class TextureContextGrid extends TextureContextPosition {
             if (side.getAxis().isVertical()) {
                 // DOWN || UP
                 tx = x % w;
-                ty = (side.getFrontOffsetY() * z + 1) % h;
+                ty = (side.getYOffset() * z + 1) % h;
             } else if (side.getAxis() == Axis.Z) {
                 // NORTH || SOUTH
                 tx = x % w;

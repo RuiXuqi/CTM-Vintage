@@ -2,20 +2,6 @@ package team.chisel.ctm.client.texture.render;
 
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenCustomHashMap;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -28,12 +14,14 @@ import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.ctx.TextureContextCTM;
 import team.chisel.ctm.client.texture.type.TextureTypeCTM;
-import team.chisel.ctm.client.util.BlockstatePredicateParser;
-import team.chisel.ctm.client.util.CTMLogic;
+import team.chisel.ctm.client.util.*;
 import team.chisel.ctm.client.util.CTMLogic.StateComparisonCallback;
-import team.chisel.ctm.client.util.IdentityStrategy;
-import team.chisel.ctm.client.util.ParseUtils;
-import team.chisel.ctm.client.util.Quad;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
 @Accessors(fluent = true)

@@ -1,9 +1,9 @@
 package team.chisel.ctm.client.util;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
+
+import javax.annotation.Nonnull;
 
 public class ProfileUtil {
     
@@ -12,7 +12,7 @@ public class ProfileUtil {
     
     private static ThreadLocal<Profiler> profiler = ThreadLocal.withInitial(() -> {
         if (Thread.currentThread().getId() == 1) {
-            return Minecraft.getMinecraft().mcProfiler;
+            return Minecraft.getMinecraft().profiler;
         } else {
             return dummyProfiler;
         }

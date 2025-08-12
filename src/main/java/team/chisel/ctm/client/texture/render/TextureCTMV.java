@@ -1,15 +1,8 @@
 package team.chisel.ctm.client.texture.render;
 
-import java.util.EnumSet;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
-import static net.minecraft.util.EnumFacing.*;
-
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
@@ -19,6 +12,11 @@ import team.chisel.ctm.client.texture.ctx.TextureContextCTMV.Connections;
 import team.chisel.ctm.client.texture.type.TextureTypeCTMV;
 import team.chisel.ctm.client.util.Quad;
 import team.chisel.ctm.client.util.Submap;
+
+import java.util.EnumSet;
+import java.util.List;
+
+import static net.minecraft.util.EnumFacing.*;
 
 public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
 

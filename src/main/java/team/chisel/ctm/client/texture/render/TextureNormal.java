@@ -1,16 +1,15 @@
 package team.chisel.ctm.client.texture.render;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.type.TextureTypeNormal;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * CTM texture for a normal texture

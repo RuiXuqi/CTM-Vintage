@@ -1,8 +1,8 @@
 package team.chisel.ctm.client.asm;
 
-import java.util.Map;
-
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+
+import java.util.Map;
 
 // Should work with anything 1.8+, so no @MCVersion
 @IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE)

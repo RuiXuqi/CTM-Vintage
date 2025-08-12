@@ -1,9 +1,5 @@
 package team.chisel.ctm.client.texture.ctx;
 
-import java.util.EnumMap;
-
-import javax.annotation.Nonnull;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -11,7 +7,9 @@ import net.minecraft.world.IBlockAccess;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.client.texture.render.TextureCTM;
 import team.chisel.ctm.client.util.CTMLogic;
-import team.chisel.ctm.client.util.RegionCache;
+
+import javax.annotation.Nonnull;
+import java.util.EnumMap;
 
 public class TextureContextCTM implements ITextureContext {
     

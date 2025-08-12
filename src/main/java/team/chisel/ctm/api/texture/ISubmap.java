@@ -1,8 +1,8 @@
 package team.chisel.ctm.api.texture;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public interface ISubmap {

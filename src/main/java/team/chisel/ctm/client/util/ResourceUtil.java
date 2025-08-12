@@ -1,20 +1,18 @@
 package team.chisel.ctm.client.util;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import com.google.common.base.Throwables;
 import com.google.gson.JsonParseException;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import team.chisel.ctm.client.texture.IMetadataSectionCTM;
+
+import javax.annotation.Nullable;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ResourceUtil {
     
@@ -27,11 +25,11 @@ public class ResourceUtil {
     }
     
     public static ResourceLocation spriteToAbsolute(ResourceLocation sprite) {
-        if (!sprite.getResourcePath().startsWith("textures/")) {
-            sprite = new ResourceLocation(sprite.getResourceDomain(), "textures/" + sprite.getResourcePath());
+        if (!sprite.getPath().startsWith("textures/")) {
+            sprite = new ResourceLocation(sprite.getNamespace(), "textures/" + sprite.getPath());
         }
-        if (!sprite.getResourcePath().endsWith(".png")) {
-            sprite = new ResourceLocation(sprite.getResourceDomain(), sprite.getResourcePath() + ".png");
+        if (!sprite.getPath().endsWith(".png")) {
+            sprite = new ResourceLocation(sprite.getNamespace(), sprite.getPath() + ".png");
         }
         return sprite;
     }

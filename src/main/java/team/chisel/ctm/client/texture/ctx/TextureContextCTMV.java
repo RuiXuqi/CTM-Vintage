@@ -1,15 +1,6 @@
 package team.chisel.ctm.client.texture.ctx;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import com.google.common.collect.ObjectArrays;
-
-import static team.chisel.ctm.client.util.ConnectionLocations.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -17,9 +8,15 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import org.apache.commons.lang3.ArrayUtils;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.client.util.ConnectionLocations;
-import team.chisel.ctm.client.util.RegionCache;
+
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+
+import static team.chisel.ctm.client.util.ConnectionLocations.*;
 
 public class TextureContextCTMV implements ITextureContext {
 

@@ -1,32 +1,8 @@
 package team.chisel.ctm.client.model;
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.MultimapBuilder;
-import com.google.common.collect.Table;
-import com.google.common.collect.Tables;
-
+import com.google.common.collect.*;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +11,8 @@ import lombok.ToString;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.model.WeightedBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
@@ -53,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.model.TRSRTransformation;
+import org.apache.commons.lang3.tuple.Pair;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.IChiselFace;
@@ -60,6 +32,19 @@ import team.chisel.ctm.api.util.RenderContextList;
 import team.chisel.ctm.client.asm.CTMCoreMethods;
 import team.chisel.ctm.client.state.CTMExtendedState;
 import team.chisel.ctm.client.util.ProfileUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class AbstractCTMBakedModel implements IBakedModel {

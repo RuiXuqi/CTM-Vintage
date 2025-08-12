@@ -1,8 +1,8 @@
 package team.chisel.ctm.api.texture;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import team.chisel.ctm.api.util.TextureInfo;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Root interface representing a type of CTM texture. To register, use {@link TextureType}.

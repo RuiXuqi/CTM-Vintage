@@ -1,7 +1,5 @@
 package team.chisel.ctm.client.texture.type;
 
-import javax.annotation.Nonnull;
-
 import lombok.RequiredArgsConstructor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
@@ -14,6 +12,8 @@ import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.ctx.TextureContextPosition;
 import team.chisel.ctm.client.texture.render.TextureMap;
 import team.chisel.ctm.client.texture.render.TextureMap.MapType;
+
+import javax.annotation.Nonnull;
 
 
 @RequiredArgsConstructor

@@ -1,25 +1,17 @@
 package team.chisel.ctm.client.util;
 
-import static net.minecraft.util.EnumFacing.DOWN;
-import static net.minecraft.util.EnumFacing.EAST;
-import static net.minecraft.util.EnumFacing.NORTH;
-import static net.minecraft.util.EnumFacing.SOUTH;
-import static net.minecraft.util.EnumFacing.UP;
-import static net.minecraft.util.EnumFacing.WEST;
-
-import java.util.Arrays;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import team.chisel.ctm.api.util.NonnullType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Arrays;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import team.chisel.ctm.api.util.NonnullType;
+import static net.minecraft.util.EnumFacing.*;
 
 /**
  * Think of this class as a "Two dimensional ForgeDirection, with diagonals".
@@ -75,14 +67,14 @@ public enum Dir {
                 // A mirror version does not affect y+ and y- so we ignore those
                 EnumFacing[] ret = new EnumFacing[dirs.length];
                 for (int i = 0; i < ret.length; i++) {
-                    ret[i] = dirs[i].getFrontOffsetY() != 0 ? dirs[i] : dirs[i].getOpposite();
+                    ret[i] = dirs[i].getYOffset() != 0 ? dirs[i] : dirs[i].getOpposite();
                 }
                 normalized = ret;
             } else {
                 EnumFacing axis;
                 // Next, we need different a different rotation axis depending
                 // on if this is up/down or not
-                if (normal.getFrontOffsetY() == 0) {
+                if (normal.getYOffset() == 0) {
                     // If it is not up/down, pick either the left or right-hand
                     // rotation
                     axis = normal == NORMAL.rotateY() ? UP : DOWN;

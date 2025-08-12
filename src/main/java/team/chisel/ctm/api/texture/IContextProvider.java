@@ -1,11 +1,11 @@
 package team.chisel.ctm.api.texture;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.IExtendedBlockState;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public interface IContextProvider {

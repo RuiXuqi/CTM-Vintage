@@ -1,7 +1,5 @@
 package team.chisel.ctm.client.texture.type;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -12,6 +10,8 @@ import team.chisel.ctm.api.texture.TextureType;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.ctx.TextureContextPosition;
 import team.chisel.ctm.client.texture.render.TextureEldritch;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @TextureType("eldritch")

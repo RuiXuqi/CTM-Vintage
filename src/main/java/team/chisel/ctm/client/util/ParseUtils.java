@@ -1,9 +1,9 @@
 package team.chisel.ctm.client.util;
 
-import java.util.Optional;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import java.util.Optional;
 
 public class ParseUtils {
 

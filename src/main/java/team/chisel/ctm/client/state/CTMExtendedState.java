@@ -1,14 +1,6 @@
 package team.chisel.ctm.client.state;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.common.collect.ImmutableMap;
-
 import lombok.Getter;
 import lombok.experimental.Delegate;
 import net.minecraft.block.properties.IProperty;
@@ -18,10 +10,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
-import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.util.RenderContextList;
 import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 import team.chisel.ctm.client.util.ProfileUtil;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public class CTMExtendedState extends BlockStateBase implements IExtendedBlockState {

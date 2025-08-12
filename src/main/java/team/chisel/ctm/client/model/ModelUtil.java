@@ -2,14 +2,6 @@ package team.chisel.ctm.client.model;
 
 import gnu.trove.map.TIntObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
 import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemMeshDefinition;
@@ -21,6 +13,12 @@ import net.minecraftforge.client.ItemModelMesherForge;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.registries.IRegistryDelegate;
 import team.chisel.ctm.CTM;
+
+import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.Map;
+import java.util.Optional;
 
 public class ModelUtil {
     
