@@ -15,19 +15,12 @@ import team.chisel.ctm.client.texture.type.TextureTypeRegistry;
 import team.chisel.ctm.client.util.CTMPackReloadListener;
 import team.chisel.ctm.client.util.TextureMetadataHandler;
 
-import static team.chisel.ctm.CTM.*;
-
-@Mod(name = MOD_NAME, modid = MOD_ID, version = VERSION, dependencies = "before:chisel;after:forge@[14.23.5.2807,)", clientSideOnly = true)
+@Mod(name = Tags.MOD_NAME, modid = Tags.MOD_ID, version = Tags.VERSION, dependencies = "before:chisel;after:forge@[14.23.5.2807,)", clientSideOnly = true)
 public class CTM {
-    
-    public static final String MOD_ID = "ctm";
-    public static final String MOD_NAME = "CTM";
-    public static final String DOMAIN = MOD_ID;
-    public static final String VERSION = "@VERSION@";
 
     public static final Logger logger = LogManager.getLogger("CTM");
     
-    @Mod.Instance(MOD_ID)
+    @Mod.Instance(Tags.MOD_ID)
     public static CTM instance;
     
     @EventHandler
