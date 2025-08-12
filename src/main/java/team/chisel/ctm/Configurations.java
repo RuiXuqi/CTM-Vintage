@@ -9,8 +9,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 
-@Config(modid = CTM.MOD_ID)
-@EventBusSubscriber(modid = CTM.MOD_ID)
+@Config(modid = Tags.MOD_ID)
+@EventBusSubscriber(modid = Tags.MOD_ID)
 public class Configurations {
     
     @Config.Comment("Disable connected textures entirely.")
@@ -21,8 +21,8 @@ public class Configurations {
 
     @SubscribeEvent
     public static void onConfigChange(ConfigChangedEvent event) {
-        if (event.getModID().equals(CTM.MOD_ID)) {
-            ConfigManager.sync(CTM.MOD_ID, Type.INSTANCE);
+        if (event.getModID().equals(Tags.MOD_ID)) {
+            ConfigManager.sync(Tags.MOD_ID, Type.INSTANCE);
             AbstractCTMBakedModel.invalidateCaches();
             Minecraft.getMinecraft().renderGlobal.loadRenderers();
         }
