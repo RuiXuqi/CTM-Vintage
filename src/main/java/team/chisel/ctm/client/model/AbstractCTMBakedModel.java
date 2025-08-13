@@ -178,6 +178,9 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
             ProfileUtil.start("model_creation");
             baked = modelcache.get(new State(state, null, getParent(rand)), () -> createModel(state, model, null, rand));
             ProfileUtil.end();
+        } else {
+            // This SHOULD be invalid, but apparently forge doesn't call getModelData when rendering items. Moving this check to be more specific below
+            // throw new IllegalArgumentException("getQuads called without state and without going through overrides, this is not valid!");
         }
 
         ProfileUtil.start("quad_lookup");
@@ -205,6 +208,9 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
         ProfileUtil.end();
 
         ProfileUtil.end();
+        if (ret == null) {
+            throw new IllegalStateException("getQuads called on a model that was not properly initialized - by using getOverrides and/or getModelData");
+        }
         return ret;
     }
 
