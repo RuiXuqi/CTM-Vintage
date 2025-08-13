@@ -6,10 +6,10 @@ import net.minecraft.util.EnumFacing;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
-import team.chisel.ctm.client.texture.ctx.TextureContextCTMV;
-import team.chisel.ctm.client.texture.ctx.TextureContextCTMV.ConnectionData;
-import team.chisel.ctm.client.texture.ctx.TextureContextCTMV.Connections;
-import team.chisel.ctm.client.texture.type.TextureTypeCTMV;
+import team.chisel.ctm.client.texture.ctx.TextureContextPillar;
+import team.chisel.ctm.client.texture.ctx.TextureContextPillar.ConnectionData;
+import team.chisel.ctm.client.texture.ctx.TextureContextPillar.Connections;
+import team.chisel.ctm.client.texture.type.TextureTypePillar;
 import team.chisel.ctm.client.util.Quad;
 import team.chisel.ctm.client.util.Submap;
 
@@ -18,9 +18,9 @@ import java.util.List;
 
 import static net.minecraft.util.EnumFacing.*;
 
-public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
+public class TexturePillar extends AbstractTexture<TextureTypePillar> {
 
-    public TextureCTMV(TextureTypeCTMV type, TextureInfo info) {
+    public TexturePillar(TextureTypePillar type, TextureInfo info) {
         super(type, info);
     }
 
@@ -37,7 +37,7 @@ public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
 
     private BakedQuad getQuad(BakedQuad in, ITextureContext context) {
         Quad q = makeQuad(in, context);
-        ConnectionData data = ((TextureContextCTMV)context).getData();
+        ConnectionData data = ((TextureContextPillar)context).getData();
         Connections cons = data.getConnections();
         
         // This is the order of operations for connections

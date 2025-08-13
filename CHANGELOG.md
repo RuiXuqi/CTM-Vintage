@@ -1,5 +1,13 @@
 # Changelog
 
+## [???]
+
+## New
+- Added ctm_vertical and sctm texture types (ChloeDawn)
+- Added ctm_full type by TJT01 (Chisel-Team/ConnectedTexturesMod/pull/186)
+## Fixes
+- #145 Fix eldritch type not being compatible with lighting data
+
 ## [1.0.2]
 
 ### Fixes

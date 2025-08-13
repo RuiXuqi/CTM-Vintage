@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static team.chisel.ctm.client.util.ConnectionLocations.*;
 
-public class TextureContextCTMV implements ITextureContext {
+public class TextureContextPillar implements ITextureContext {
 
     private static final ConnectionLocations[] MAIN_VALUES = { UP, DOWN, NORTH, SOUTH, EAST, WEST };
     private static final ConnectionLocations[] OFFSET_VALUES = ArrayUtils.removeElements(ConnectionLocations.VALUES, ObjectArrays.concat(
@@ -129,7 +129,7 @@ public class TextureContextCTMV implements ITextureContext {
 
     private long compressedData;
     
-    public TextureContextCTMV(IBlockAccess world, BlockPos pos) {
+    public TextureContextPillar(IBlockAccess world, BlockPos pos) {
         data = new ConnectionData(world, pos);
 
         IBlockState state = world.getBlockState(pos);
@@ -140,7 +140,7 @@ public class TextureContextCTMV implements ITextureContext {
         }
     }
 
-    public TextureContextCTMV(long data){
+    public TextureContextPillar(long data){
         this.data = new ConnectionData(data);
     }
 
