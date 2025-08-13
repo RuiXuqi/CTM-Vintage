@@ -63,28 +63,28 @@ public enum ConnectionLocations {
      * The enum facing directions needed to get to this connection location
      */
     private final EnumFacing normal;
-    private final @Nullable Dir dir;
+    private final @Nullable LocalDirection dir;
     private boolean offset;
 
-    private ConnectionLocations(@Nullable Dir dir) {
+    private ConnectionLocations(@Nullable LocalDirection dir) {
         this(EnumFacing.SOUTH, dir);
     }
     
-    private ConnectionLocations(@Nullable Dir dir, boolean offset) {
+    private ConnectionLocations(@Nullable LocalDirection dir, boolean offset) {
         this(EnumFacing.SOUTH, dir, offset);
     }
     
-    private ConnectionLocations(EnumFacing normal, @Nullable Dir dir){
+    private ConnectionLocations(EnumFacing normal, @Nullable LocalDirection dir){
         this(normal, dir, false);
     }
     
-    private ConnectionLocations(EnumFacing normal, @Nullable Dir dir, boolean offset) {
+    private ConnectionLocations(EnumFacing normal, @Nullable LocalDirection dir, boolean offset) {
         this.normal = normal;
         this.dir = dir;
         this.offset = offset;
     }
 
-    public @Nullable Dir getDirForSide(EnumFacing facing){
+    public @Nullable LocalDirection getDirForSide(EnumFacing facing){
         return dir == null ? null : dir.relativize(facing);
     }
 

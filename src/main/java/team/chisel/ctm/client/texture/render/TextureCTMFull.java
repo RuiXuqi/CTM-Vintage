@@ -10,10 +10,7 @@ import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.ctx.TextureContextCTM;
 import team.chisel.ctm.client.texture.type.TextureTypeCTMFull;
-import team.chisel.ctm.client.util.CTMLogic;
-import team.chisel.ctm.client.util.Dir;
-import team.chisel.ctm.client.util.Quad;
-import team.chisel.ctm.client.util.Submap;
+import team.chisel.ctm.client.util.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
@@ -32,7 +29,7 @@ public class TextureCTMFull extends TextureCTM<TextureTypeCTMFull> {
 	@Override
 	public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
 		Quad quad = makeQuad(bq, context);
-		CTMLogic ctm = (context instanceof TextureContextCTM) ? ((TextureContextCTM) context).getCTM(bq.getFace()) : null;
+		ICTMLogic ctm = (context instanceof TextureContextCTM) ? ((TextureContextCTM) context).getCTM(bq.getFace()) : null;
 		if (context == null || ctm == null || Configurations.disableCTM) {
 			return Collections.singletonList(quad.transformUVs(sprites[0], Submap.X4[0][0]).rebake());
 		}

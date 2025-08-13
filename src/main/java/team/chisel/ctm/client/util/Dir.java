@@ -22,7 +22,7 @@ import static net.minecraft.util.EnumFacing.*;
  * for inner corner rendering.
  */
 @ParametersAreNonnullByDefault
-public enum Dir {
+public enum Dir implements LocalDirection {
 	// @formatter:off
     TOP(UP), 
     TOP_RIGHT(UP, EAST),
@@ -110,7 +110,8 @@ public enum Dir {
      *            The side of the current face.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
-    public boolean isConnected(CTMLogic ctm, IBlockAccess world, BlockPos pos, EnumFacing side) {
+    @Override
+    public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, EnumFacing side) {
         return ctm.isConnected(world, pos, applyConnection(pos, side), side);
     }
 
@@ -129,7 +130,8 @@ public enum Dir {
      *            The state to check for connection with.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
-    public boolean isConnected(CTMLogic ctm, IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state) {
+    @Override
+    public boolean isConnected(ConnectionCheck  ctm, IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state) {
         return ctm.isConnected(world, pos, applyConnection(pos, side), side, state);
     }
 
@@ -144,6 +146,7 @@ public enum Dir {
         return pos.add(getOffset(side));
     }
 
+    @Override
     public Dir relativize(EnumFacing normal) {
         /*
         if (normal == NORMAL) {
@@ -162,13 +165,14 @@ public enum Dir {
         */
         throw new UnsupportedOperationException("Yell at tterrag to finish deserialization");
     }
-    
+
+    @Override
     @Nonnull
     public BlockPos getOffset(EnumFacing normal) {
         return offsets[normal.ordinal()];
     }
 	
-	public @Nullable Dir getDirFor(EnumFacing[] dirs) {
+	public @Nullable LocalDirection getDirFor(EnumFacing[] dirs) {
 	    if (dirs == this.dirs) { // Short circuit for identical return from getNormalizedDirs
 	        return this; 
 	    }

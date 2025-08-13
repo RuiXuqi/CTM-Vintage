@@ -82,7 +82,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
         this.connectionChecks = info.getInfo().map(obj -> predicateParser.parse(obj.get("connect_to"))).orElse(null);
     }
 
-    public boolean connectTo(CTMLogic ctm, IBlockState from, IBlockState to, EnumFacing dir) {
+    public boolean connectTo(ConnectionCheck ctm, IBlockState from, IBlockState to, EnumFacing dir) {
         try {
 			return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0) == 1;
 		} catch (Exception e) {
