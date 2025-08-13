@@ -15,6 +15,7 @@ plugins {
     id 'com.modrinth.minotaur' version '2.+' apply false
     id 'org.jetbrains.changelog' version '2.2.1'
     id 'io.freefair.lombok' version '8.12'
+    id 'com.diffplug.spotless' version '7.2.1'
 }
 
 apply from: 'gradle/scripts/helpers.gradle'
@@ -358,3 +359,16 @@ idea.project.settings {
 
 apply from: 'gradle/scripts/publishing.gradle'
 apply from: 'gradle/scripts/extra.gradle'
+
+spotless {
+    ratchetFrom '1.12/dev'
+
+    java {
+        target 'src/*/java/team/chisel/ctm/**/*.java'
+
+        leadingSpacesToTabs()
+        endWithNewline()
+        formatAnnotations()
+        trimTrailingWhitespace()
+    }
+}

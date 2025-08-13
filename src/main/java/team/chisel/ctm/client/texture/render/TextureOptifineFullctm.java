@@ -14,11 +14,11 @@ import net.minecraft.util.JsonUtils;
 import team.chisel.ctm.Configurations;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
-import team.chisel.ctm.client.texture.ctx.TextureContextNewCTM;
+import team.chisel.ctm.client.texture.ctx.TextureContextOptifineFullctm;
 import team.chisel.ctm.client.texture.type.TextureTypeOptifineFullctm;
 import team.chisel.ctm.client.util.*;
-import team.chisel.ctm.client.util.CTMLogicBakery.OutputFace;
 import team.chisel.ctm.client.util.CTMLogic.StateComparisonCallback;
+import team.chisel.ctm.client.util.CTMLogicBakery.OutputFace;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -30,24 +30,23 @@ import java.util.function.BiPredicate;
 
 @ParametersAreNonnullByDefault
 @Accessors(fluent = true)
-public class TextureNewCTM<T extends TextureTypeOptifineFullctm> extends AbstractTexture<T> {
+public class TextureOptifineFullctm<T extends TextureTypeOptifineFullctm> extends AbstractTexture<T> {
 
-    private static final BlockstatePredicateParser predicateParser = new BlockstatePredicateParser();
+	private static final BlockstatePredicateParser predicateParser = new BlockstatePredicateParser();
 
 	@Getter
 	private final Optional<Boolean> connectInside;
-	
+
 	@Getter
 	private final boolean ignoreStates;
-	
-	@Nullable
-	private final BiPredicate<EnumFacing, IBlockState> connectionChecks;
-	
+
+	@Nullable private final BiPredicate<EnumFacing, IBlockState> connectionChecks;
+
 	@RequiredArgsConstructor
 	private static final class CacheKey {
 		private final IBlockState from;
 		private final EnumFacing dir;
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -76,29 +75,29 @@ public class TextureNewCTM<T extends TextureTypeOptifineFullctm> extends Abstrac
 
 	private final Cache<CacheKey, Object2ByteMap<IBlockState>> connectionCache = CacheBuilder.newBuilder().build();
 
-    public TextureNewCTM(T type, TextureInfo info) {
-        super(type, info);
-        this.connectInside = info.getInfo().flatMap(obj -> ParseUtils.getBoolean(obj, "connect_inside"));
-        this.ignoreStates = info.getInfo().map(obj -> JsonUtils.getBoolean(obj, "ignore_states", false)).orElse(false);
-        this.connectionChecks = info.getInfo().map(obj -> predicateParser.parse(obj.get("connect_to"))).orElse(null);
-    }
+	public TextureOptifineFullctm(T type, TextureInfo info) {
+		super(type, info);
+		this.connectInside = info.getInfo().flatMap(obj -> ParseUtils.getBoolean(obj, "connect_inside"));
+		this.ignoreStates = info.getInfo().map(obj -> JsonUtils.getBoolean(obj, "ignore_states", false)).orElse(false);
+		this.connectionChecks = info.getInfo().map(obj -> predicateParser.parse(obj.get("connect_to"))).orElse(null);
+	}
 
-    public boolean connectTo(ConnectionCheck ctm, IBlockState from, IBlockState to, EnumFacing dir) {
-        try {
-            return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0) == 1;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public boolean connectTo(ConnectionCheck ctm, IBlockState from, IBlockState to, EnumFacing dir) {
+		try {
+			return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0) == 1;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    @Override
-    public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
-        Quad quad = makeQuad(bq, context);
-        if (context == null || Configurations.disableCTM) {
-            return Collections.singletonList(quad.transformUVs(sprites[0], Submap.X1).rebake()); // default tex
-        }
+	@Override
+	public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
+		Quad quad = makeQuad(bq, context);
+		if (context == null || Configurations.disableCTM) {
+			return Collections.singletonList(quad.transformUVs(sprites[0], Submap.X1).rebake()); // default tex
+		}
 
-		OutputFace[] ctm = ((TextureContextNewCTM)context).getCTM(bq.getFace()).getCachedSubmaps();
+		OutputFace[] ctm = ((TextureContextOptifineFullctm)context).getCTM(bq.getFace()).getCachedSubmaps();
 		List<BakedQuad> ret = new ArrayList<>();
 		for (var face : ctm) {
 			Quad sub = quad.subsect(face.getFace());
@@ -107,10 +106,10 @@ public class TextureNewCTM<T extends TextureTypeOptifineFullctm> extends Abstrac
 			}
 		}
 		return ret;
-    }
-    
-    @Override
-    protected Quad makeQuad(BakedQuad bq, ITextureContext context) {
-        return super.makeQuad(bq, context).derotate();
-    }
+	}
+
+	@Override
+	protected Quad makeQuad(BakedQuad bq, ITextureContext context) {
+		return super.makeQuad(bq, context).derotate();
+	}
 }

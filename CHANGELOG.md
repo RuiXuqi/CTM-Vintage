@@ -1,12 +1,21 @@
 # Changelog
 
-## [???]
+## [1.1.0]
 
+## Changes
+- Cherry-pick many commits from modern CTM.
+  - Make the mod very unstable and dangerous because of the blind cherry-picks.
+  - But it just works with some modifications!
+- Mapping is switched to stable 39. Hope nothing happened.
 ## New
 - Added ctm_vertical and sctm texture types (ChloeDawn)
-- Added ctm_full type by TJT01 (Chisel-Team/ConnectedTexturesMod/pull/186)
-## Fixes
+- Added ctm_full type by TJT01 ([#186](https://github.com/Chisel-Team/ConnectedTexturesMod/pull/186))
+- Added optifine_fullctm type, code from modern CTM mod
+  - It is not exactly the same as Optifine's. You need to cut the 12x4 texture into three 4x4.
+## Fixes (maybe, since they may not happen in 1.12.2)
 - #145 Fix eldritch type not being compatible with lighting data
+- Fix model overrides not applying
+- Fix emissive lighting math causing broken item rendering
 
 ## [1.0.2]
 
