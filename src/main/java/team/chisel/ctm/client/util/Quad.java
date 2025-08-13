@@ -525,7 +525,7 @@ public class Quad {
                 case UV:
                     if (ele.getIndex() == 1) {
                         //Stuff for fullbright
-                        builder.put(i, blocklight * 0x10, skylight * 0x10);
+                        builder.put(i, ((float) blocklight * 0x20) / 0xFFFF, ((float) skylight * 0x20) / 0xFFFF);
                     } else if (ele.getIndex() == 0) {
                         Vector2f uv = vertUv[v];
                         builder.put(i, uv.x, uv.y , 0, 1);
