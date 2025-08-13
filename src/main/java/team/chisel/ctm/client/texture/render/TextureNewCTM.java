@@ -95,7 +95,7 @@ public class TextureNewCTM<T extends TextureTypeOptifineFullctm> extends Abstrac
     public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
         Quad quad = makeQuad(bq, context);
         if (context == null || Configurations.disableCTM) {
-            return Collections.singletonList(quad.transformUVs(sprites[0], Submap.fromPixelScale(16f / 12, 16f / 4, 0, 0)).rebake());
+            return Collections.singletonList(quad.transformUVs(sprites[0], Submap.X1).rebake()); // default tex
         }
 
 		OutputFace[] ctm = ((TextureContextNewCTM)context).getCTM(bq.getFace()).getCachedSubmaps();
@@ -103,7 +103,7 @@ public class TextureNewCTM<T extends TextureTypeOptifineFullctm> extends Abstrac
 		for (var face : ctm) {
 			Quad sub = quad.subsect(face.getFace());
 			if (sub != null) {
-				ret.add(sub.transformUVs(sprites[0], face.getUvs()).rebake());
+				ret.add(sub.transformUVs(sprites[face.getSprite()], face.getUvs()).rebake());
 			}
 		}
 		return ret;

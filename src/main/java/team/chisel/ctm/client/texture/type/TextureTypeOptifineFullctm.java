@@ -26,6 +26,11 @@ public class TextureTypeOptifineFullctm implements ITextureType {
     }
 
     @Override
+    public int requiredTextures() {
+        return 4;
+    }
+
+    @Override
     public ICTMTexture<? extends TextureTypeOptifineFullctm> makeTexture(TextureInfo info) {
         return new TextureNewCTM<>(this, info);
     }

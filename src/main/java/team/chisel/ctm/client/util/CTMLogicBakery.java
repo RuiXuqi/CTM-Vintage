@@ -102,6 +102,7 @@ public class CTMLogicBakery {
 
         ISubmap uvs;
         ISubmap face;
+        int sprite;
     }
     
     private int size;
@@ -122,9 +123,17 @@ public class CTMLogicBakery {
         return output(submap, texture, Submap.X1);
     }
 
+    public CTMLogicBakery output(int submap, ISubmap texture, int sprite) {
+        return output(submap, texture, Submap.X1, sprite);
+    }
+
     public CTMLogicBakery output(int submap, ISubmap texture, ISubmap at) {
+        return output(submap, texture, at, 0);
+    }
+
+    public CTMLogicBakery output(int submap, ISubmap texture, ISubmap at, int sprite) {
         this.curRule = submap;
-        this.outputs.put(submap, new OutputFace(texture, at));
+        this.outputs.put(submap, new OutputFace(texture, at, sprite));
         return this;
     }
     
@@ -210,7 +219,7 @@ public class CTMLogicBakery {
         return buf.toString();
     }
 
-    private static final ISubmap[][] OF_FORMAT = Submap.grid(12, 4);
+    private static final ISubmap[][] OF_FORMAT = Submap.grid(4, 4);
     public static CTMLogicBakery TEST_OF = new CTMLogicBakery()
             .input(0, Dir.TOP) // LSB
             .input(1, Dir.TOP_RIGHT)
@@ -220,53 +229,53 @@ public class CTMLogicBakery {
             .input(5, Dir.BOTTOM_LEFT)
             .input(6, Dir.LEFT)
             .input(7, Dir.TOP_LEFT) // MSB
-            .output(0, OF_FORMAT[0][0]).when("0X0X0X0X")
-            .output(1, OF_FORMAT[0][1]).when("0X1X0X0X")
-            .output(2, OF_FORMAT[0][2]).when("0X1X0X1X")
-            .output(3, OF_FORMAT[0][3]).when("0X0X0X1X")
-            .output(4, OF_FORMAT[0][4]).when("0X101X0X")
-            .output(5, OF_FORMAT[0][5]).when("0X0X101X")
-            .output(6, OF_FORMAT[0][6]).when("10101X0X")
-            .output(7, OF_FORMAT[0][7]).when("0X10101X")
-            .output(8, OF_FORMAT[0][8]).when("11101010")
-            .output(9, OF_FORMAT[0][9]).when("10111010")
-            .output(10, OF_FORMAT[0][10]).when("10101111")
-            .output(11, OF_FORMAT[0][11]).when("11101011")
-            .output(12, OF_FORMAT[1][0]).when("0X0X1X0X")
-            .output(13, OF_FORMAT[1][1]).when("0X111X0X")
-            .output(14, OF_FORMAT[1][2]).when("0X11111X")
-            .output(15, OF_FORMAT[1][3]).when("0X0X111X")
-            .output(16, OF_FORMAT[1][4]).when("101X0X0X")
-            .output(17, OF_FORMAT[1][5]).when("1X0X0X10")
-            .output(18, OF_FORMAT[1][6]).when("101X0X10")
-            .output(19, OF_FORMAT[1][7]).when("1X0X1010")
-            .output(20, OF_FORMAT[1][8]).when("10101011")
-            .output(21, OF_FORMAT[1][9]).when("10101110")
-            .output(22, OF_FORMAT[1][10]).when("10111110")
-            .output(23, OF_FORMAT[1][11]).when("11111010")
-            .output(24, OF_FORMAT[2][0]).when("1X0X1X0X")
-            .output(25, OF_FORMAT[2][1]).when("11111X0X")
-            .output(26, OF_FORMAT[2][2]).when("11111111")
-            .output(27, OF_FORMAT[2][3]).when("1X0X1111")
-            .output(28, OF_FORMAT[2][4]).when("10111X0X")
-            .output(29, OF_FORMAT[2][5]).when("0X10111X")
-            .output(30, OF_FORMAT[2][6]).when("11101X0X")
-            .output(31, OF_FORMAT[2][7]).when("0X11101X")
-            .output(32, OF_FORMAT[2][8]).when("11101111")
-            .output(33, OF_FORMAT[2][9]).when("11111011")
-            .output(34, OF_FORMAT[2][10]).when("11101110")
-            .output(35, OF_FORMAT[2][11]).when("10111011")
-            .output(36, OF_FORMAT[3][0]).when("1X0X0X0X")
-            .output(37, OF_FORMAT[3][1]).when("111X0X0X")
-            .output(38, OF_FORMAT[3][2]).when("111X0X11")
-            .output(39, OF_FORMAT[3][3]).when("1X0X0X11")
-            .output(40, OF_FORMAT[3][4]).when("111X0X10")
-            .output(41, OF_FORMAT[3][5]).when("1X0X1011")
-            .output(42, OF_FORMAT[3][6]).when("101X0X11")
-            .output(43, OF_FORMAT[3][7]).when("1X0X1110")
-            .output(44, OF_FORMAT[3][8]).when("10111111")
-            .output(45, OF_FORMAT[3][9]).when("11111110")
-            .output(46, OF_FORMAT[3][10]).when("10101010");
+            .output(0, OF_FORMAT[0][0], 1).when("0X0X0X0X")
+            .output(1, OF_FORMAT[0][1], 1).when("0X1X0X0X")
+            .output(2, OF_FORMAT[0][2], 1).when("0X1X0X1X")
+            .output(3, OF_FORMAT[0][3], 1).when("0X0X0X1X")
+            .output(4, OF_FORMAT[0][0], 2).when("0X101X0X")
+            .output(5, OF_FORMAT[0][1], 2).when("0X0X101X")
+            .output(6, OF_FORMAT[0][2], 2).when("10101X0X")
+            .output(7, OF_FORMAT[0][3], 2).when("0X10101X")
+            .output(8, OF_FORMAT[0][0], 3).when("11101010")
+            .output(9, OF_FORMAT[0][1], 3).when("10111010")
+            .output(10, OF_FORMAT[0][2], 3).when("10101111")
+            .output(11, OF_FORMAT[0][3], 3).when("11101011")
+            .output(12, OF_FORMAT[1][0], 1).when("0X0X1X0X")
+            .output(13, OF_FORMAT[1][1], 1).when("0X111X0X")
+            .output(14, OF_FORMAT[1][2], 1).when("0X11111X")
+            .output(15, OF_FORMAT[1][3], 1).when("0X0X111X")
+            .output(16, OF_FORMAT[1][0], 2).when("101X0X0X")
+            .output(17, OF_FORMAT[1][1], 2).when("1X0X0X10")
+            .output(18, OF_FORMAT[1][2], 2).when("101X0X10")
+            .output(19, OF_FORMAT[1][3], 2).when("1X0X1010")
+            .output(20, OF_FORMAT[1][0], 3).when("10101011")
+            .output(21, OF_FORMAT[1][1], 3).when("10101110")
+            .output(22, OF_FORMAT[1][2], 3).when("10111110")
+            .output(23, OF_FORMAT[1][3], 3).when("11111010")
+            .output(24, OF_FORMAT[2][0], 1).when("1X0X1X0X")
+            .output(25, OF_FORMAT[2][1], 1).when("11111X0X")
+            .output(26, OF_FORMAT[2][2], 1).when("11111111")
+            .output(27, OF_FORMAT[2][3], 1).when("1X0X1111")
+            .output(28, OF_FORMAT[2][0], 2).when("10111X0X")
+            .output(29, OF_FORMAT[2][1], 2).when("0X10111X")
+            .output(30, OF_FORMAT[2][2], 2).when("11101X0X")
+            .output(31, OF_FORMAT[2][3], 2).when("0X11101X")
+            .output(32, OF_FORMAT[2][0], 3).when("11101111")
+            .output(33, OF_FORMAT[2][1], 3).when("11111011")
+            .output(34, OF_FORMAT[2][2], 3).when("11101110")
+            .output(35, OF_FORMAT[2][3], 3).when("10111011")
+            .output(36, OF_FORMAT[3][0], 1).when("1X0X0X0X")
+            .output(37, OF_FORMAT[3][1], 1).when("111X0X0X")
+            .output(38, OF_FORMAT[3][2], 1).when("111X0X11")
+            .output(39, OF_FORMAT[3][3], 1).when("1X0X0X11")
+            .output(40, OF_FORMAT[3][0], 2).when("111X0X10")
+            .output(41, OF_FORMAT[3][1], 2).when("1X0X1011")
+            .output(42, OF_FORMAT[3][2], 2).when("101X0X11")
+            .output(43, OF_FORMAT[3][3], 2).when("1X0X1110")
+            .output(44, OF_FORMAT[3][0], 3).when("10111111")
+            .output(45, OF_FORMAT[3][1], 3).when("11111110")
+            .output(46, OF_FORMAT[3][2], 3).when("10101010");
 
     private static final ISubmap[][] CTM_FORMAT = Submap.X4;
     private static final ISubmap[][] CTM_QUADS = Submap.X2;
