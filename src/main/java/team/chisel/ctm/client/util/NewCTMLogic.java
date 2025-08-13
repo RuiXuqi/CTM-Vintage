@@ -1,19 +1,22 @@
 package team.chisel.ctm.client.util;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import team.chisel.ctm.api.texture.ISubmap;
 
 @RequiredArgsConstructor
 public class NewCTMLogic {
 
-    private final int[][] lookups;
-    private final Submap[] tiles;
+    @VisibleForTesting
+    public final int[][] lookups;
+    private final ISubmap[] tiles;
     private final LocalDirection[] directions;
     private final ConnectionCheck connectionCheck;
 
-    public Submap[] getSubmaps(IBlockAccess world, BlockPos pos, EnumFacing side) {
+    public ISubmap[] getSubmaps(IBlockAccess world, BlockPos pos, EnumFacing side) {
         int key = 0;
         for (int i = 0; i < directions.length; i++) {
             BlockPos offset = directions[i].getOffset(side);
@@ -25,11 +28,10 @@ public class NewCTMLogic {
         }
         // TODO reduce allocation by encapsulating multi-submap results
         int[] tileIds = lookups[key];
-        Submap[] ret = new Submap[tileIds.length];
+        ISubmap[] ret = new Submap[tileIds.length];
         for (int i = 0; i < ret.length; i++) {
             ret[i] = tiles[tileIds[i]];
         }
         return ret;
     }
-
 }
