@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.1]
+# Fixes
+- Fix emissive lighting math causing broken item rendering
+  - True fix. It is caused by the cherry-pick.
+
 ## [1.1.0]
 
 ## Changes
