@@ -50,7 +50,7 @@ public class ModelCTM implements IModelCTM {
     
     // Populated during bake with real texture data
     protected Int2ObjectMap<TextureAtlasSprite> spriteOverrides;
-    protected Map<Pair<Integer, String>, ICTMTexture<?>> textureOverrides;
+    protected Map<Pair<Integer, ResourceLocation>, ICTMTexture<?>> textureOverrides;
 
     private final Collection<ResourceLocation> textureDependencies;
     
@@ -193,7 +193,7 @@ public class ModelCTM implements IModelCTM {
                     }
                     ICTMTexture<?> tex = e.getValue().makeTexture(sprite, bakedTextureGetter);
                     layers |= 1 << (tex.getLayer() == null ? 7 : tex.getLayer().ordinal());
-                    textureOverrides.put(Pair.of(e.getKey(), texLoc.toString()), tex);
+                    textureOverrides.put(Pair.of(e.getKey(), texLoc), tex);
                 }
             }
         }
