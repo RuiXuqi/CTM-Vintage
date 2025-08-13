@@ -21,6 +21,7 @@ import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.apache.logging.log4j.message.ParameterizedMessage;
 import team.chisel.ctm.CTM;
 import team.chisel.ctm.api.event.TextureCollectedEvent;
 import team.chisel.ctm.api.model.IModelCTM;
@@ -128,41 +129,44 @@ public enum TextureMetadataHandler {
                     } catch (Exception e) {
                         continue;
                     }
+                    try {
+                        Set<ResourceLocation> textures = Sets.newHashSet(model.getTextures());
+                        // FORGE WHY
+                        if (vanillaModelWrapperClass.isAssignableFrom(model.getClass())) {
+                            ModelBlock parent = ((ModelBlock) modelWrapperModel.get(model)).parent;
+                            while (parent != null) {
+                                textures.addAll(parent.textures.values().stream().filter(s -> !s.startsWith("#")).map(ResourceLocation::new).collect(Collectors.toSet()));
+                                parent = parent.parent;
+                            }
+                        }
 
-                    Set<ResourceLocation> textures = Sets.newHashSet(model.getTextures());
-                    // FORGE WHY
-                    if (vanillaModelWrapperClass.isAssignableFrom(model.getClass())) {
-                        ModelBlock parent = ((ModelBlock) modelWrapperModel.get(model)).parent;
-                        while (parent != null) {
-                            textures.addAll(parent.textures.values().stream().filter(s -> !s.startsWith("#")).map(ResourceLocation::new).collect(Collectors.toSet()));
-                            parent = parent.parent;
-                        }
-                    }
-                    
-                    Set<ResourceLocation> newDependencies = Sets.newHashSet(model.getDependencies());
+                        Set<ResourceLocation> newDependencies = Sets.newHashSet(model.getDependencies());
 
-                    // FORGE WHYYYYY
-                    if (multipartModelClass.isAssignableFrom(model.getClass())) {
-                        Map<?, IModel> partModels = (Map<?, IModel>) multipartPartModels.get(model);
-                        textures = partModels.values().stream().map(m -> m.getTextures()).flatMap(Collection::stream).collect(Collectors.toSet());
-                        newDependencies.addAll(partModels.values().stream().flatMap(m -> m.getDependencies().stream()).collect(Collectors.toList()));
-                    }
-                    
-                    for (ResourceLocation tex : textures) {
-                        IMetadataSectionCTM meta = null;
-                        try {
-                            meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(tex));
-                        } catch (IOException e) {} // Fallthrough
-                        if (meta != null) {
-                            shouldWrap = true;
-                            break;
+                        // FORGE WHYYYYY
+                        if (multipartModelClass.isAssignableFrom(model.getClass())) {
+                            Map<?, IModel> partModels = (Map<?, IModel>) multipartPartModels.get(model);
+                            textures = partModels.values().stream().map(m -> m.getTextures()).flatMap(Collection::stream).collect(Collectors.toSet());
+                            newDependencies.addAll(partModels.values().stream().flatMap(m -> m.getDependencies().stream()).collect(Collectors.toList()));
                         }
-                    }
-                    
-                    for (ResourceLocation rl : newDependencies) {
-                        if (seenModels.add(rl)) {
-                            dependencies.push(rl);
+
+                        for (ResourceLocation tex : textures) {
+                            IMetadataSectionCTM meta = null;
+                            try {
+                                meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(tex));
+                            } catch (IOException e) {} // Fallthrough
+                            if (meta != null) {
+                                shouldWrap = true;
+                                break;
+                            }
                         }
+
+                        for (ResourceLocation rl : newDependencies) {
+                            if (seenModels.add(rl)) {
+                                dependencies.push(rl);
+                            }
+                        }
+                    } catch (Exception e) {
+                        CTM.logger.error(new ParameterizedMessage("Error loading model dependency {} for model {}. Skipping...", dep, mrl), e);
                     }
                 }
                 wrappedModels.put(mrl, shouldWrap);
