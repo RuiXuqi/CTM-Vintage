@@ -49,8 +49,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class AbstractCTMBakedModel implements IBakedModel {
 
-    private static Cache<ModelResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.SECONDS).<ModelResourceLocation, AbstractCTMBakedModel>build();
-    private static Cache<State, AbstractCTMBakedModel> modelcache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).maximumSize(5000).<State, AbstractCTMBakedModel>build();
+    private static Cache<ModelResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder()
+            .expireAfterAccess(10, TimeUnit.SECONDS)
+            .maximumSize(0)
+            .<ModelResourceLocation, AbstractCTMBakedModel>build();
+    private static Cache<State, AbstractCTMBakedModel> modelcache = CacheBuilder.newBuilder()
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+//            .maximumSize(5000)
+            .maximumSize(0)
+            .<State, AbstractCTMBakedModel>build();
 
     public static void invalidateCaches()
     {

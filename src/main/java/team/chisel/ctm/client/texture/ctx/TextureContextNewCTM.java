@@ -32,7 +32,7 @@ public class TextureContextNewCTM implements ITextureContext {
     }
     
     protected NewCTMLogic createCTM(@Nonnull IBlockState state) {
-        return CTMLogicBakery.TEST.bake();
+        return CTMLogicBakery.TEST_OF.bake();
     }
 
     public NewCTMLogic getCTM(EnumFacing face) {

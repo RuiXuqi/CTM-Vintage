@@ -45,4 +45,7 @@ public interface LocalDirection {
 
     int ordinal();
 
+    String name();
+
+    String asJson();
 }

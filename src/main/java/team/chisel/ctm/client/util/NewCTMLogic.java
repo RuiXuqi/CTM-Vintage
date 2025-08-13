@@ -5,25 +5,25 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import team.chisel.ctm.api.texture.ISubmap;
+import team.chisel.ctm.client.util.CTMLogicBakery.OutputFace;
 
 @RequiredArgsConstructor
 public class NewCTMLogic implements ICTMLogic {
 
     @VisibleForTesting
     public final int[][] lookups;
-    private final ISubmap[] tiles;
+    private final OutputFace[] tiles;
     private final LocalDirection[] directions;
     private final ConnectionCheck connectionCheck;
 
     private int[] cachedSubmapIds;
-    private ISubmap[] cachedSubmaps;
+    private OutputFace[] cachedSubmaps;
 
-    public ISubmap[] getCachedSubmaps() {
+    public OutputFace[] getCachedSubmaps() {
         return this.cachedSubmaps;
     }
 
-    public ISubmap[] getSubmaps(IBlockAccess world, BlockPos pos, EnumFacing side) {
+    public OutputFace[] getSubmaps(IBlockAccess world, BlockPos pos, EnumFacing side) {
         int key = 0;
         for (int i = 0; i < directions.length; i++) {
             BlockPos offset = directions[i].getOffset(side);
@@ -36,7 +36,7 @@ public class NewCTMLogic implements ICTMLogic {
         }
         // TODO reduce allocation by encapsulating multi-submap results
         int[] tileIds = lookups[key];
-        ISubmap[] ret = new Submap[tileIds.length];
+        OutputFace[] ret = new OutputFace[tileIds.length];
         for (int i = 0; i < ret.length; i++) {
             ret[i] = tiles[tileIds[i]];
         }

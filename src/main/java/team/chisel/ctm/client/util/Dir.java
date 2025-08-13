@@ -1,5 +1,6 @@
 package team.chisel.ctm.client.util;
 
+import com.google.gson.Gson;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -230,4 +231,9 @@ public enum Dir implements LocalDirection {
 
         return facing;
 	}
+
+    @Override
+    public String asJson() {
+        return "{\"id\": \"" + name() + "\", \"directions\": " + new Gson().toJson(dirs) + "}";
+    }
 }
