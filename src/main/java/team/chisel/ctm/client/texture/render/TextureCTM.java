@@ -1,5 +1,7 @@
 package team.chisel.ctm.client.texture.render;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenCustomHashMap;
 import lombok.Getter;
@@ -20,6 +22,7 @@ import team.chisel.ctm.client.util.CTMLogic.StateComparisonCallback;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
@@ -69,7 +72,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
 		}
 	}
 
-	private final Map<CacheKey, Object2ByteMap<IBlockState>> connectionCache = new HashMap<>();
+	private final Cache<CacheKey, Object2ByteMap<IBlockState>> connectionCache = CacheBuilder.newBuilder().build();
 
     public TextureCTM(T type, TextureInfo info) {
         super(type, info);
@@ -80,9 +83,9 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
     }
     
     public boolean connectTo(CTMLogic ctm, IBlockState from, IBlockState to, EnumFacing dir) {
-        synchronized (connectionCache) {
-        	Object2ByteMap<IBlockState> sidecache = connectionCache.computeIfAbsent(new CacheKey(from, dir), 
-				k -> {
+        try {
+        	Object2ByteMap<IBlockState> sidecache = connectionCache.get(new CacheKey(from, dir),
+				() -> {
 					Object2ByteMap<IBlockState> map = new Object2ByteOpenCustomHashMap<>(new IdentityStrategy<>());
 					map.defaultReturnValue((byte) -1);
 					return map;
@@ -93,6 +96,8 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
                 sidecache.put(to, cached = (byte) ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0));
             }
             return cached == 1;
+		} catch (ExecutionException e) {
+			throw new RuntimeException(e);
         }
     }
 

@@ -1,8 +1,6 @@
 package team.chisel.ctm.client.texture.render;
 
 import com.google.common.collect.Lists;
-
-
 import lombok.experimental.Accessors;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -12,10 +10,15 @@ import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.ctx.TextureContextCTM;
 import team.chisel.ctm.client.texture.type.TextureTypeCTMFull;
-import team.chisel.ctm.client.util.*;
+import team.chisel.ctm.client.util.CTMLogic;
+import team.chisel.ctm.client.util.Dir;
+import team.chisel.ctm.client.util.Quad;
+import team.chisel.ctm.client.util.Submap;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
