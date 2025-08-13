@@ -1,9 +1,5 @@
 package team.chisel.ctm.client.util;
 
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -14,6 +10,9 @@ import net.minecraft.world.IBlockAccess;
 import team.chisel.ctm.Configurations;
 import team.chisel.ctm.api.IFacade;
 import team.chisel.ctm.client.util.CTMLogic.StateComparisonCallback;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 @Accessors(fluent = true, chain = true)
 public class ConnectionCheck {

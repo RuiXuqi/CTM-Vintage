@@ -6,7 +6,10 @@ import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.ctx.TextureContextCTM;
 import team.chisel.ctm.client.texture.type.TextureTypeSCTM;
-import team.chisel.ctm.client.util.*;
+import team.chisel.ctm.client.util.Dir;
+import team.chisel.ctm.client.util.ICTMLogic;
+import team.chisel.ctm.client.util.Quad;
+import team.chisel.ctm.client.util.Submap;
 
 import java.util.Collections;
 import java.util.List;

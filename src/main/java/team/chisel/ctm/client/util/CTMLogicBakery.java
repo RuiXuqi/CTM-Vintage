@@ -1,14 +1,17 @@
 package team.chisel.ctm.client.util;
 
-import java.util.Arrays;
-
-import org.apache.commons.lang3.NotImplementedException;
-
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.var;
+import org.apache.commons.lang3.ArrayUtils;
 import team.chisel.ctm.api.texture.ISubmap;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.IntFunction;
 
 @RequiredArgsConstructor
 public class CTMLogicBakery {
@@ -44,7 +47,7 @@ public class CTMLogicBakery {
             for (int i = 0; i < input.length; i++) {
                 Trinary req = input[i];
                 boolean bit = ((state >> i) & 1) == 1;
-                if (bit != (req == Trinary.TRUE)) {
+                if (req != Trinary.DONT_CARE && bit != (req == Trinary.TRUE)) {
                     return false;
                 }
             }
@@ -73,13 +76,45 @@ public class CTMLogicBakery {
     }
     
     public CTMLogicBakery when(int bit, boolean is) {
+        Preconditions.checkArgument(bit < size, "bit out of range");
         rules.putIfAbsent(curRule, new DesiredState(size, curRule));
         rules.compute(curRule, (i, s) -> s.with(bit, is ? Trinary.TRUE : Trinary.FALSE));
         return this;
     }
     
+    public CTMLogicBakery when(String pattern) {
+        Preconditions.checkArgument(pattern.length() == size, "pattern length");
+        for (int i = pattern.length() - 1; i >= 0; i--) {
+            char bit = pattern.charAt(i);
+            if (bit == '0' || bit == '1') {
+                when(pattern.length() - 1 - i, bit == '1');
+            }
+        }
+        return this;
+    }
+
     public NewCTMLogic bake() {
-        throw new NotImplementedException("");
+        int max = 1 << size;
+        int[][] lookups = new int[max][];
+        for (int state = 0; state < max; state++) {
+            for (var e : rules.int2ObjectEntrySet()) {
+                if (e.getValue().test(state)) {
+                    if (lookups[state] == null) {
+                        lookups[state] = new int[] { e.getIntKey() };
+                    } else {
+                        lookups[state] = ArrayUtils.add(lookups[state], e.getIntKey());
+                    }
+                }
+            }
+        }
+        return new NewCTMLogic(lookups, asSortedArray(outputs, ISubmap[]::new), asSortedArray(bitmap, LocalDirection[]::new), new ConnectionCheck());
+    }
+
+    private <T> T[] asSortedArray(Int2ObjectMap<T> indexedMap, IntFunction<T[]> ctor) {
+        return indexedMap.int2ObjectEntrySet().stream()
+                .sorted((e1, e2) -> Integer.compare(e1.getIntKey(), e2.getIntKey()))
+                .map(Map.Entry::getValue)
+                .toArray(ctor);
     }
     
     public static CTMLogicBakery TEST = new CTMLogicBakery()

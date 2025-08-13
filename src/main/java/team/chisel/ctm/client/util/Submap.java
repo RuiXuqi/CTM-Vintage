@@ -1,10 +1,6 @@
 package team.chisel.ctm.client.util;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import team.chisel.ctm.api.texture.ISubmap;
 

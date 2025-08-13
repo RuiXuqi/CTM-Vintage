@@ -11,22 +11,24 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import team.chisel.ctm.Configurations;
+import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
-import team.chisel.ctm.client.texture.ctx.TextureContextCTM;
-import team.chisel.ctm.client.texture.type.TextureTypeCTM;
+import team.chisel.ctm.client.texture.ctx.TextureContextNewCTM;
+import team.chisel.ctm.client.texture.type.TextureTypeOptifineFullctm;
 import team.chisel.ctm.client.util.*;
 import team.chisel.ctm.client.util.CTMLogic.StateComparisonCallback;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
 @Accessors(fluent = true)
-public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
+public class TextureNewCTM<T extends TextureTypeOptifineFullctm> extends AbstractTexture<T> {
 
     private static final BlockstatePredicateParser predicateParser = new BlockstatePredicateParser();
 
@@ -34,7 +36,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
 	private final Optional<Boolean> connectInside;
 	
 	@Getter
-	private final boolean ignoreStates, actualStates;
+	private final boolean ignoreStates;
 	
 	@Nullable
 	private final BiPredicate<EnumFacing, IBlockState> connectionChecks;
@@ -72,19 +74,18 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
 
 	private final Cache<CacheKey, Object2ByteMap<IBlockState>> connectionCache = CacheBuilder.newBuilder().build();
 
-    public TextureCTM(T type, TextureInfo info) {
+    public TextureNewCTM(T type, TextureInfo info) {
         super(type, info);
         this.connectInside = info.getInfo().flatMap(obj -> ParseUtils.getBoolean(obj, "connect_inside"));
         this.ignoreStates = info.getInfo().map(obj -> JsonUtils.getBoolean(obj, "ignore_states", false)).orElse(false);
-        this.actualStates = info.getInfo().map(obj -> JsonUtils.getBoolean(obj, "use_actual_state", false)).orElse(false);
         this.connectionChecks = info.getInfo().map(obj -> predicateParser.parse(obj.get("connect_to"))).orElse(null);
     }
 
     public boolean connectTo(ConnectionCheck ctm, IBlockState from, IBlockState to, EnumFacing dir) {
         try {
-			return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0) == 1;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+            return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0) == 1;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -92,21 +93,12 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
     public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
         Quad quad = makeQuad(bq, context);
         if (context == null || Configurations.disableCTM) {
-            return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());
+            return Collections.singletonList(quad.transformUVs(sprites[0], new Submap(16f / 12, 16f / 4, 0, 0)).rebake());
         }
 
-        Quad[] quads = quad.subdivide(4);
-        
-        int[] ctm = ((TextureContextCTM)context).getCTM(bq.getFace()).getSubmapIndices();
-        
-        for (int i = 0; i < quads.length; i++) {
-            Quad q = quads[i];
-            if (q != null) {
-                int ctmid = q.getUvs().normalize().getQuadrant();
-                quads[i] = q.grow().transformUVs(sprites[ctm[ctmid] > 15 ? 0 : 1], CTMLogic.uvs[ctm[ctmid]].normalize());
-            }
-        }
-        return Arrays.stream(quads).filter(Objects::nonNull).map(q -> q.rebake()).collect(Collectors.toList());
+        ISubmap[] ctm = ((TextureContextNewCTM)context).getCTM(bq.getFace()).getCachedSubmaps();
+        quad = quad.transformUVs(sprites[0], ctm[0]);
+        return Collections.singletonList(quad.rebake());
     }
     
     @Override
