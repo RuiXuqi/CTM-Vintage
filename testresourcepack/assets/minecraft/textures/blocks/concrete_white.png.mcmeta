@@ -1,0 +1,17 @@
+{
+  "_comment0": "An example for optifine_fullctm, texture by Cyanide.",
+  "_comment1": "As you see, there are three full textures.",
+  "_comment2": "You need to cut the white_concrete_full.png into three parts, and list them in order, like what I did.",
+  "_comment3": "The red block in the corner of the number 3 texture is useless. Fill it or not with anything.",
+  "_comment4": "The concrete_white.png is for those who do not install CTM mod. You know, for capability.",
+  "_comment5": "But without it, ctm will not work!",
+  "ctm": {
+    "ctm_version": 1,
+    "type": "optifine_fullctm",
+    "textures": [
+        "blocks/concrete_white_optifine_fullctm_1",
+        "blocks/concrete_white_optifine_fullctm_2",
+        "blocks/concrete_white_optifine_fullctm_3"
+    ]
+  }
+}
