@@ -66,15 +66,15 @@ import static team.chisel.ctm.client.util.Dir.*;
 @ParametersAreNonnullByDefault
 @Accessors(fluent = true, chain = true)
 public class CTMLogic implements ICTMLogic {
-    
+
     public interface StateComparisonCallback {
-        
-        public static final StateComparisonCallback DEFAULT = 
+
+        public static final StateComparisonCallback DEFAULT =
                 (ctm, from, to, dir) -> ctm.ignoreStates ? from.getBlock() == to.getBlock() : from == to;
-        
+
         boolean connects(ConnectionCheck instance, IBlockState from, IBlockState to, EnumFacing dir);
     }
-	
+
     /**
      * The Uvs for the specific "magic number" value
      */
@@ -102,9 +102,9 @@ public class CTMLogic implements ICTMLogic {
             Submap.fromPixelScale(8, 8, 0, 8),   // 18
             Submap.fromPixelScale(8, 8, 8, 8)    // 19
     };
-    
+
     public static final ISubmap FULL_TEXTURE = Submap.X1;
-    
+
     // @formatter:on
 
 	/** Some hardcoded offset values for the different corner indeces */
@@ -120,7 +120,7 @@ public class CTMLogic implements ICTMLogic {
 	    { TOP, RIGHT, TOP_RIGHT },
 	    { TOP, LEFT, TOP_LEFT }
 	};
-	
+
 	protected byte connectionMap;
 	protected int[] submapCache = new int[] { 18, 19, 17, 16 };
 
@@ -131,7 +131,7 @@ public class CTMLogic implements ICTMLogic {
 
 	/**
 	 * @return The indeces of the typical 4x4 submap to use for the given face at the given location.
-	 * 
+	 *
 	 *         Indeces are in counter-clockwise order starting at bottom left.
 	 */
     public int[] createSubmapIndices(@Nullable IBlockAccess world, BlockPos pos, EnumFacing side) {
@@ -161,7 +161,7 @@ public class CTMLogic implements ICTMLogic {
 
 		return submapCache;
 	}
-    
+
     public int[] getSubmapIndices() {
         return submapCache;
     }
@@ -170,15 +170,15 @@ public class CTMLogic implements ICTMLogic {
     public long serialized() {
         return Byte.toUnsignedLong(connectionMap);
     }
-	
+
     public static boolean isDefaultTexture(int id) {
         return (id == 16 || id == 17 || id == 18 || id == 19);
     }
-    
+
     protected void setConnectedState(LocalDirection dir, boolean connected) {
         connectionMap = setConnectedState(connectionMap, dir, connected);
     }
-    
+
     private static byte setConnectedState(byte map, LocalDirection dir, boolean connected) {
         if (connected) {
             return (byte) (map | (1 << dir.ordinal()));
@@ -192,12 +192,12 @@ public class CTMLogic implements ICTMLogic {
      */
 	@Override
     public void buildConnectionMap(IBlockAccess world, BlockPos pos, EnumFacing side) {
-        IBlockState state = connectionCheck.getConnectionState(world, pos, side, pos);
+        //IBlockState state = connectionCheck.getConnectionState(world, pos, side, pos);
         // TODO this naive check doesn't work for models that have unculled faces.
         // Perhaps a smarter optimization could be done eventually?
 //        if (state.shouldSideBeRendered(world, pos, side)) {
             for (Dir dir : Dir.VALUES) {
-                setConnectedState(dir, dir.isConnected(connectionCheck, world, pos, side, state));
+				setConnectedState(dir, dir.isConnected(connectionCheck, world, pos, side));
             }
 //        }
     }
