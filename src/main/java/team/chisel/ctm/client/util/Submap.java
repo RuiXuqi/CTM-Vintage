@@ -31,7 +31,7 @@ public class Submap implements ISubmap {
         { fromPixelScale(4, 4, 0, 12),  fromPixelScale(4, 4, 4, 12),    fromPixelScale(4, 4, 8, 12),    fromPixelScale(4, 4, 12, 12) },
     };
     
-    public static final ISubmap[][] grid(int w, int h) {
+    public static ISubmap[][] grid(int w, int h) {
         float xDiv = 16f / w;
         float yDiv = 16f / h;
         ISubmap[][] ret = new ISubmap[h][w];

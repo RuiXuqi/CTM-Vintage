@@ -10,7 +10,7 @@ public class ProfileUtil {
     /** Will never be "on" so calls to it will short-circuit */
     private static final Profiler dummyProfiler = new Profiler();
     
-    private static ThreadLocal<Profiler> profiler = ThreadLocal.withInitial(() -> {
+    private static final ThreadLocal<Profiler> profiler = ThreadLocal.withInitial(() -> {
         if (Thread.currentThread().getId() == 1) {
             return Minecraft.getMinecraft().profiler;
         } else {

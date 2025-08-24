@@ -38,18 +38,18 @@ public interface ISubmap {
 		return this;
 	}
 
-	public interface ISpriteSubmap extends ISubmap {
+	interface ISpriteSubmap extends ISubmap {
 
 		TextureAtlasSprite getSprite();
 	}
 
-	final float PIXELS_PER_UNIT = 16f;
-	final float UNITS_PER_PIXEL = 1f / PIXELS_PER_UNIT;
+	float PIXELS_PER_UNIT = 16f;
+	float UNITS_PER_PIXEL = 1f / PIXELS_PER_UNIT;
 
 	@RequiredArgsConstructor
 	@EqualsAndHashCode
 	@ToString(includeFieldNames = false)
-	static class SubmapRescaled implements ISubmap {
+	class SubmapRescaled implements ISubmap {
 
 		private final ISubmap parent;
 		private final float ratio;

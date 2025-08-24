@@ -56,7 +56,7 @@ public class ModelCTM implements IModelCTM {
     
     private transient byte layers;
 
-    private Map<String, ICTMTexture<?>> textures = new HashMap<>();
+    private final Map<String, ICTMTexture<?>> textures = new HashMap<>();
     
     public ModelCTM(ModelBlock modelinfo, IModel vanillamodel, Int2ObjectMap<JsonElement> overrides) throws IOException {
         this.modelinfo = modelinfo;

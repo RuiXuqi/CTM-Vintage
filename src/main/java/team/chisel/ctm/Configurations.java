@@ -16,7 +16,7 @@ public class Configurations {
     @Config.Comment("Disable connected textures entirely.")
     public static boolean disableCTM = false;
     
-    @Config.Comment("Choose whether the inside corner is disconnected on a CTM block - http://imgur.com/eUywLZ4")
+    @Config.Comment("Choose whether the inside corner is disconnected on a CTM block - https://imgur.com/eUywLZ4")
     public static boolean connectInsideCTM = false;
 
     @SubscribeEvent

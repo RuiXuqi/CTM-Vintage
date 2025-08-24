@@ -64,7 +64,7 @@ public enum ConnectionLocations {
      */
     private final EnumFacing normal;
     private final @Nullable LocalDirection dir;
-    private boolean offset;
+    private final boolean offset;
 
     private ConnectionLocations(@Nullable LocalDirection dir) {
         this(EnumFacing.SOUTH, dir);

@@ -13,7 +13,7 @@ public enum OffsetProviderRegistry {
     
     INSTANCE;
     
-    private List<IOffsetProvider> providers = new ArrayList<>();
+    private final List<IOffsetProvider> providers = new ArrayList<>();
     
     public void registerProvider(IOffsetProvider provider) {
         this.providers.add(provider);

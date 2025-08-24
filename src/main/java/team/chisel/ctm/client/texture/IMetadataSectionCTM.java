@@ -28,7 +28,7 @@ import java.util.function.Function;
 @ParametersAreNonnullByDefault
 public interface IMetadataSectionCTM extends IMetadataSection {
     
-    public static final String SECTION_NAME = "ctm";
+    String SECTION_NAME = "ctm";
     
     int getVersion();
     
@@ -53,7 +53,7 @@ public interface IMetadataSectionCTM extends IMetadataSection {
                 }
                 sprite = proxySprite;
             } catch (IOException e) {
-                CTM.logger.error("Could not parse metadata of proxy, ignoring proxy and using base texture." + getProxy(), e);
+                CTM.logger.error("Could not parse metadata of proxy, ignoring proxy and using base texture. {}", getProxy(), e);
                 meta = this;
             }
         }

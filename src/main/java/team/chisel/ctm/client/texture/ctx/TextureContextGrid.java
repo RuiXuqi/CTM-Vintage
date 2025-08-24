@@ -106,7 +106,7 @@ public abstract class TextureContextGrid extends TextureContextPosition {
             textureCoords.put(side, coords);
             
             // Calculate a unique index for a submap (x + (y * x-size)), then shift it left by the max bit storage (10 bits = 1024 unique indices)
-            serialized |= (coords.x + (coords.y * tex.getXSize())) << (10 * side.ordinal());
+            serialized |= (coords.x + ((long) coords.y * tex.getXSize())) << (10 * side.ordinal());
         }
         
         this.serialized = serialized;

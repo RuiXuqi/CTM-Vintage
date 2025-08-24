@@ -175,7 +175,7 @@ public enum TextureMetadataHandler {
                         event.getModelRegistry().putObject(mrl, wrap(rootModel, event.getModelRegistry().getObject(mrl)));
                         dependencies.clear();
                     } catch (IOException e) {
-                        CTM.logger.error("Could not wrap model " + mrl + ". Aborting...", e);
+                        CTM.logger.error("Could not wrap model {}. Aborting...", mrl, e);
                     }
                 }
             }

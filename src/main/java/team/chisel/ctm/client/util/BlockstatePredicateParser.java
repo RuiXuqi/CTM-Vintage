@@ -265,10 +265,10 @@ public class BlockstatePredicateParser {
         }
     }
     
-    static final Type MAP_TYPE = new TypeToken<EnumMap<EnumFacing, Predicate<IBlockState>>>(){}.getType();
-    static final Type PREDICATE_TYPE = new TypeToken<Predicate<IBlockState>>() {}.getType();
-    
-    final PredicateDeserializer predicateDeserializer = new PredicateDeserializer();
+    private static final Type MAP_TYPE = new TypeToken<EnumMap<EnumFacing, Predicate<IBlockState>>>(){}.getType();
+    private static final Type PREDICATE_TYPE = new TypeToken<Predicate<IBlockState>>() {}.getType();
+
+    private final PredicateDeserializer predicateDeserializer = new PredicateDeserializer();
     
     private final Gson GSON = new GsonBuilder()
                                      .registerTypeAdapter(PREDICATE_TYPE, predicateDeserializer)
