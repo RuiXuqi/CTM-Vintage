@@ -6,10 +6,17 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import team.chisel.ctm.api.texture.ISubmap;
+import team.chisel.ctm.client.newctm.CTMLogicBakery.OutputFace;
+import team.chisel.ctm.client.newctm.ConnectionCheck;
+import team.chisel.ctm.client.newctm.ICTMLogic;
+import team.chisel.ctm.client.newctm.ILogicCache;
+import team.chisel.ctm.client.newctm.LocalDirection;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static team.chisel.ctm.client.util.Dir.*;
 
@@ -65,7 +72,7 @@ import static team.chisel.ctm.client.util.Dir.*;
  */
 @ParametersAreNonnullByDefault
 @Accessors(fluent = true, chain = true)
-public class CTMLogic implements ICTMLogic {
+public class CTMLogic implements ICTMLogic, ILogicCache {
 
     /**
      * The Uvs for the specific "magic number" value
@@ -135,7 +142,8 @@ public class CTMLogic implements ICTMLogic {
      * <p>
      * Indeces are in counter-clockwise order starting at bottom left.
      */
-    public int[] createSubmapIndices(@Nullable IBlockAccess world, BlockPos pos, EnumFacing side) {
+    @Override
+    public int[] getSubmapIds(@Nullable IBlockAccess world, BlockPos pos, EnumFacing side) {
         if (world == null) {
             return submapCache;
         }
@@ -226,7 +234,6 @@ public class CTMLogic implements ICTMLogic {
      * @param dir The direction to check connection in.
      * @return True if the cached connectionMap holds a connection in this {@link Dir direction}.
      */
-    @Override
     public boolean connected(Dir dir) {
         return ((connectionMap >> dir.ordinal()) & 1) == 1;
     }
@@ -235,7 +242,6 @@ public class CTMLogic implements ICTMLogic {
      * @param dirs The directions to check connection in.
      * @return True if the cached connectionMap holds a connection in <i><b>all</b></i> the given {@link Dir directions}.
      */
-    @Override
     @SuppressWarnings("null")
     public boolean connectedAnd(Dir... dirs) {
         for (Dir dir : dirs) {
@@ -250,7 +256,6 @@ public class CTMLogic implements ICTMLogic {
      * @param dirs The directions to check connection in.
      * @return True if the cached connectionMap holds a connection in <i><b>one of</b></i> the given {@link Dir directions}.
      */
-    @Override
     @SuppressWarnings("null")
     public boolean connectedOr(Dir... dirs) {
         for (Dir dir : dirs) {
@@ -261,7 +266,6 @@ public class CTMLogic implements ICTMLogic {
         return false;
     }
 
-    @Override
     public boolean connectedNone(Dir... dirs) {
         for (Dir dir : dirs) {
             if (connected(dir)) {
@@ -271,7 +275,6 @@ public class CTMLogic implements ICTMLogic {
         return true;
     }
 
-    @Override
     public boolean connectedOnly(Dir... dirs) {
         byte map = 0;
         for (Dir dir : dirs) {
@@ -280,14 +283,41 @@ public class CTMLogic implements ICTMLogic {
         return map == this.connectionMap;
     }
 
-    @Override
     public int numConnections() {
         return Integer.bitCount(connectionMap);
     }
 
+    @Override
+    @Deprecated
+    public OutputFace[] getCachedSubmaps() {
+        return new OutputFace[0];
+    }
+
+    @Override
+    @Deprecated
+    public OutputFace[] getSubmaps(IBlockAccess world, BlockPos pos, EnumFacing side) {
+        return new OutputFace[0];
+    }
+
+    @Override
+    @Deprecated
+    public ILogicCache cached() {
+        return this;
+    }
+
+    @Override
+    public List<ISubmap> outputSubmaps() {
+        return Arrays.stream(Submap.X2).flatMap(Arrays::stream).collect(Collectors.toList());
+    }
+
+    @Override
+    public int requiredTextures() {
+        return 2;
+    }
+
     public interface StateComparisonCallback {
 
-		StateComparisonCallback DEFAULT = (ctm, from, to, dir) -> ctm.ignoreStates() ? from.getBlock() == to.getBlock() : from == to;
+        StateComparisonCallback DEFAULT = (ctm, from, to, dir) -> ctm.ignoreStates() ? from.getBlock() == to.getBlock() : from == to;
 
         boolean connects(ConnectionCheck instance, IBlockState from, IBlockState to, EnumFacing dir);
     }

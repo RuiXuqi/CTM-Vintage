@@ -153,7 +153,7 @@ public class Quad {
     }
 
     public Quad subsect(ISubmap submap) {
-        submap = submap.unitScale();
+
         int firstIndex = 0;
         for (int i = 0; i < vertUv.length; i++) {
             if (vertUv[i].y == getUvs().minV && vertUv[i].x == getUvs().minU) {
@@ -194,6 +194,15 @@ public class Quad {
                     break;
             }
         }
+
+        if (normal.getAxis() != Axis.Y) {
+            submap = submap.flipY();
+        }
+        if (normal == EnumFacing.EAST || normal == EnumFacing.NORTH) {
+            submap = submap.flipX();
+        }
+
+        submap = submap.unitScale();
 
         if (normal.getAxis() == Axis.Y || normal == EnumFacing.SOUTH || normal == EnumFacing.WEST) {
             // Relative X is the same sign for DOWN, UP, SOUTH, and WEST
@@ -373,6 +382,20 @@ public class Quad {
         return new Quad(vertPos, getUvs().transform(sprite, submap), builder, blocklight, skylight);
     }
 
+    public Quad setUVs(TextureAtlasSprite sprite, ISubmap submap) {
+        return new Quad(vertPos, sample(sprite, submap), builder, blocklight, skylight);
+    }
+
+    private UVs sample(TextureAtlasSprite sprite, ISubmap submap) {
+        submap = submap.unitScale();
+        float width = sprite.getMaxU() - sprite.getMinU();
+        float height = sprite.getMaxV() - sprite.getMinV();
+        return new UVs(Submap.raw(
+                width * submap.getWidth(), height * submap.getHeight(),
+                lerp(sprite.getMinU(), sprite.getMaxU(), submap.getXOffset()),
+                lerp(sprite.getMinV(), sprite.getMaxV(), submap.getYOffset())), sprite);
+    }
+
     public Quad grow() {
         return new Quad(vertPos, getUvs().normalizeQuadrant(), builder, blocklight, skylight);
     }
@@ -399,17 +422,13 @@ public class Quad {
         private final VertexFormat vertexFormat;
         @Getter
         private final TextureAtlasSprite sprite;
-
+        private final ListMultimap<EnumUsage, float[]> data = MultimapBuilder.enumKeys(EnumUsage.class).arrayListValues().build();
         @Setter
         private int quadTint = -1;
-
         @Setter
         private EnumFacing quadOrientation;
-
         @Setter
         private boolean applyDiffuseLighting;
-
-        private final ListMultimap<EnumUsage, float[]> data = MultimapBuilder.enumKeys(EnumUsage.class).arrayListValues().build();
 
         @Override
         public void put(int element, @Nullable float... data) {

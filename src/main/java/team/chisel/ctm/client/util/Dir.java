@@ -6,6 +6,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import team.chisel.ctm.api.util.NonnullType;
+import team.chisel.ctm.client.newctm.ConnectionCheck;
+import team.chisel.ctm.client.newctm.LocalDirection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

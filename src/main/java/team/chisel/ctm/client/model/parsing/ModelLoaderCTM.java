@@ -35,8 +35,8 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
 
     public static final Set<ResourceLocation> parsedLocations = new HashSet<>();
     private static final Map<Integer, IModelParser> parserVersions = ImmutableMap.of(1, new ModelParserV1());
-    private IResourceManager manager;
     private final Map<ResourceLocation, IModelCTM> loadedModels = Maps.newHashMap();
+    private IResourceManager manager;
     private final LoadingCache<ResourceLocation, JsonElement> jsonCache = CacheBuilder.newBuilder().maximumSize(128).build(
             new CacheLoader<ResourceLocation, JsonElement>() {
                 @Override

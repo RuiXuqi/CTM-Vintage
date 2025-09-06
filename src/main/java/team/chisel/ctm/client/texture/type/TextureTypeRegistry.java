@@ -74,6 +74,11 @@ public class TextureTypeRegistry {
         }
     }
 
+    public static ITextureType remove(String name) {
+        String key = name.toLowerCase(Locale.ROOT);
+        return map.remove(key);
+    }
+
     public static ITextureType getType(String name) {
         String key = name.toLowerCase(Locale.ROOT);
         return map.get(key);

@@ -58,10 +58,10 @@ public class ModelCTM implements IModelCTM {
     private final Int2ObjectMap<JsonElement> overrides;
     private final Collection<ResourceLocation> textureDependencies;
     private final Map<String, ICTMTexture<?>> textures = new HashMap<>();
+    private final IModel vanillamodel;
     // Populated during bake with real texture data
     protected Int2ObjectMap<TextureAtlasSprite> spriteOverrides;
     protected Map<Pair<Integer, ResourceLocation>, ICTMTexture<?>> textureOverrides;
-    private final IModel vanillamodel;
     private Boolean uvlock;
     private transient byte layers;
 

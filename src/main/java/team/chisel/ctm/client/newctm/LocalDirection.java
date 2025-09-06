@@ -1,4 +1,4 @@
-package team.chisel.ctm.client.util;
+package team.chisel.ctm.client.newctm;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;

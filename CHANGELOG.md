@@ -1,18 +1,23 @@
 # Changelog
 
+## [1.2.0]
+### Changes
+- [Add JSON loading of logic definitions, implement OF and our own CTM](https://github.com/Chisel-Team/ConnectedTexturesMod/commit/6de3569a8441a804582c2c025d55a7d8139d5f46)
+- ctm_full type is removed.
+
 ## [1.1.1]
-# Fixes
+### Fixes
 - Fix emissive lighting math causing broken item rendering
   - True fix. It is caused by the cherry-pick.
 
 ## [1.1.0]
 
-## Changes
+### Changes
 - Cherry-pick many commits from modern CTM.
   - Make the mod very unstable and dangerous because of the blind cherry-picks.
   - But it just works with some modifications!
 - Mapping is switched to stable 39. Hope nothing happened.
-## New
+### New
 - Added ctm_vertical and sctm texture types (ChloeDawn)
 - Added ctm_full type by TJT01 ([#186](https://github.com/Chisel-Team/ConnectedTexturesMod/pull/186))
 - Added optifine_fullctm type, code from modern CTM mod

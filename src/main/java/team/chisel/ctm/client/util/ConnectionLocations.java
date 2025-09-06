@@ -2,6 +2,7 @@ package team.chisel.ctm.client.util;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import team.chisel.ctm.client.newctm.LocalDirection;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
