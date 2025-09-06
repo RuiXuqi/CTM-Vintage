@@ -54,10 +54,11 @@ public class NewCTMLogic implements ICTMLogic {
         }
         long ret = 0L;
         for (int i = 0; i < cachedSubmapIds.length; i++) {
-            ret |= cachedSubmapIds[i] << (i * stride);
+            ret |= (long) cachedSubmapIds[i] << (i * stride);
         }
         return ret;
     }
+
     @Override
     public void buildConnectionMap(IBlockAccess world, BlockPos pos, EnumFacing side) {
         getSubmaps(world, pos, side);

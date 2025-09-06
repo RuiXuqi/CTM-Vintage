@@ -20,43 +20,44 @@ import static team.chisel.ctm.client.util.ConnectionLocations.*;
 
 public class TextureContextPillar implements ITextureContext {
 
-    private static final ConnectionLocations[] MAIN_VALUES = { UP, DOWN, NORTH, SOUTH, EAST, WEST };
+    private static final ConnectionLocations[] MAIN_VALUES = {UP, DOWN, NORTH, SOUTH, EAST, WEST};
     private static final ConnectionLocations[] OFFSET_VALUES = ArrayUtils.removeElements(ConnectionLocations.VALUES, ObjectArrays.concat(
-            new ConnectionLocations[] { NORTH_EAST_UP, NORTH_EAST_DOWN, NORTH_WEST_UP, NORTH_WEST_DOWN, SOUTH_WEST_UP, SOUTH_WEST_DOWN, SOUTH_EAST_UP, SOUTH_EAST_DOWN, },
+            new ConnectionLocations[]{NORTH_EAST_UP, NORTH_EAST_DOWN, NORTH_WEST_UP, NORTH_WEST_DOWN, SOUTH_WEST_UP, SOUTH_WEST_DOWN, SOUTH_EAST_UP, SOUTH_EAST_DOWN,},
             MAIN_VALUES,
             ConnectionLocations.class
     ));
     private static final ConnectionLocations[] ALL_VALUES = ObjectArrays.concat(MAIN_VALUES, OFFSET_VALUES, ConnectionLocations.class);
+    @Getter
+    private final ConnectionData data;
+    private long compressedData;
+
+    public TextureContextPillar(IBlockAccess world, BlockPos pos) {
+        data = new ConnectionData(world, pos);
+
+        IBlockState state = world.getBlockState(pos);
+        for (ConnectionLocations loc : ALL_VALUES) {
+            if (state == world.getBlockState(loc.transform(pos))) {
+                compressedData = compressedData | loc.getMask();
+            }
+        }
+    }
+
+    public TextureContextPillar(long data) {
+        this.data = new ConnectionData(data);
+    }
+
+    @Override
+    public long getCompressedData() {
+        return this.compressedData;
+    }
 
     @AllArgsConstructor
     @Getter
     @ToString
     public static class Connections {
-        
-        private EnumSet<EnumFacing> connections;        
-        
-        public boolean connected(EnumFacing facing) {
-            return connections.contains(facing);
-        }
-        
-        public boolean connectedAnd(EnumFacing... facings) {
-            for (EnumFacing f : facings) {
-                if (!connected(f)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        
-        public boolean connectedOr(EnumFacing... facings) {
-            for (EnumFacing f : facings) {
-                if (connected(f)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
+
+        private EnumSet<EnumFacing> connections;
+
         public static Connections forPos(IBlockAccess world, BlockPos pos) {
             IBlockState state = world.getBlockState(pos);
             return forPos(world, state, pos);
@@ -95,14 +96,36 @@ public class TextureContextPillar implements ITextureContext {
             }
             return new Connections(connections);
         }
+
+        public boolean connected(EnumFacing facing) {
+            return connections.contains(facing);
+        }
+
+        public boolean connectedAnd(EnumFacing... facings) {
+            for (EnumFacing f : facings) {
+                if (!connected(f)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public boolean connectedOr(EnumFacing... facings) {
+            for (EnumFacing f : facings) {
+                if (connected(f)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     @ToString
     public static class ConnectionData {
 
         @Getter
-        private Connections connections;
-        private Map<EnumFacing, Connections> connectionConnections = new EnumMap<>(EnumFacing.class);
+        private final Connections connections;
+        private final Map<EnumFacing, Connections> connectionConnections = new EnumMap<>(EnumFacing.class);
 
         public ConnectionData(IBlockAccess world, BlockPos pos) {
             connections = Connections.forPos(world, pos);
@@ -112,9 +135,9 @@ public class TextureContextPillar implements ITextureContext {
             }
         }
 
-        public ConnectionData(long data){
+        public ConnectionData(long data) {
             connections = Connections.forData(data, null);
-            for (EnumFacing f : EnumFacing.VALUES){
+            for (EnumFacing f : EnumFacing.VALUES) {
                 connectionConnections.put(f, Connections.forData(data, f));
             }
         }
@@ -122,30 +145,5 @@ public class TextureContextPillar implements ITextureContext {
         public Connections getConnections(EnumFacing facing) {
             return connectionConnections.get(facing);
         }
-    }
-
-    @Getter
-    private ConnectionData data;
-
-    private long compressedData;
-    
-    public TextureContextPillar(IBlockAccess world, BlockPos pos) {
-        data = new ConnectionData(world, pos);
-
-        IBlockState state = world.getBlockState(pos);
-        for (ConnectionLocations loc : ALL_VALUES) {
-            if (state == world.getBlockState(loc.transform(pos))){
-                compressedData = compressedData | loc.getMask();
-            }
-        }
-    }
-
-    public TextureContextPillar(long data){
-        this.data = new ConnectionData(data);
-    }
-
-    @Override
-    public long getCompressedData(){
-        return this.compressedData;
     }
 }

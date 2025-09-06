@@ -30,15 +30,14 @@ import java.util.Map;
 import java.util.Set;
 
 public enum ModelLoaderCTM implements ICustomModelLoader {
-    
-    INSTANCE;
-        
-    private static final Map<Integer, IModelParser> parserVersions = ImmutableMap.of(1, new ModelParserV1());
-    
-    private IResourceManager manager;
-    private Map<ResourceLocation, IModelCTM> loadedModels = Maps.newHashMap();
 
-    private LoadingCache<ResourceLocation, JsonElement> jsonCache = CacheBuilder.newBuilder().maximumSize(128).build(
+    INSTANCE;
+
+    public static final Set<ResourceLocation> parsedLocations = new HashSet<>();
+    private static final Map<Integer, IModelParser> parserVersions = ImmutableMap.of(1, new ModelParserV1());
+    private IResourceManager manager;
+    private final Map<ResourceLocation, IModelCTM> loadedModels = Maps.newHashMap();
+    private final LoadingCache<ResourceLocation, JsonElement> jsonCache = CacheBuilder.newBuilder().maximumSize(128).build(
             new CacheLoader<ResourceLocation, JsonElement>() {
                 @Override
                 @SuppressWarnings("null")
@@ -56,7 +55,8 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
                         if (ele != null) {
                             return ele;
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                    }
 
                     return JsonNull.INSTANCE;
                 }
@@ -74,9 +74,9 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
         jsonCache.invalidateAll();
         loadedModels.clear();
     }
-    
+
     @Override
-    public boolean accepts(ResourceLocation modelLocation) {        
+    public boolean accepts(ResourceLocation modelLocation) {
         if (modelLocation instanceof ModelResourceLocation) {
             modelLocation = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath());
         }
@@ -94,8 +94,6 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
         }
         return model;
     }
-
-    public static final Set<ResourceLocation> parsedLocations = new HashSet<>();
 
     private IModelCTM loadFromFile(ResourceLocation res, boolean forLoad) {
         if (forLoad) {

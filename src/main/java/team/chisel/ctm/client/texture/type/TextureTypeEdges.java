@@ -27,6 +27,27 @@ public class TextureTypeEdges extends TextureTypeCTM {
         return new TextureEdges(this, info);
     }
 
+    @Override
+    public TextureContextCTM getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
+        return new TextureContextCTM(state, world, pos, (TextureEdges) tex) {
+
+            @Override
+            protected CTMLogic createCTM(IBlockState state) {
+                CTMLogic parent = super.createCTM(state);
+                // FIXME
+                CTMLogic ret = new CTMLogicEdges();
+                ret.connectionCheck.ignoreStates(parent.connectionCheck.ignoreStates()).stateComparator(parent.connectionCheck.stateComparator());
+                ret.connectionCheck.disableObscuredFaceCheck = parent.connectionCheck.disableObscuredFaceCheck;
+                return ret;
+            }
+        };
+    }
+
+    @Override
+    public int requiredTextures() {
+        return 3;
+    }
+
     @ParametersAreNonnullByDefault
     public static class CTMLogicEdges extends CTMLogic {
 
@@ -50,7 +71,7 @@ public class TextureTypeEdges extends TextureTypeCTM {
         }
 
         public boolean isObscured() {
-            return ((ConnectionCheckEdges)connectionCheck).isObscured();
+            return ((ConnectionCheckEdges) connectionCheck).isObscured();
         }
     }
 
@@ -59,7 +80,7 @@ public class TextureTypeEdges extends TextureTypeCTM {
         @Setter
         @Getter
         private boolean obscured;
-        
+
         @Override
         public boolean isConnected(IBlockAccess world, BlockPos current, BlockPos connection, EnumFacing dir, IBlockState state) {
             if (isObscured()) {
@@ -73,7 +94,7 @@ public class TextureTypeEdges extends TextureTypeCTM {
 
             IBlockState con = getConnectionState(world, connection, dir, current);
             IBlockState obscuringcon = getConnectionState(world, connection.offset(dir), dir, current);
-            
+
             if (stateComparator(state, con, dir) || stateComparator(state, obscuringcon, dir)) {
                 Vec3d difference = new Vec3d(connection.subtract(current));
                 if (difference.lengthSquared() > 1) {
@@ -93,33 +114,12 @@ public class TextureTypeEdges extends TextureTypeCTM {
                     BlockPos posA = new BlockPos(vA).add(current);
                     BlockPos posB = new BlockPos(vB).add(current);
                     return (getConnectionState(world, posA, dir, current) == state && !stateComparator(state, getConnectionState(world, posA.offset(dir), dir, current), dir))
-                        || (getConnectionState(world, posB, dir, current) == state && !stateComparator(state, getConnectionState(world, posB.offset(dir), dir, current), dir));
+                            || (getConnectionState(world, posB, dir, current) == state && !stateComparator(state, getConnectionState(world, posB.offset(dir), dir, current), dir));
                 } else {
                     return true;
                 }
             }
             return false;
         }
-    }
-    
-    @Override
-    public TextureContextCTM getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
-        return new TextureContextCTM(state, world, pos, (TextureEdges) tex) {
-            
-            @Override
-            protected CTMLogic createCTM(IBlockState state) {
-                CTMLogic parent = super.createCTM(state);
-                // FIXME
-                CTMLogic ret = new CTMLogicEdges();
-                ret.connectionCheck.ignoreStates(parent.connectionCheck.ignoreStates()).stateComparator(parent.connectionCheck.stateComparator());
-                ret.connectionCheck.disableObscuredFaceCheck = parent.connectionCheck.disableObscuredFaceCheck;
-                return ret;
-            }
-        };
-    }
-
-    @Override
-    public int requiredTextures() {
-        return 3;
     }
 }

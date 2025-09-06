@@ -19,28 +19,26 @@ import javax.annotation.Nonnull;
 @RequiredArgsConstructor
 public class TextureTypeMap implements ITextureType {
 
+    @TextureType("r")
+    @TextureType("random")
+    public static final TextureTypeMap R = new TextureTypeMap(MapType.RANDOM);
+    @TextureType("v")
+    @TextureType("pattern")
+    public static final TextureTypeMap V = new TextureTypeMap(MapType.PATTERNED);
     private final MapType type;
-    
+
     @Override
     public TextureMap makeTexture(TextureInfo info) {
         return new TextureMap(this, info, type);
     }
-    
+
     @Override
     public ITextureContext getBlockRenderContext(IBlockState state, IBlockAccess world, @Nonnull BlockPos pos, ICTMTexture<?> tex) {
         return type.getContext(pos, (TextureMap) tex);
     }
-    
+
     @Override
     public ITextureContext getContextFromData(long data) {
         return new TextureContextPosition(BlockPos.fromLong(data));
     }
-    
-    @TextureType("r")
-    @TextureType("random")
-    public static final TextureTypeMap R = new TextureTypeMap(MapType.RANDOM);
-    
-    @TextureType("v")
-    @TextureType("pattern")
-    public static final TextureTypeMap V = new TextureTypeMap(MapType.PATTERNED);
 }

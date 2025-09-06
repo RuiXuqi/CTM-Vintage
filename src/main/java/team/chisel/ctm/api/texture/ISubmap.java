@@ -10,94 +10,93 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public interface ISubmap {
 
-	float getYOffset();
+    float PIXELS_PER_UNIT = 16f;
+    float UNITS_PER_PIXEL = 1f / PIXELS_PER_UNIT;
 
-	float getXOffset();
+    float getYOffset();
 
-	float getWidth();
+    float getXOffset();
 
-	float getHeight();
+    float getWidth();
 
-	default float getInterpolatedU(TextureAtlasSprite sprite, float u) {
-		return sprite.getInterpolatedU(getXOffset() + u / getWidth());
-	}
+    float getHeight();
 
-	default float getInterpolatedV(TextureAtlasSprite sprite, float v) {
-		return sprite.getInterpolatedV(getYOffset() + v / getWidth());
-	}
+    default float getInterpolatedU(TextureAtlasSprite sprite, float u) {
+        return sprite.getInterpolatedU(getXOffset() + u / getWidth());
+    }
 
-	default float[] toArray() {
-		return new float[] { getXOffset(), getYOffset(), getXOffset() + getWidth(), getYOffset() + getHeight() };
-	}
+    default float getInterpolatedV(TextureAtlasSprite sprite, float v) {
+        return sprite.getInterpolatedV(getYOffset() + v / getWidth());
+    }
 
-	default ISubmap unitScale() {
-		return new SubmapRescaled(this, UNITS_PER_PIXEL, false);
-	}
+    default float[] toArray() {
+        return new float[]{getXOffset(), getYOffset(), getXOffset() + getWidth(), getYOffset() + getHeight()};
+    }
 
-	default ISubmap pixelScale() {
-		return this;
-	}
+    default ISubmap unitScale() {
+        return new SubmapRescaled(this, UNITS_PER_PIXEL, false);
+    }
 
-	interface ISpriteSubmap extends ISubmap {
+    default ISubmap pixelScale() {
+        return this;
+    }
+    interface ISpriteSubmap extends ISubmap {
 
-		TextureAtlasSprite getSprite();
-	}
+        TextureAtlasSprite getSprite();
+    }
 
-	float PIXELS_PER_UNIT = 16f;
-	float UNITS_PER_PIXEL = 1f / PIXELS_PER_UNIT;
+    @RequiredArgsConstructor
+    @EqualsAndHashCode
+    @ToString(includeFieldNames = false)
+    class SubmapRescaled implements ISubmap {
 
-	@RequiredArgsConstructor
-	@EqualsAndHashCode
-	@ToString(includeFieldNames = false)
-	class SubmapRescaled implements ISubmap {
+        private final ISubmap parent;
+        private final float ratio;
+        private final boolean isPixelScale;
 
-		private final ISubmap parent;
-		private final float ratio;
-		private final boolean isPixelScale;
+        @Override
+        public float getXOffset() {
+            return parent.getXOffset() * ratio;
+        }
 
-		@Override
-		public float getXOffset() {
-			return parent.getXOffset() * ratio;
-		}
+        @Override
+        public float getYOffset() {
+            return parent.getYOffset() * ratio;
+        }
 
-		@Override
-		public float getYOffset() {
-			return parent.getYOffset() * ratio;
-		}
+        @Override
+        public float getWidth() {
+            return parent.getWidth() * ratio;
+        }
 
-		@Override
-		public float getWidth() {
-			return parent.getWidth() * ratio;
-		}
+        @Override
+        public float getHeight() {
+            return parent.getHeight() * ratio;
+        }
 
-		@Override
-		public float getHeight() {
-			return parent.getHeight() * ratio;
-		}
+        @Override
+        public ISubmap pixelScale() {
+            return isPixelScale ? this : parent;
+        }
 
-		@Override
-		public ISubmap pixelScale() {
-			return isPixelScale ? this : parent;
-		}
+        @Override
+        public ISubmap unitScale() {
+            return isPixelScale ? parent : this;
+        }
 
-		@Override
-		public ISubmap unitScale() {
-			return isPixelScale ? parent : this;
-		}
+        @Override
+        public float getInterpolatedU(TextureAtlasSprite sprite, float u) {
+            return parent.getInterpolatedU(sprite, u);
+        }
 
-		@Override
-		public float getInterpolatedU(TextureAtlasSprite sprite, float u) {
-			return parent.getInterpolatedU(sprite, u);
-		}
+        @Override
+        public float getInterpolatedV(TextureAtlasSprite sprite, float v) {
+            return parent.getInterpolatedV(sprite, v);
+        }
 
-		@Override
-		public float getInterpolatedV(TextureAtlasSprite sprite, float v) {
-			return parent.getInterpolatedV(sprite, v);
-		}
-
-		@Override
-		public float[] toArray() {
-			return parent.toArray();
-		}
-	}
+        @Override
+        public float[] toArray() {
+            return parent.toArray();
+        }
+    }
 }

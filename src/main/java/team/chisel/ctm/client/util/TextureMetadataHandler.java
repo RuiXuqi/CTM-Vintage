@@ -40,10 +40,32 @@ import java.util.stream.Collectors;
 public enum TextureMetadataHandler {
 
     INSTANCE;
-	
-	private final Set<ResourceLocation> registeredTextures = new HashSet<>();
-	private final Object2BooleanMap<ResourceLocation> wrappedModels = new Object2BooleanLinkedOpenHashMap<>();
-    
+
+    private static final Class<?> multipartModelClass;
+    private static final Class<?> vanillaModelWrapperClass;
+    private static final Field multipartPartModels;
+
+    /*
+     * Handle wrapping models that use CTM textures
+     */
+    private static final Field modelWrapperModel;
+
+    static {
+        try {
+            multipartModelClass = Class.forName("net.minecraftforge.client.model.ModelLoader$MultipartModel");
+            multipartPartModels = multipartModelClass.getDeclaredField("partModels");
+            multipartPartModels.setAccessible(true);
+            vanillaModelWrapperClass = Class.forName("net.minecraftforge.client.model.ModelLoader$VanillaModelWrapper");
+            modelWrapperModel = vanillaModelWrapperClass.getDeclaredField("model");
+            modelWrapperModel.setAccessible(true);
+        } catch (ClassNotFoundException | NoSuchFieldException | SecurityException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    private final Set<ResourceLocation> registeredTextures = new HashSet<>();
+    private final Object2BooleanMap<ResourceLocation> wrappedModels = new Object2BooleanLinkedOpenHashMap<>();
+
     /*
      * Handle stitching metadata additional textures
      */
@@ -65,9 +87,9 @@ public enum TextureMetadataHandler {
                         if (proxymeta != null) {
                             // Load proxy's additional textures
                             for (ResourceLocation r : proxymeta.getAdditionalTextures()) {
-                            	if (registeredTextures.add(r)) {
-                            		event.getMap().registerSprite(r);
-                            	}
+                                if (registeredTextures.add(r)) {
+                                    event.getMap().registerSprite(r);
+                                }
                             }
                         }
                     }
@@ -78,32 +100,11 @@ public enum TextureMetadataHandler {
                         }
                     }
                 }
-            }
-            catch (FileNotFoundException e) {} // Ignore these, they are reported by vanilla
+            } catch (FileNotFoundException e) {
+            } // Ignore these, they are reported by vanilla
             catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-    
-    /*
-     * Handle wrapping models that use CTM textures 
-     */
-
-    private static final Class<?> multipartModelClass;
-    private static final Class<?> vanillaModelWrapperClass;
-    private static final Field multipartPartModels;
-    private static final Field modelWrapperModel;
-    static {
-        try {
-            multipartModelClass = Class.forName("net.minecraftforge.client.model.ModelLoader$MultipartModel");
-            multipartPartModels = multipartModelClass.getDeclaredField("partModels");
-            multipartPartModels.setAccessible(true);
-            vanillaModelWrapperClass = Class.forName("net.minecraftforge.client.model.ModelLoader$VanillaModelWrapper");
-            modelWrapperModel = vanillaModelWrapperClass.getDeclaredField("model");
-            modelWrapperModel.setAccessible(true);
-        } catch (ClassNotFoundException | NoSuchFieldException | SecurityException e) {
-            throw Throwables.propagate(e);
         }
     }
 
@@ -125,7 +126,7 @@ public enum TextureMetadataHandler {
                     ResourceLocation dep = dependencies.pop();
                     IModel model;
                     try {
-                         model = dep == mrl ? rootModel : ModelLoaderRegistry.getModel(dep);
+                        model = dep == mrl ? rootModel : ModelLoaderRegistry.getModel(dep);
                     } catch (Exception e) {
                         continue;
                     }
@@ -153,7 +154,8 @@ public enum TextureMetadataHandler {
                             IMetadataSectionCTM meta = null;
                             try {
                                 meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(tex));
-                            } catch (IOException e) {} // Fallthrough
+                            } catch (IOException e) {
+                            } // Fallthrough
                             if (meta != null) {
                                 shouldWrap = true;
                                 break;

@@ -27,21 +27,22 @@ import java.util.function.Function;
 
 @ParametersAreNonnullByDefault
 public interface IMetadataSectionCTM extends IMetadataSection {
-    
+
     String SECTION_NAME = "ctm";
-    
+
     int getVersion();
-    
+
     ITextureType getType();
-    
+
     BlockRenderLayer getLayer();
-    
+
     ResourceLocation[] getAdditionalTextures();
-    
-    @Nullable String getProxy();
+
+    @Nullable
+    String getProxy();
 
     JsonObject getExtraData();
-    
+
     default ICTMTexture<?> makeTexture(TextureAtlasSprite sprite, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         IMetadataSectionCTM meta = this;
         if (getProxy() != null) {
@@ -58,36 +59,31 @@ public interface IMetadataSectionCTM extends IMetadataSection {
             }
         }
         return meta.getType().makeTexture(new TextureInfo(
-                Arrays.stream(ObjectArrays.concat(new ResourceLocation(sprite.getIconName()), meta.getAdditionalTextures())).map(bakedTextureGetter::apply).toArray(TextureAtlasSprite[]::new), 
-                Optional.of(meta.getExtraData()), 
+                Arrays.stream(ObjectArrays.concat(new ResourceLocation(sprite.getIconName()), meta.getAdditionalTextures())).map(bakedTextureGetter::apply).toArray(TextureAtlasSprite[]::new),
+                Optional.of(meta.getExtraData()),
                 meta.getLayer()
         ));
     }
-    
+
     @ToString
     @Getter
-    public static class V1 implements IMetadataSectionCTM {
-        
+    class V1 implements IMetadataSectionCTM {
+
         private ITextureType type = TextureTypeRegistry.getType("NORMAL");
         private BlockRenderLayer layer = null;
         private String proxy;
         private ResourceLocation[] additionalTextures = new ResourceLocation[0];
         private JsonObject extraData = new JsonObject();
 
-        @Override
-        public int getVersion() {
-            return 1;
-        }
-
         public static IMetadataSectionCTM fromJson(JsonObject obj) throws JsonParseException {
             V1 ret = new V1();
-            
+
             if (obj.has("proxy")) {
                 JsonElement proxyEle = obj.get("proxy");
                 if (proxyEle.isJsonPrimitive() && proxyEle.getAsJsonPrimitive().isString()) {
                     ret.proxy = proxyEle.getAsString();
                 }
-                
+
                 if (obj.entrySet().stream().filter(e -> e.getKey().equals("ctm_version")).count() > 1) {
                     throw new JsonParseException("Cannot define other fields when using proxy");
                 }
@@ -129,15 +125,20 @@ public interface IMetadataSectionCTM extends IMetadataSection {
                     }
                 }
             }
-            
+
             if (obj.has("extra") && obj.get("extra").isJsonObject()) {
                 ret.extraData = obj.getAsJsonObject("extra");
             }
             return ret;
         }
+
+        @Override
+        public int getVersion() {
+            return 1;
+        }
     }
-    
-    public static class Serializer implements IMetadataSectionSerializer<IMetadataSectionCTM> {
+
+    class Serializer implements IMetadataSectionSerializer<IMetadataSectionCTM> {
 
         @Override
         public @Nullable IMetadataSectionCTM deserialize(@Nullable JsonElement json, @Nullable Type typeOfT, @Nullable JsonDeserializationContext context) throws JsonParseException {
@@ -147,8 +148,8 @@ public interface IMetadataSectionCTM extends IMetadataSection {
                     JsonElement version = obj.get("ctm_version");
                     if (version.isJsonPrimitive() && version.getAsJsonPrimitive().isNumber()) {
                         switch (version.getAsInt()) {
-                        case 1:
-                            return V1.fromJson(obj);
+                            case 1:
+                                return V1.fromJson(obj);
                         }
                     }
                 } else {

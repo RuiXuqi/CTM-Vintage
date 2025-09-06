@@ -21,29 +21,29 @@ public class TextureTypeSCTM extends TextureTypeCTM {
     public ICTMTexture<TextureTypeSCTM> makeTexture(TextureInfo info) {
         return new TextureSCTM(this, info);
     }
-    
+
     @Override
     public TextureContextCTM getBlockRenderContext(final IBlockState state, final IBlockAccess world, final BlockPos pos, final ICTMTexture<?> tex) {
         return new TextureContextCTM(state, world, pos, (TextureCTM<?>) tex) {
-        
+
             @Override
             protected CTMLogic createCTM(IBlockState state) {
                 CTMLogic ctm = super.createCTM(state);
-            
+
                 ctm.connectionCheck.disableObscuredFaceCheck = Optional.of(true);
-            
+
                 return ctm;
             }
         };
     }
-    
+
     @Override
     public int getQuadsPerSide() {
         return 1;
     }
-    
+
     @Override
     public int requiredTextures() {
-    	return 1;
+        return 1;
     }
 }

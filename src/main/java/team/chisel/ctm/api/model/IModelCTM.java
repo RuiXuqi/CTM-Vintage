@@ -12,25 +12,25 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 public interface IModelCTM extends IModel {
-    
+
     IModel getVanillaParent();
 
     void load();
-    
+
     @Deprecated
     Collection<ICTMTexture<?>> getChiselTextures();
-    
+
     default Collection<ICTMTexture<?>> getCTMTextures() {
         return getChiselTextures();
     }
-    
+
     ICTMTexture<?> getTexture(String iconName);
-    
+
     @Deprecated
     default IChiselFace getFace(EnumFacing facing) {
         return null;
     }
-    
+
     @Deprecated
     default IChiselFace getDefaultFace() {
         return null;

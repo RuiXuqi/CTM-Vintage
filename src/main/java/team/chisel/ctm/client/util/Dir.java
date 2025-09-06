@@ -24,7 +24,7 @@ import static net.minecraft.util.EnumFacing.*;
  */
 @ParametersAreNonnullByDefault
 public enum Dir implements LocalDirection {
-	// @formatter:off
+    // @formatter:off
     TOP(UP), 
     TOP_RIGHT(UP, EAST),
     RIGHT(EAST), 
@@ -35,27 +35,27 @@ public enum Dir implements LocalDirection {
     TOP_LEFT(UP, WEST);
     // @formatter:on
 
-	/**
-	 * All values of this enum, used to prevent unnecessary allocation via {@link #values()}.
-	 */
-	public static final Dir[] VALUES = values();
-	private static final EnumFacing NORMAL = SOUTH;
-	
-	static {
-	    // Run after static init
-	    for (Dir dir : Dir.VALUES) {
-	        dir.buildCaches();
-	    }
-	}
+    /**
+     * All values of this enum, used to prevent unnecessary allocation via {@link #values()}.
+     */
+    public static final Dir[] VALUES = values();
+    private static final EnumFacing NORMAL = SOUTH;
 
-	private @NonnullType EnumFacing[] dirs;
-	
-	private @NonnullType BlockPos[] offsets = new BlockPos[6];
-
-	private Dir(EnumFacing... dirs) {
-		this.dirs = dirs;
+    static {
+        // Run after static init
+        for (Dir dir : Dir.VALUES) {
+            dir.buildCaches();
+        }
     }
-	
+
+    private final @NonnullType EnumFacing[] dirs;
+
+    private final @NonnullType BlockPos[] offsets = new BlockPos[6];
+
+    Dir(EnumFacing... dirs) {
+        this.dirs = dirs;
+    }
+
     private void buildCaches() {
         // Fill normalized dirs
         for (EnumFacing normal : EnumFacing.VALUES) {
@@ -96,19 +96,15 @@ public enum Dir implements LocalDirection {
             }
             offsets[normal.ordinal()] = ret;
         }
-	}
+    }
 
     /**
      * Finds if this block is connected for the given side in this Dir.
      *
-     * @param ctm
-     *            The CTM instance to use for logic.
-     * @param world
-     *            The world the block is in.
-     * @param pos
-     *            The position of your block.
-     * @param side
-     *            The side of the current face.
+     * @param ctm   The CTM instance to use for logic.
+     * @param world The world the block is in.
+     * @param pos   The position of your block.
+     * @param side  The side of the current face.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
     @Override
@@ -119,26 +115,21 @@ public enum Dir implements LocalDirection {
     /**
      * Finds if this block is connected for the given side in this Dir.
      *
-     * @param ctm
-     *            The CTM instance to use for logic.
-     * @param world
-     *            The world the block is in.
-     * @param pos
-     *            The position of your block.
-     * @param side
-     *            The side of the current face.
-     * @param state
-     *            The state to check for connection with.
+     * @param ctm   The CTM instance to use for logic.
+     * @param world The world the block is in.
+     * @param pos   The position of your block.
+     * @param side  The side of the current face.
+     * @param state The state to check for connection with.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
     @Override
-    public boolean isConnected(ConnectionCheck  ctm, IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state) {
+    public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state) {
         return ctm.isConnected(world, pos, applyConnection(pos, side), side, state);
     }
 
     /**
      * Apply this Dir to the given BlockPos for the given EnumFacing normal direction.
-     * 
+     *
      * @return The offset BlockPos
      */
     @SuppressWarnings("null")
@@ -172,21 +163,21 @@ public enum Dir implements LocalDirection {
     public BlockPos getOffset(EnumFacing normal) {
         return offsets[normal.ordinal()];
     }
-	
-	public @Nullable LocalDirection getDirFor(EnumFacing[] dirs) {
-	    if (dirs == this.dirs) { // Short circuit for identical return from getNormalizedDirs
-	        return this; 
-	    }
-	    
-	    for (Dir dir : VALUES) {
-	        if (Arrays.equals(dir.dirs, dirs)) {
-	            return dir;
-	        }
-	    }
-	    return null;
-	}
 
-	private EnumFacing rotate(EnumFacing facing, EnumFacing axisFacing) {
+    public @Nullable LocalDirection getDirFor(EnumFacing[] dirs) {
+        if (dirs == this.dirs) { // Short circuit for identical return from getNormalizedDirs
+            return this;
+        }
+
+        for (Dir dir : VALUES) {
+            if (Arrays.equals(dir.dirs, dirs)) {
+                return dir;
+            }
+        }
+        return null;
+    }
+
+    private EnumFacing rotate(EnumFacing facing, EnumFacing axisFacing) {
         Axis axis = axisFacing.getAxis();
         AxisDirection axisDir = axisFacing.getAxisDirection();
 
@@ -196,41 +187,41 @@ public enum Dir implements LocalDirection {
 
         if (facing.getAxis() != axis) {
             switch (axis) {
-            case X:
-                // Inverted results from EnumFacing#rotateX
-                switch (facing) {
-                case NORTH:
-                    return UP;
-                case DOWN:
-                    return NORTH;
-                case SOUTH:
-                    return DOWN;
-                case UP:
-                    return SOUTH;
-                default:
-                    return facing; // Invalid but ignored
-                }
-            case Y:
-                return facing.rotateYCCW();
-            case Z:
-                // Inverted results from EnumFacing#rotateZ
-                switch (facing) {
-                case EAST:
-                    return EAST;
-                case WEST:
-                    return WEST;
-                case UP:
-                    return DOWN;
-                case DOWN:
-                    return UP;
-                default:
-                    return facing; // invalid but ignored
-                }
+                case X:
+                    // Inverted results from EnumFacing#rotateX
+                    switch (facing) {
+                        case NORTH:
+                            return UP;
+                        case DOWN:
+                            return NORTH;
+                        case SOUTH:
+                            return DOWN;
+                        case UP:
+                            return SOUTH;
+                        default:
+                            return facing; // Invalid but ignored
+                    }
+                case Y:
+                    return facing.rotateYCCW();
+                case Z:
+                    // Inverted results from EnumFacing#rotateZ
+                    switch (facing) {
+                        case EAST:
+                            return EAST;
+                        case WEST:
+                            return WEST;
+                        case UP:
+                            return DOWN;
+                        case DOWN:
+                            return UP;
+                        default:
+                            return facing; // invalid but ignored
+                    }
             }
         }
 
         return facing;
-	}
+    }
 
     @Override
     public String asJson() {

@@ -42,9 +42,9 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
 
     private BakedQuad getQuad(BakedQuad in, ITextureContext context) {
         Quad q = makeQuad(in, context);
-        ConnectionData data = ((TextureContextPillar)context).getData();
+        ConnectionData data = ((TextureContextPillar) context).getData();
         Connections cons = data.getConnections();
-        
+
         // This is the order of operations for connections
         EnumSet<EnumFacing> realConnections = EnumSet.copyOf(data.getConnections().getConnections());
         if (cons.connectedOr(UP, DOWN)) {
@@ -99,7 +99,7 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
         if (cons.getConnections().isEmpty() && in.getFace().getAxis().isHorizontal()) {
             connected = true;
         }
-        
+
         q = q.rotate(rotation);
         if (connected) {
             return q.transformUVs(sprites[1], uvs).rebake();

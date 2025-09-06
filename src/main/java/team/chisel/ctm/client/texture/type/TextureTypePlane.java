@@ -15,22 +15,22 @@ public class TextureTypePlane extends TextureTypeCTM {
     public static final TextureTypePlane H = new TextureTypePlane(EnumFacing.Plane.HORIZONTAL);
     @TextureType("ctm_vertical")
     public static final TextureTypePlane V = new TextureTypePlane(EnumFacing.Plane.VERTICAL);
-    
+
     @Getter
     private final EnumFacing.Plane plane;
-    
+
     @Override
     public ICTMTexture<TextureTypePlane> makeTexture(TextureInfo info) {
         return new TexturePlane(this, info);
     }
-    
+
     @Override
     public int getQuadsPerSide() {
         return 1;
     }
-    
+
     @Override
     public int requiredTextures() {
-    	return 1;
+        return 1;
     }
 }

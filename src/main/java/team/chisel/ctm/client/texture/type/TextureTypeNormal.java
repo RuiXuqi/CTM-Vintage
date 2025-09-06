@@ -16,25 +16,25 @@ import javax.annotation.Nonnull;
  * Normal Block Render Type
  */
 public enum TextureTypeNormal implements ITextureType {
-    
+
     @TextureType("normal")
     INSTANCE;
-    
+
     @Nonnull
     private static final ITextureContext EMPTY_CONTEXT = () -> 0L;
 
     @Override
-    public ICTMTexture<TextureTypeNormal> makeTexture(TextureInfo info){
+    public ICTMTexture<TextureTypeNormal> makeTexture(TextureInfo info) {
         return new TextureNormal(this, info);
     }
 
     @Override
-    public ITextureContext getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex){
+    public ITextureContext getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
         return EMPTY_CONTEXT;
     }
 
     @Override
-    public ITextureContext getContextFromData(long data){
+    public ITextureContext getContextFromData(long data) {
         return EMPTY_CONTEXT;
     }
 }

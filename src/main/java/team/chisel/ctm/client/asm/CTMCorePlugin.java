@@ -10,7 +10,7 @@ public class CTMCorePlugin implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] { "team.chisel.ctm.client.asm.CTMTransformer" };
+        return new String[]{"team.chisel.ctm.client.asm.CTMTransformer"};
     }
 
     @Override
@@ -24,7 +24,7 @@ public class CTMCorePlugin implements IFMLLoadingPlugin {
     }
 
     @Override
-    public void injectData(Map<String, Object> data) {        
+    public void injectData(Map<String, Object> data) {
     }
 
     @Override

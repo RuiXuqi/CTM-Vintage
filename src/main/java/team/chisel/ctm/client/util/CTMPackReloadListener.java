@@ -6,7 +6,7 @@ import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 import team.chisel.ctm.client.model.parsing.ModelLoaderCTM;
 
 public enum CTMPackReloadListener implements IResourceManagerReloadListener {
-    
+
     INSTANCE;
 
     @Override

@@ -15,15 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResourceUtil {
-    
+
+    private static final Map<ResourceLocation, IMetadataSectionCTM> metadataCache = new HashMap<>();
+
     public static ResourceLocation toResourceLocation(TextureAtlasSprite sprite) {
         return new ResourceLocation(sprite.getIconName());
     }
-    
+
     public static IResource getResource(TextureAtlasSprite sprite) throws IOException {
         return getResource(spriteToAbsolute(toResourceLocation(sprite)));
     }
-    
+
     public static ResourceLocation spriteToAbsolute(ResourceLocation sprite) {
         if (!sprite.getPath().startsWith("textures/")) {
             sprite = new ResourceLocation(sprite.getNamespace(), "textures/" + sprite.getPath());
@@ -33,11 +35,11 @@ public class ResourceUtil {
         }
         return sprite;
     }
-    
+
     public static IResource getResource(ResourceLocation res) throws IOException {
         return Minecraft.getMinecraft().getResourceManager().getResource(res);
     }
-    
+
     public static IResource getResourceUnsafe(ResourceLocation res) {
         try {
             return getResource(res);
@@ -45,8 +47,6 @@ public class ResourceUtil {
             throw Throwables.propagate(e);
         }
     }
-    
-    private static final Map<ResourceLocation, IMetadataSectionCTM> metadataCache = new HashMap<>();
 
     public static @Nullable IMetadataSectionCTM getMetadata(ResourceLocation res) throws IOException {
         // Note, semantically different from computeIfAbsent, as we DO care about keys mapped to null values
@@ -57,18 +57,18 @@ public class ResourceUtil {
         try (IResource resource = getResource(res)) {
             ret = resource.getMetadata(IMetadataSectionCTM.SECTION_NAME);
         } catch (FileNotFoundException e) {
-            ret = null;  
+            ret = null;
         } catch (JsonParseException e) {
             throw new IOException("Error loading metadata for location " + res, e);
         }
         metadataCache.put(res, ret);
         return ret;
     }
-    
+
     public static @Nullable IMetadataSectionCTM getMetadata(TextureAtlasSprite sprite) throws IOException {
         return getMetadata(spriteToAbsolute(toResourceLocation(sprite)));
     }
-    
+
     public static @Nullable IMetadataSectionCTM getMetadataUnsafe(TextureAtlasSprite sprite) {
         try {
             return getMetadata(sprite);
@@ -76,7 +76,7 @@ public class ResourceUtil {
             throw Throwables.propagate(e);
         }
     }
-    
+
     public static void invalidateCaches() {
         metadataCache.clear();
     }

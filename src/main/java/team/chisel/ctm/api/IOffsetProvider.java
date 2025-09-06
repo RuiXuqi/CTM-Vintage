@@ -6,8 +6,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 
 public interface IOffsetProvider {
-    
+
     @Nonnull
-    public BlockPos getOffset(@Nonnull World world, @Nonnull BlockPos pos);
+    BlockPos getOffset(@Nonnull World world, @Nonnull BlockPos pos);
 
 }

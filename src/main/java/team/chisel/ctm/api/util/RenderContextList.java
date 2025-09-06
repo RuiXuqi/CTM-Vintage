@@ -24,18 +24,18 @@ import java.util.Map.Entry;
  */
 @ParametersAreNonnullByDefault
 public class RenderContextList {
-    
+
     private static final ThreadLocal<RegionCache> regionMetaCache = ThreadLocal.withInitial(
             () -> new RegionCache(BlockPos.ORIGIN, 0, null));
-    
+
     private final Map<ICTMTexture<?>, ITextureContext> contextMap = Maps.newIdentityHashMap();
     private final Object2LongMap<ICTMTexture<?>> serialized = new Object2LongOpenCustomHashMap<>(new IdentityStrategy<>());
 
     public RenderContextList(IBlockState state, Collection<ICTMTexture<?>> textures, final IBlockAccess world, BlockPos pos) {
         ProfileUtil.start("ctm_region_cache_update");
-    	IBlockAccess cachedWorld = regionMetaCache.get().updateWorld(world);
-    	
-    	ProfileUtil.endAndStart("ctm_context_gather");
+        IBlockAccess cachedWorld = regionMetaCache.get().updateWorld(world);
+
+        ProfileUtil.endAndStart("ctm_context_gather");
         for (ICTMTexture<?> tex : textures) {
             ITextureType type = tex.getType();
             ITextureContext ctx = type.getBlockRenderContext(state, cachedWorld, pos, tex);
@@ -43,7 +43,7 @@ public class RenderContextList {
                 contextMap.put(tex, ctx);
             }
         }
-        
+
         ProfileUtil.endAndStart("ctm_context_serialize");
         for (Entry<ICTMTexture<?>, ITextureContext> e : contextMap.entrySet()) {
             serialized.put(e.getKey(), e.getValue().getCompressedData());

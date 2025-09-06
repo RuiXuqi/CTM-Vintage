@@ -30,47 +30,15 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
 
     private static final BlockstatePredicateParser predicateParser = new BlockstatePredicateParser();
 
-	@Getter
-	private final Optional<Boolean> connectInside;
-	
-	@Getter
-	private final boolean ignoreStates, actualStates;
-	
-	@Nullable
-	private final BiPredicate<EnumFacing, IBlockState> connectionChecks;
-	
-	@RequiredArgsConstructor
-	private static final class CacheKey {
-		private final IBlockState from;
-		private final EnumFacing dir;
-		
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + dir.hashCode();
-			result = prime * result + System.identityHashCode(from);
-			return result;
-		}
+    @Getter
+    private final Optional<Boolean> connectInside;
 
-		@Override
-		public boolean equals(@Nullable Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			CacheKey other = (CacheKey) obj;
-			if (dir != other.dir)
-				return false;
-			if (from != other.from)
-				return false;
-			return true;
-		}
-	}
+    @Getter
+    private final boolean ignoreStates, actualStates;
 
-	private final Cache<CacheKey, Object2ByteMap<IBlockState>> connectionCache = CacheBuilder.newBuilder().build();
+    @Nullable
+    private final BiPredicate<EnumFacing, IBlockState> connectionChecks;
+    private final Cache<CacheKey, Object2ByteMap<IBlockState>> connectionCache = CacheBuilder.newBuilder().build();
 
     public TextureCTM(T type, TextureInfo info) {
         super(type, info);
@@ -82,9 +50,9 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
 
     public boolean connectTo(ConnectionCheck ctm, IBlockState from, IBlockState to, EnumFacing dir) {
         try {
-			return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0) == 1;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+            return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0) == 1;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -96,12 +64,12 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
         }
 
         Quad[] quads = quad.subdivide(4);
-        
-        int[] ctm = ((TextureContextCTM)context).getCTM(bq.getFace()).getSubmapIndices();
 
-		//CTM.logger.info("{}: {}", bq.getFace(), Arrays.toString(ctm));
+        int[] ctm = ((TextureContextCTM) context).getCTM(bq.getFace()).getSubmapIndices();
 
-		for (int i = 0; i < quads.length; i++) {
+        //CTM.logger.info("{}: {}", bq.getFace(), Arrays.toString(ctm));
+
+        for (int i = 0; i < quads.length; i++) {
             Quad q = quads[i];
             if (q != null) {
                 int ctmid = q.getUvs().normalize().getQuadrant();
@@ -112,9 +80,38 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
         }
         return Arrays.stream(quads).filter(Objects::nonNull).map(Quad::rebake).collect(Collectors.toList());
     }
-    
+
     @Override
     protected Quad makeQuad(BakedQuad bq, ITextureContext context) {
         return super.makeQuad(bq, context).derotate();
+    }
+
+    @RequiredArgsConstructor
+    private static final class CacheKey {
+        private final IBlockState from;
+        private final EnumFacing dir;
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + dir.hashCode();
+            result = prime * result + System.identityHashCode(from);
+            return result;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            CacheKey other = (CacheKey) obj;
+            if (dir != other.dir)
+                return false;
+            return from == other.from;
+        }
     }
 }

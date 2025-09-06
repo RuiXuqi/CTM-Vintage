@@ -67,13 +67,6 @@ import static team.chisel.ctm.client.util.Dir.*;
 @Accessors(fluent = true, chain = true)
 public class CTMLogic implements ICTMLogic {
 
-    public interface StateComparisonCallback {
-
-		StateComparisonCallback DEFAULT = (ctm, from, to, dir) -> ctm.ignoreStates() ? from.getBlock() == to.getBlock() : from == to;
-
-        boolean connects(ConnectionCheck instance, IBlockState from, IBlockState to, EnumFacing dir);
-    }
-
     /**
      * The Uvs for the specific "magic number" value
      */
@@ -101,81 +94,32 @@ public class CTMLogic implements ICTMLogic {
             Submap.fromPixelScale(8, 8, 0, 8),   // 18
             Submap.fromPixelScale(8, 8, 8, 8)    // 19
     };
-
     public static final ISubmap FULL_TEXTURE = Submap.X1;
+    // Mapping the different corner indeces to their respective dirs
+    protected static final Dir[][] submapMap = {
+            {BOTTOM, LEFT, BOTTOM_LEFT},
+            {BOTTOM, RIGHT, BOTTOM_RIGHT},
+            {TOP, RIGHT, TOP_RIGHT},
+            {TOP, LEFT, TOP_LEFT}
+    };
 
     // @formatter:on
+    /**
+     * Some hardcoded offset values for the different corner indeces
+     */
+    protected static int[] submapOffsets = {4, 5, 1, 0};
 
-	/** Some hardcoded offset values for the different corner indeces */
-	protected static int[] submapOffsets = { 4, 5, 1, 0 };
+    // TODO encapsulate
+    public ConnectionCheck connectionCheck = new ConnectionCheck();
+    protected byte connectionMap;
+    protected int[] submapCache = {18, 19, 17, 16};
 
-	// TODO encapsulate
-	public ConnectionCheck connectionCheck = new ConnectionCheck();
-
-    // Mapping the different corner indeces to their respective dirs
-	protected static final Dir[][] submapMap = {
-	    { BOTTOM, LEFT, BOTTOM_LEFT },
-	    { BOTTOM, RIGHT, BOTTOM_RIGHT },
-	    { TOP, RIGHT, TOP_RIGHT },
-	    { TOP, LEFT, TOP_LEFT }
-	};
-
-	protected byte connectionMap;
-	protected int[] submapCache = { 18, 19, 17, 16 };
-
-
-	public static CTMLogic getInstance() {
-		return new CTMLogic();
-	}
-
-	/**
-	 * @return The indeces of the typical 4x4 submap to use for the given face at the given location.
-	 *
-	 *         Indeces are in counter-clockwise order starting at bottom left.
-	 */
-    public int[] createSubmapIndices(@Nullable IBlockAccess world, BlockPos pos, EnumFacing side) {
-		if (world == null) {
-            return submapCache;
-        }
-
-		buildConnectionMap(world, pos, side);
-
-		// Map connections to submap indeces
-		for (int i = 0; i < 4; i++) {
-			fillSubmaps(i);
-		}
-
-		return submapCache;
-	}
-
-	public int[] createSubmapIndices(long data, EnumFacing side){
-		submapCache = new int[] { 18, 19, 17, 16 };
-
-		buildConnectionMap(data, side);
-
-		// Map connections to submap indeces
-		for (int i = 0; i < 4; i++) {
-			fillSubmaps(i);
-		}
-
-		return submapCache;
-	}
-
-    public int[] getSubmapIndices() {
-        return submapCache;
-    }
-
-	@Override
-    public long serialized() {
-        return Byte.toUnsignedLong(connectionMap);
+    public static CTMLogic getInstance() {
+        return new CTMLogic();
     }
 
     public static boolean isDefaultTexture(int id) {
         return (id == 16 || id == 17 || id == 18 || id == 19);
-    }
-
-    protected void setConnectedState(LocalDirection dir, boolean connected) {
-        connectionMap = setConnectedState(connectionMap, dir, connected);
     }
 
     private static byte setConnectedState(byte map, LocalDirection dir, boolean connected) {
@@ -187,17 +131,63 @@ public class CTMLogic implements ICTMLogic {
     }
 
     /**
+     * @return The indeces of the typical 4x4 submap to use for the given face at the given location.
+     * <p>
+     * Indeces are in counter-clockwise order starting at bottom left.
+     */
+    public int[] createSubmapIndices(@Nullable IBlockAccess world, BlockPos pos, EnumFacing side) {
+        if (world == null) {
+            return submapCache;
+        }
+
+        buildConnectionMap(world, pos, side);
+
+        // Map connections to submap indeces
+        for (int i = 0; i < 4; i++) {
+            fillSubmaps(i);
+        }
+
+        return submapCache;
+    }
+
+    public int[] createSubmapIndices(long data, EnumFacing side) {
+        submapCache = new int[]{18, 19, 17, 16};
+
+        buildConnectionMap(data, side);
+
+        // Map connections to submap indeces
+        for (int i = 0; i < 4; i++) {
+            fillSubmaps(i);
+        }
+
+        return submapCache;
+    }
+
+    public int[] getSubmapIndices() {
+        return submapCache;
+    }
+
+    @Override
+    public long serialized() {
+        return Byte.toUnsignedLong(connectionMap);
+    }
+
+    protected void setConnectedState(LocalDirection dir, boolean connected) {
+        connectionMap = setConnectedState(connectionMap, dir, connected);
+    }
+
+    /**
      * Builds the connection map and stores it in this CTM instance. The {@link #connected(Dir)}, {@link #connectedAnd(Dir...)}, and {@link #connectedOr(Dir...)} methods can be used to access it.
      */
-	@Override
+    @Override
     public void buildConnectionMap(IBlockAccess world, BlockPos pos, EnumFacing side) {
         //IBlockState state = connectionCheck.getConnectionState(world, pos, side, pos);
         // TODO this naive check doesn't work for models that have unculled faces.
         // Perhaps a smarter optimization could be done eventually?
 //        if (state.shouldSideBeRendered(world, pos, side)) {
-            for (Dir dir : Dir.VALUES) {
-				setConnectedState(dir, dir.isConnected(connectionCheck, world, pos, side));
-            }
+        for (Dir dir : Dir.VALUES) {
+            setConnectedState(dir, dir.isConnected(connectionCheck, world, pos, side));
+        }
 //        }
     }
 
@@ -206,7 +196,7 @@ public class CTMLogic implements ICTMLogic {
         List<ConnectionLocations> connections = ConnectionLocations.decode(data);
         for (ConnectionLocations loc : connections) {
             if (loc.getDirForSide(side) != null) {
-				LocalDirection dir = loc.getDirForSide(side);
+                LocalDirection dir = loc.getDirForSide(side);
                 if (dir != null) {
                     setConnectedState(dir, true);
                 }
@@ -214,87 +204,91 @@ public class CTMLogic implements ICTMLogic {
         }
     }
 
-	@SuppressWarnings("null")
+    @SuppressWarnings("null")
     protected void fillSubmaps(int idx) {
-		Dir[] dirs = submapMap[idx];
-		if (connectedOr(dirs[0], dirs[1])) {
-			if (connectedAnd(dirs)) {
-				// If all dirs are connected, we use the fully connected face,
-				// the base offset value.
-			    submapCache[idx] = submapOffsets[idx];
-			} else {
-				// This is a bit magic-y, but basically the array is ordered so
-				// the first dir requires an offset of 2, and the second dir
-				// requires an offset of 8, plus the initial offset for the
-				// corner.
-			    submapCache[idx] = submapOffsets[idx] + (connected(dirs[0]) ? 2 : 0) + (connected(dirs[1]) ? 8 : 0);
-			}
-		}
-	}
-
-	/**
-	 * @param dir
-	 *            The direction to check connection in.
-	 * @return True if the cached connectionMap holds a connection in this {@link Dir direction}.
-	 */
-	@Override
-	public boolean connected(Dir dir) {
-		return ((connectionMap >> dir.ordinal()) & 1) == 1;
-	}
-
-	/**
-	 * @param dirs
-	 *            The directions to check connection in.
-	 * @return True if the cached connectionMap holds a connection in <i><b>all</b></i> the given {@link Dir directions}.
-	 */
-	@Override
-	@SuppressWarnings("null")
-    public boolean connectedAnd(Dir... dirs) {
-		for (Dir dir : dirs) {
-			if (!connected(dir)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * @param dirs
-	 *            The directions to check connection in.
-	 * @return True if the cached connectionMap holds a connection in <i><b>one of</b></i> the given {@link Dir directions}.
-	 */
-	@Override
-	@SuppressWarnings("null")
-    public boolean connectedOr(Dir... dirs) {
-		for (Dir dir : dirs) {
-			if (connected(dir)) {
-				return true;
-			}
-		}
-		return false;
+        Dir[] dirs = submapMap[idx];
+        if (connectedOr(dirs[0], dirs[1])) {
+            if (connectedAnd(dirs)) {
+                // If all dirs are connected, we use the fully connected face,
+                // the base offset value.
+                submapCache[idx] = submapOffsets[idx];
+            } else {
+                // This is a bit magic-y, but basically the array is ordered so
+                // the first dir requires an offset of 2, and the second dir
+                // requires an offset of 8, plus the initial offset for the
+                // corner.
+                submapCache[idx] = submapOffsets[idx] + (connected(dirs[0]) ? 2 : 0) + (connected(dirs[1]) ? 8 : 0);
+            }
+        }
     }
 
-	@Override
-	public boolean connectedNone(Dir... dirs) {
-	    for (Dir dir : dirs) {
-	        if (connected(dir)) {
-	            return false;
-	        }
-	    }
-	    return true;
-	}
+    /**
+     * @param dir The direction to check connection in.
+     * @return True if the cached connectionMap holds a connection in this {@link Dir direction}.
+     */
+    @Override
+    public boolean connected(Dir dir) {
+        return ((connectionMap >> dir.ordinal()) & 1) == 1;
+    }
 
-	@Override
-	public boolean connectedOnly(Dir... dirs) {
-	    byte map = 0;
-	    for (Dir dir : dirs) {
-	        map = setConnectedState(map, dir, true);
-	    }
-	    return map == this.connectionMap;
-	}
+    /**
+     * @param dirs The directions to check connection in.
+     * @return True if the cached connectionMap holds a connection in <i><b>all</b></i> the given {@link Dir directions}.
+     */
+    @Override
+    @SuppressWarnings("null")
+    public boolean connectedAnd(Dir... dirs) {
+        for (Dir dir : dirs) {
+            if (!connected(dir)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public int numConnections() {
-	    return Integer.bitCount(connectionMap);
-	}
+    /**
+     * @param dirs The directions to check connection in.
+     * @return True if the cached connectionMap holds a connection in <i><b>one of</b></i> the given {@link Dir directions}.
+     */
+    @Override
+    @SuppressWarnings("null")
+    public boolean connectedOr(Dir... dirs) {
+        for (Dir dir : dirs) {
+            if (connected(dir)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean connectedNone(Dir... dirs) {
+        for (Dir dir : dirs) {
+            if (connected(dir)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean connectedOnly(Dir... dirs) {
+        byte map = 0;
+        for (Dir dir : dirs) {
+            map = setConnectedState(map, dir, true);
+        }
+        return map == this.connectionMap;
+    }
+
+    @Override
+    public int numConnections() {
+        return Integer.bitCount(connectionMap);
+    }
+
+    public interface StateComparisonCallback {
+
+		StateComparisonCallback DEFAULT = (ctm, from, to, dir) -> ctm.ignoreStates() ? from.getBlock() == to.getBlock() : from == to;
+
+        boolean connects(ConnectionCheck instance, IBlockState from, IBlockState to, EnumFacing dir);
+    }
 }

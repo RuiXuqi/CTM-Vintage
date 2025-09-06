@@ -10,15 +10,15 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 public enum OffsetProviderRegistry {
-    
+
     INSTANCE;
-    
+
     private final List<IOffsetProvider> providers = new ArrayList<>();
-    
+
     public void registerProvider(IOffsetProvider provider) {
         this.providers.add(provider);
     }
-    
+
     public BlockPos getOffset(World world, BlockPos pos) {
         BlockPos ret = BlockPos.ORIGIN;
         for (IOffsetProvider p : providers) {

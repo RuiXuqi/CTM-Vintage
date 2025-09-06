@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class TextureNormal extends AbstractTexture<TextureTypeNormal> {
 
-    public TextureNormal(TextureTypeNormal type, TextureInfo info){
+    public TextureNormal(TextureTypeNormal type, TextureInfo info) {
         super(type, info);
     }
 

@@ -20,15 +20,15 @@ public class TextureEdges extends TextureCTM<TextureTypeEdges> {
     public TextureEdges(TextureTypeEdges type, TextureInfo info) {
         super(type, info);
     }
-    
+
     @Override
     public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
         Quad quad = makeQuad(bq, context);
         if (context == null || Configurations.disableCTM) {
             return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());
         }
-        
-        CTMLogicEdges logic = (CTMLogicEdges) ((TextureContextCTM)context).getCTM(bq.getFace());
+
+        CTMLogicEdges logic = (CTMLogicEdges) ((TextureContextCTM) context).getCTM(bq.getFace());
         if (logic.isObscured()) {
             return Arrays.stream(quad.transformUVs(sprites[2]).subdivide(4)).filter(Objects::nonNull).map(q -> q.rebake()).collect(Collectors.toList());
         }

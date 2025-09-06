@@ -35,7 +35,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     protected BlockRenderLayer layer;
 
     @SuppressWarnings("null")
-    protected @NonnullType TextureAtlasSprite @NonnullType[] sprites;
+    protected @NonnullType TextureAtlasSprite @NonnullType [] sprites;
 
     @Deprecated
     protected boolean fullbright;
@@ -71,7 +71,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
             }
         }
     }
-    
+
     private final int parseLightValue(@Nullable JsonElement data) {
         if (data != null && data.isJsonPrimitive() && data.getAsJsonPrimitive().isNumber()) {
             return MathHelper.clamp(data.getAsInt(), 0, 15);
@@ -83,7 +83,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     public TextureAtlasSprite getParticle() {
         return sprites[0];
     }
-    
+
     @Override
     public Collection<ResourceLocation> getTextures() {
         return Arrays.stream(sprites).map(s -> new ResourceLocation(s.getIconName())).collect(Collectors.toList());

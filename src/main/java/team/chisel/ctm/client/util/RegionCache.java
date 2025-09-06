@@ -24,32 +24,31 @@ public class RegionCache implements IBlockAccess {
 
     /*
      * XXX
-     * 
+     *
      * These are required for future use, in case there is ever a need to have this region cache only store a certain area of the world.
-     * 
-     * Currently, this class is only used by CTM, which is limited to a very small subsection of the world, 
+     *
+     * Currently, this class is only used by CTM, which is limited to a very small subsection of the world,
      * and thus the overhead of distance checking is unnecessary.
      */
     @SuppressWarnings("unused")
     private final BlockPos center;
     @SuppressWarnings("unused")
     private final int radius;
-    
-    private WeakReference<IBlockAccess> passthrough;
     private final Long2ObjectMap<IBlockState> stateCache = new Long2ObjectOpenHashMap<>();
+    private WeakReference<IBlockAccess> passthrough;
 
     public RegionCache(BlockPos center, int radius, @Nullable IBlockAccess passthrough) {
         this.center = center;
         this.radius = radius;
         this.passthrough = new WeakReference<>(passthrough);
     }
-    
+
     private IBlockAccess getPassthrough() {
         IBlockAccess ret = passthrough.get();
         Preconditions.checkNotNull(ret);
         return ret;
     }
-    
+
     public @Nonnull RegionCache updateWorld(IBlockAccess passthrough) {
         // We do NOT use getPassthrough() here so as to skip the null-validation - it's obviously valid to be null here
         if (this.passthrough.get() != passthrough) {

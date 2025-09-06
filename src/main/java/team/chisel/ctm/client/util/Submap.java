@@ -9,28 +9,39 @@ import team.chisel.ctm.api.texture.ISubmap;
 @ToString
 @EqualsAndHashCode
 public class Submap implements ISubmap {
-    
+
     public static final ISubmap X1 = fromPixelScale(16, 16, 0, 0);
-    
-    public static final ISubmap[][] X2 = new ISubmap[][] {
-        { fromPixelScale(8, 8, 0, 0), fromPixelScale(8, 8, 8, 0) },
-        { fromPixelScale(8, 8, 0, 8), fromPixelScale(8, 8, 8, 8) }
+
+    public static final ISubmap[][] X2 = new ISubmap[][]{
+            {fromPixelScale(8, 8, 0, 0), fromPixelScale(8, 8, 8, 0)},
+            {fromPixelScale(8, 8, 0, 8), fromPixelScale(8, 8, 8, 8)}
     };
-    
+    public static final ISubmap[][] X4 = new ISubmap[][]{
+            {fromPixelScale(4, 4, 0, 0), fromPixelScale(4, 4, 4, 0), fromPixelScale(4, 4, 8, 0), fromPixelScale(4, 4, 12, 0)},
+            {fromPixelScale(4, 4, 0, 4), fromPixelScale(4, 4, 4, 4), fromPixelScale(4, 4, 8, 4), fromPixelScale(4, 4, 12, 4)},
+            {fromPixelScale(4, 4, 0, 8), fromPixelScale(4, 4, 4, 8), fromPixelScale(4, 4, 8, 8), fromPixelScale(4, 4, 12, 8)},
+            {fromPixelScale(4, 4, 0, 12), fromPixelScale(4, 4, 4, 12), fromPixelScale(4, 4, 8, 12), fromPixelScale(4, 4, 12, 12)},
+    };
     private static final float DIV3 = 16 / 3f;
-    public static final ISubmap[][] X3 = new ISubmap[][] {
-        { fromPixelScale(DIV3, DIV3, 0, 0),         fromPixelScale(DIV3, DIV3, DIV3, 0),        fromPixelScale(DIV3, DIV3, DIV3 * 2, 0) },
-        { fromPixelScale(DIV3, DIV3, 0, DIV3),      fromPixelScale(DIV3, DIV3, DIV3, DIV3),     fromPixelScale(DIV3, DIV3, DIV3 * 2, DIV3) },
-        { fromPixelScale(DIV3, DIV3, 0, DIV3 * 2),  fromPixelScale(DIV3, DIV3, DIV3, DIV3 * 2), fromPixelScale(DIV3, DIV3, DIV3 * 2, DIV3 * 2) },
+    public static final ISubmap[][] X3 = new ISubmap[][]{
+            {fromPixelScale(DIV3, DIV3, 0, 0), fromPixelScale(DIV3, DIV3, DIV3, 0), fromPixelScale(DIV3, DIV3, DIV3 * 2, 0)},
+            {fromPixelScale(DIV3, DIV3, 0, DIV3), fromPixelScale(DIV3, DIV3, DIV3, DIV3), fromPixelScale(DIV3, DIV3, DIV3 * 2, DIV3)},
+            {fromPixelScale(DIV3, DIV3, 0, DIV3 * 2), fromPixelScale(DIV3, DIV3, DIV3, DIV3 * 2), fromPixelScale(DIV3, DIV3, DIV3 * 2, DIV3 * 2)},
     };
-    
-    public static final ISubmap[][] X4 = new ISubmap[][] {
-        { fromPixelScale(4, 4, 0, 0),   fromPixelScale(4, 4, 4, 0),     fromPixelScale(4, 4, 8, 0),     fromPixelScale(4, 4, 12, 0) },
-        { fromPixelScale(4, 4, 0, 4),   fromPixelScale(4, 4, 4, 4),     fromPixelScale(4, 4, 8, 4),     fromPixelScale(4, 4, 12, 4) },
-        { fromPixelScale(4, 4, 0, 8),   fromPixelScale(4, 4, 4, 8),     fromPixelScale(4, 4, 8, 8),     fromPixelScale(4, 4, 12, 8) },
-        { fromPixelScale(4, 4, 0, 12),  fromPixelScale(4, 4, 4, 12),    fromPixelScale(4, 4, 8, 12),    fromPixelScale(4, 4, 12, 12) },
-    };
-    
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    final SubmapRescaled rescaled;
+    private final float width, height;
+    private final float xOffset, yOffset;
+
+    private Submap(float width, float height, float xOffset, float yOffset, float rescale) {
+        this.width = width;
+        this.height = height;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        this.rescaled = new SubmapRescaled(this, rescale, false);
+    }
+
     public static ISubmap[][] grid(int w, int h) {
         float xDiv = 16f / w;
         float yDiv = 16f / h;
@@ -49,21 +60,6 @@ public class Submap implements ISubmap {
 
     public static ISubmap fromPixelScale(float width, float height, float xOffset, float yOffset) {
         return new Submap(width, height, xOffset, yOffset, UNITS_PER_PIXEL);
-    }
-
-    private final float width, height;
-    private final float xOffset, yOffset;
-    
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    final SubmapRescaled rescaled;
-    
-    private Submap(float width, float height, float xOffset, float yOffset, float rescale) {
-        this.width = width;
-        this.height = height;
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
-        this.rescaled = new SubmapRescaled(this, rescale, false);
     }
 
     @Override

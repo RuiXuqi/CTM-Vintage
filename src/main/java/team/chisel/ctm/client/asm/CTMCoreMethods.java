@@ -19,39 +19,39 @@ import team.chisel.ctm.client.util.ProfileUtil;
 import javax.annotation.Nonnull;
 
 public class CTMCoreMethods {
-    
+
+    public static ThreadLocal<Boolean> renderingDamageModel = ThreadLocal.withInitial(() -> false);
+
     @SneakyThrows
     public static Boolean canRenderInLayer(@Nonnull IBlockState state, @Nonnull BlockRenderLayer layer) {
         ProfileUtil.start("ctm_render_in_layer");
         IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
         if (model instanceof WeightedBakedModel) {
-            model = ((WeightedBakedModel)model).baseModel;
+            model = ((WeightedBakedModel) model).baseModel;
         }
-        
+
         Boolean ret;
         if (model instanceof AbstractCTMBakedModel) {
-            ret = ((AbstractCTMBakedModel)model).getModel().canRenderInLayer(state, layer);
+            ret = ((AbstractCTMBakedModel) model).getModel().canRenderInLayer(state, layer);
         } else {
             ret = null;
         }
         ProfileUtil.end();
         return ret;
     }
-    
-    public static ThreadLocal<Boolean> renderingDamageModel = ThreadLocal.withInitial(() -> false);
-    
+
     public static void preDamageModel() {
         renderingDamageModel.set(true);
     }
-    
+
     public static void postDamageModel() {
         renderingDamageModel.set(false);
     }
 
     public static void onSpriteRegister(TextureMap map, TextureAtlasSprite sprite) {
         MinecraftForge.EVENT_BUS.post(new TextureCollectedEvent(map, sprite));
-	}
-    
+    }
+
     public static IModel transformParent(IModel model) {
         if (model instanceof IModelCTM) {
             try {

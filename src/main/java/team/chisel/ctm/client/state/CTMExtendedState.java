@@ -23,35 +23,24 @@ import java.util.Optional;
 @ParametersAreNonnullByDefault
 public class CTMExtendedState extends BlockStateBase implements IExtendedBlockState {
 
-    interface Exclusions {
-        public <T extends Comparable<T>> T getValue(IProperty<T> property);
-        
-        public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value);
-        
-        public <T extends Comparable<T>> IBlockState cycleProperty(IProperty<T> property);
-    }
-    
     @Delegate(excludes = Exclusions.class)
     private final IBlockState wrapped;
     private final IBlockState clean;
-    
     private final boolean extended;
     private final @Nullable IExtendedBlockState extState;
-    
     @Getter
     private final IBlockAccess world;
     @Getter
     private final BlockPos pos;
-    
     private @Nullable RenderContextList ctxCache;
-    
+
     @SuppressWarnings("null")
     public CTMExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
         ProfileUtil.start("ctm_extended_state");
         this.wrapped = state;
         this.world = world;
         this.pos = pos;
-        
+
         this.extended = wrapped instanceof IExtendedBlockState;
         if (extended) {
             extState = (IExtendedBlockState) wrapped;
@@ -66,7 +55,7 @@ public class CTMExtendedState extends BlockStateBase implements IExtendedBlockSt
     public CTMExtendedState(IBlockState state, CTMExtendedState parent) {
         this(state, parent.world, parent.pos);
     }
-    
+
     public RenderContextList getContextList(IBlockState state, AbstractCTMBakedModel model) {
         if (ctxCache == null) {
             ctxCache = new RenderContextList(state, model.getCTMTextures(), world, pos);
@@ -98,13 +87,13 @@ public class CTMExtendedState extends BlockStateBase implements IExtendedBlockSt
     public IBlockState getClean() {
         return clean;
     }
-    
-    // Lombok chokes on these for some reason
 
     @Override
     public <T extends Comparable<T>> T getValue(IProperty<T> property) {
         return wrapped.getValue(property);
     }
+
+    // Lombok chokes on these for some reason
 
     @Override
     public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value) {
@@ -114,5 +103,13 @@ public class CTMExtendedState extends BlockStateBase implements IExtendedBlockSt
     @Override
     public <T extends Comparable<T>> IBlockState cycleProperty(IProperty<T> property) {
         return new CTMExtendedState(wrapped.cycleProperty(property), this);
+    }
+
+    interface Exclusions {
+        <T extends Comparable<T>> T getValue(IProperty<T> property);
+
+        <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value);
+
+        <T extends Comparable<T>> IBlockState cycleProperty(IProperty<T> property);
     }
 }

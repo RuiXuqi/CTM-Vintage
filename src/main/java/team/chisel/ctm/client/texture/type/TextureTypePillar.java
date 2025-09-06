@@ -19,19 +19,19 @@ public class TextureTypePillar implements ITextureType {
     public ICTMTexture<TextureTypePillar> makeTexture(TextureInfo info) {
         return new TexturePillar(this, info);
     }
-    
+
     @Override
     public TextureContextPillar getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
         return new TextureContextPillar(world, pos);
     }
-    
+
     @Override
     public int requiredTextures() {
         return 2;
     }
 
     @Override
-    public ITextureContext getContextFromData(long data){
+    public ITextureContext getContextFromData(long data) {
         return new TextureContextPillar(data);
     }
 }

@@ -14,33 +14,33 @@ import java.util.EnumMap;
 
 public class TextureContextOptifineFullctm implements ITextureContext {
 
-	protected final ICTMTexture<?> tex;
+    protected final ICTMTexture<?> tex;
 
-	private EnumMap<EnumFacing, NewCTMLogic> ctmData = new EnumMap<>(EnumFacing.class);
+    private final EnumMap<EnumFacing, NewCTMLogic> ctmData = new EnumMap<>(EnumFacing.class);
 
-	private long data;
+    private long data;
 
-	public TextureContextOptifineFullctm(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
-		this.tex = tex;
+    public TextureContextOptifineFullctm(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
+        this.tex = tex;
 
-		for (EnumFacing face : EnumFacing.values()) {
-			NewCTMLogic ctm = createCTM(state);
-			ctm.getSubmaps(world, pos, face);
-			ctmData.put(face, ctm);
-			this.data |= ctm.serialized() << (face.ordinal() * 10);
-		}
-	}
+        for (EnumFacing face : EnumFacing.values()) {
+            NewCTMLogic ctm = createCTM(state);
+            ctm.getSubmaps(world, pos, face);
+            ctmData.put(face, ctm);
+            this.data |= ctm.serialized() << (face.ordinal() * 10);
+        }
+    }
 
-	protected NewCTMLogic createCTM(@Nonnull IBlockState state) {
-		return CTMLogicBakery.TEST_OF.bake();
-	}
+    protected NewCTMLogic createCTM(@Nonnull IBlockState state) {
+        return CTMLogicBakery.TEST_OF.bake();
+    }
 
-	public NewCTMLogic getCTM(EnumFacing face) {
-		return ctmData.get(face);
-	}
+    public NewCTMLogic getCTM(EnumFacing face) {
+        return ctmData.get(face);
+    }
 
-	@Override
-	public long getCompressedData(){
-		return this.data;
-	}
+    @Override
+    public long getCompressedData() {
+        return this.data;
+    }
 }

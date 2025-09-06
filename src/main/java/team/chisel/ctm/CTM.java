@@ -19,10 +19,10 @@ import team.chisel.ctm.client.util.TextureMetadataHandler;
 public class CTM {
 
     public static final Logger logger = LogManager.getLogger("CTM");
-    
+
     @Mod.Instance(Tags.MOD_ID)
     public static CTM instance;
-    
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         TextureTypeRegistry.preInit(event);
@@ -30,8 +30,8 @@ public class CTM {
         ModelLoaderRegistry.registerLoader(ModelLoaderCTM.INSTANCE);
         MinecraftForge.EVENT_BUS.register(ModelLoaderCTM.INSTANCE);
         Minecraft.getMinecraft().metadataSerializer.registerMetadataSectionType(new IMetadataSectionCTM.Serializer(), IMetadataSectionCTM.class);
-        
+
         MinecraftForge.EVENT_BUS.register(TextureMetadataHandler.INSTANCE);
-        ((SimpleReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CTMPackReloadListener.INSTANCE);
+        ((SimpleReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CTMPackReloadListener.INSTANCE);
     }
 }

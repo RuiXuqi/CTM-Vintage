@@ -17,7 +17,7 @@ public class TextureContextPosition implements ITextureContext {
     public TextureContextPosition(int x, int y, int z) {
         this(new BlockPos(x, y, z));
     }
-    
+
     public TextureContextPosition applyOffset() {
         this.position = position.add(OffsetProviderRegistry.INSTANCE.getOffset(Minecraft.getMinecraft().world, position));
         return this;

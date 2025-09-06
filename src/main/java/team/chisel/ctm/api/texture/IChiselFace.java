@@ -10,5 +10,6 @@ public interface IChiselFace {
 
     List<ICTMTexture<?>> getTextureList();
 
-    @Nonnull TextureAtlasSprite getParticle();
+    @Nonnull
+    TextureAtlasSprite getParticle();
 }

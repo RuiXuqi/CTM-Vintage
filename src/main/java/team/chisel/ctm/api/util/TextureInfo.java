@@ -14,13 +14,13 @@ import java.util.Optional;
 @ParametersAreNonnullByDefault
 public class TextureInfo {
 
-    private TextureAtlasSprite[] sprites;
+    private final TextureAtlasSprite[] sprites;
 
-    private Optional<JsonObject> info;
+    private final Optional<JsonObject> info;
 
-    private BlockRenderLayer renderLayer;
+    private final BlockRenderLayer renderLayer;
 
-    public TextureInfo(TextureAtlasSprite[] sprites, Optional<JsonObject> info, BlockRenderLayer layer){
+    public TextureInfo(TextureAtlasSprite[] sprites, Optional<JsonObject> info, BlockRenderLayer layer) {
         this.sprites = sprites;
         this.info = info;
         this.renderLayer = layer;
@@ -37,15 +37,14 @@ public class TextureInfo {
      * Gets a JsonObject that had the key "info" for extra texture information
      * This JsonObject might not exist
      */
-    public Optional<JsonObject> getInfo()
-    {
+    public Optional<JsonObject> getInfo() {
         return this.info;
     }
 
     /**
      * Returns the render layer for this texture
      */
-    public BlockRenderLayer getRenderLayer(){
+    public BlockRenderLayer getRenderLayer() {
         return this.renderLayer;
     }
 

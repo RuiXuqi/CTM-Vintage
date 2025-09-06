@@ -24,18 +24,18 @@ import java.util.Map.Entry;
 
 @ParametersAreNonnullByDefault
 public class ModelBakedCTM extends AbstractCTMBakedModel {
-    
+
+    private static final EnumFacing[] FACINGS = ObjectArrays.concat(EnumFacing.VALUES, (EnumFacing) null);
+
     public ModelBakedCTM(IModelCTM model, IBakedModel parent) {
         super(model, parent);
     }
-
-    private static final EnumFacing[] FACINGS = ObjectArrays.concat(EnumFacing.VALUES, (EnumFacing) null);
 
     @Override
     protected AbstractCTMBakedModel createModel(@Nullable IBlockState state, IModelCTM model, @Nullable RenderContextList ctx, long rand) {
         IBakedModel parent = getParent(rand);
         while (parent instanceof ModelBakedCTM) {
-            parent = ((AbstractCTMBakedModel)parent).getParent(rand);
+            parent = ((AbstractCTMBakedModel) parent).getParent(rand);
         }
 
         AbstractCTMBakedModel ret = new ModelBakedCTM(model, parent);
@@ -48,7 +48,7 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
                 } else {
                     quads = ret.genQuads.get(layer);
                 }
-                
+
                 // Linked to maintain the order of quads
                 Map<BakedQuad, ICTMTexture<?>> texturemap = new LinkedHashMap<>();
                 // Gather all quads and map them to their textures
@@ -84,17 +84,17 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
         }
         return ret;
     }
-    
+
     @Override
     public @Nonnull TextureAtlasSprite getParticleTexture() {
         return Optional.ofNullable(getModel().getTexture(getParent().getParticleTexture().getIconName()))
                 .map(ICTMTexture::getParticle)
                 .orElse(getParent().getParticleTexture());
     }
-    
+
     @Override
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(TransformType cameraTransformType) {
-    	// FIXME this won't work if parent returns a different model (shouldn't happen for vanilla)
-    	return Pair.of(this, getParent().handlePerspective(cameraTransformType).getRight());
+        // FIXME this won't work if parent returns a different model (shouldn't happen for vanilla)
+        return Pair.of(this, getParent().handlePerspective(cameraTransformType).getRight());
     }
 }

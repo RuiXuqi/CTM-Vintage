@@ -49,126 +49,60 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class AbstractCTMBakedModel implements IBakedModel {
 
-    private static Cache<ModelResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder()
+    public static final Map<TransformType, TRSRTransformation> TRANSFORMS = ImmutableMap.<TransformType, TRSRTransformation>builder()
+            .put(TransformType.GUI, get(0, 0, 0, 30, 45, 0, 0.625f))
+            .put(TransformType.THIRD_PERSON_RIGHT_HAND, get(0, 2.5f, 0, 75, 45, 0, 0.375f))
+            .put(TransformType.THIRD_PERSON_LEFT_HAND, get(0, 2.5f, 0, 75, 45, 0, 0.375f))
+            .put(TransformType.FIRST_PERSON_RIGHT_HAND, get(0, 0, 0, 0, 45, 0, 0.4f))
+            .put(TransformType.FIRST_PERSON_LEFT_HAND, get(0, 0, 0, 0, 225, 0, 0.4f))
+            .put(TransformType.GROUND, get(0, 2, 0, 0, 0, 0, 0.25f))
+            .put(TransformType.FIXED, get(0, 0, 0, 0, 0, 0, 0.5f))
+            .build();
+    public static final TRSRTransformation DEFAULT_TRANSFORM = get(0, 0, 0, 0, 0, 0, 1);
+    protected static final BlockRenderLayer[] LAYERS = BlockRenderLayer.values();
+    private static final Cache<ModelResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.SECONDS)
             .maximumSize(0)
-            .<ModelResourceLocation, AbstractCTMBakedModel>build();
-    private static Cache<State, AbstractCTMBakedModel> modelcache = CacheBuilder.newBuilder()
+            .build();
+    private static final Cache<State, AbstractCTMBakedModel> modelcache = CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
 //            .maximumSize(5000)
             .maximumSize(0)
-            .<State, AbstractCTMBakedModel>build();
-
-    public static void invalidateCaches()
-    {
-        itemcache.invalidateAll();
-        modelcache.invalidateAll();
-    }
-
-    @ParametersAreNonnullByDefault
-    private class Overrides extends ItemOverrideList {
-                
-        public Overrides() {
-            super(Lists.newArrayList());
-        }
-
-        @Override
-        @SneakyThrows
-        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
-            Block block = null;
-            if (stack.getItem() instanceof ItemBlock) {
-                block = ((ItemBlock) stack.getItem()).getBlock();
-            }
-            final IBlockState state = block == null ? null : block.getDefaultState();
-            if (!stack.isEmpty() && stack.getItem().hasCustomProperties()) { // Handle parent model's overrides
-                @SuppressWarnings("deprecation") // Duplicate super logic, but called on the parent model overrides
-                ResourceLocation location = parent.getOverrides().applyOverride(stack, world, entity);
-                if (location != null) {
-                    // Use the override's location as cache key
-                    ModelResourceLocation overrideLoc = ModelLoader.getInventoryVariant(location.toString());
-                    IBakedModel newParent = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager().getModel(overrideLoc);
-                    return itemcache.get(overrideLoc, () -> withNewParent(newParent).createModel(state, model, null, 0));
-                }
-            }
-            ModelResourceLocation mrl = ModelUtil.getMesh(stack);
-            if (mrl == null) {
-                // this must be a missing/invalid model
-                return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
-            }
-            return itemcache.get(mrl, () -> createModel(state, model, null, 0));
-        }
-    }
-    
-    @Getter 
-    @RequiredArgsConstructor 
-    @ToString
-    private static class State {
-        private final @Nonnull IBlockState cleanState;
-        private final @Nullable Object2LongMap<ICTMTexture<?>> serializedContext;
-        private final @Nonnull IBakedModel parent;
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            State other = (State) obj;
-            
-            if (cleanState != other.cleanState) {
-                return false;
-            }
-            if (parent != other.parent) {
-                return false;
-            }
-
-            if (serializedContext == null) {
-                if (other.serializedContext != null) {
-                    return false;
-                }
-            } else if (!serializedContext.equals(other.serializedContext)) {
-                return false;
-            }
-            return true;
-        }
-        
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            // for some reason blockstates hash their properties, we only care about the identity hash
-            result = prime * result + System.identityHashCode(cleanState);
-            result = prime * result + (parent == null ? 0 : parent.hashCode());
-            result = prime * result + (serializedContext == null ? 0 : serializedContext.hashCode());
-            return result;
-        }
-    }
-    
+            .build();
+    protected final ListMultimap<BlockRenderLayer, BakedQuad> genQuads = MultimapBuilder.enumKeys(BlockRenderLayer.class).arrayListValues().build();
+    protected final Table<BlockRenderLayer, EnumFacing, List<BakedQuad>> faceQuads = Tables.newCustomTable(Maps.newEnumMap(BlockRenderLayer.class), () -> Maps.newEnumMap(EnumFacing.class));
     @Getter
     private final @Nonnull IModelCTM model;
     @Getter
     private final @Nonnull IBakedModel parent;
     private final @Nonnull Overrides overrides = new Overrides();
-
-    protected final ListMultimap<BlockRenderLayer, BakedQuad> genQuads = MultimapBuilder.enumKeys(BlockRenderLayer.class).arrayListValues().build();
-    protected final Table<BlockRenderLayer, EnumFacing, List<BakedQuad>> faceQuads = Tables.newCustomTable(Maps.newEnumMap(BlockRenderLayer.class), () -> Maps.newEnumMap(EnumFacing.class));
-    
     private final EnumMap<EnumFacing, ImmutableList<BakedQuad>> noLayerCache = new EnumMap<>(EnumFacing.class);
     private ImmutableList<BakedQuad> noSideNoLayerCache;
 
+    public static void invalidateCaches() {
+        itemcache.invalidateAll();
+        modelcache.invalidateAll();
+    }
+
+    private static @Nonnull TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s) {
+        return new TRSRTransformation(
+                new Vector3f(tx / 16, ty / 16, tz / 16),
+                TRSRTransformation.quatFromXYZDegrees(new Vector3f(ax, ay, az)),
+                new Vector3f(s, s, s),
+                null);
+    }
+
     @Override
     @SneakyThrows
-    public @Nonnull List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {        
+    public @Nonnull List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (CTMCoreMethods.renderingDamageModel.get()) {
             return parent.getQuads(state, side, rand);
         }
-        
+
         IBakedModel parent = getParent(rand);
 
         ProfileUtil.start("ctm_models");
-        
+
         AbstractCTMBakedModel baked = this;
         BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
 
@@ -181,7 +115,7 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
             ProfileUtil.endAndStart("model_creation");
             baked = modelcache.get(new State(ext.getClean(), serialized, parent), () -> createModel(state, model, ctxList, rand));
             ProfileUtil.end();
-        } else if (state != null)  {
+        } else if (state != null) {
             ProfileUtil.start("model_creation");
             baked = modelcache.get(new State(state, null, getParent(rand)), () -> createModel(state, model, null, rand));
             ProfileUtil.end();
@@ -227,11 +161,11 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
     @Nonnull
     public IBakedModel getParent(long rand) {
         if (getParent() instanceof WeightedBakedModel) {
-            return ((WeightedBakedModel)parent).getRandomModel(rand);
+            return ((WeightedBakedModel) parent).getRandomModel(rand);
         }
         return getParent();
     }
-    
+
     @Override
     public @Nonnull ItemOverrideList getOverrides() {
         return overrides;
@@ -264,35 +198,13 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
         return ItemCameraTransforms.DEFAULT;
     }
 
-    private static @Nonnull TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s) {
-        return new TRSRTransformation(
-            new Vector3f(tx / 16, ty / 16, tz / 16),
-            TRSRTransformation.quatFromXYZDegrees(new Vector3f(ax, ay, az)),
-            new Vector3f(s, s, s),
-            null);
-    }
-        
-    public static final Map<TransformType, TRSRTransformation> TRANSFORMS = ImmutableMap.<TransformType, TRSRTransformation>builder()
-            .put(TransformType.GUI,                         get(0, 0, 0, 30, 45, 0, 0.625f))
-            .put(TransformType.THIRD_PERSON_RIGHT_HAND,     get(0, 2.5f, 0, 75, 45, 0, 0.375f))
-            .put(TransformType.THIRD_PERSON_LEFT_HAND,      get(0, 2.5f, 0, 75, 45, 0, 0.375f))
-            .put(TransformType.FIRST_PERSON_RIGHT_HAND,     get(0, 0, 0, 0, 45, 0, 0.4f))
-            .put(TransformType.FIRST_PERSON_LEFT_HAND,      get(0, 0, 0, 0, 225, 0, 0.4f))
-            .put(TransformType.GROUND,                      get(0, 2, 0, 0, 0, 0, 0.25f))
-            .put(TransformType.FIXED,                       get(0, 0, 0, 0, 0, 0, 0.5f))
-            .build();
-    
-    public static final TRSRTransformation DEFAULT_TRANSFORM = get(0, 0, 0, 0, 0, 0, 1);
-
     @Override
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
         return Pair.of(this, TRANSFORMS.getOrDefault(cameraTransformType, DEFAULT_TRANSFORM).getMatrix());
     }
-    
-    protected static final BlockRenderLayer[] LAYERS = BlockRenderLayer.values();
-    
+
     protected abstract AbstractCTMBakedModel createModel(IBlockState state, @Nonnull IModelCTM model, RenderContextList ctx, long rand);
-    
+
     protected /* abstract */ AbstractCTMBakedModel withNewParent(@Nonnull IBakedModel parent) {
         return new ModelBakedCTM(getModel(), parent);
     }
@@ -320,7 +232,7 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
         }
         return ret;
     }
-    
+
     protected TextureAtlasSprite getOverrideSprite(long rand, int tintIndex) {
         TextureAtlasSprite ret = getModel().getOverrideSprite(tintIndex);
         if (ret == null) {
@@ -333,8 +245,84 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
         ImmutableList.Builder<ICTMTexture<?>> builder = ImmutableList.builder();
         builder.addAll(getModel().getCTMTextures());
         if (getParent() instanceof AbstractCTMBakedModel) {
-            builder.addAll(((AbstractCTMBakedModel)getParent()).getCTMTextures());
+            builder.addAll(((AbstractCTMBakedModel) getParent()).getCTMTextures());
         }
         return builder.build();
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    @ToString
+    private static class State {
+        private final @Nonnull IBlockState cleanState;
+        private final @Nullable Object2LongMap<ICTMTexture<?>> serializedContext;
+        private final @Nonnull IBakedModel parent;
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            State other = (State) obj;
+
+            if (cleanState != other.cleanState) {
+                return false;
+            }
+            if (parent != other.parent) {
+                return false;
+            }
+
+            if (serializedContext == null) {
+                return other.serializedContext == null;
+            } else return serializedContext.equals(other.serializedContext);
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            // for some reason blockstates hash their properties, we only care about the identity hash
+            result = prime * result + System.identityHashCode(cleanState);
+            result = prime * result + (parent == null ? 0 : parent.hashCode());
+            result = prime * result + (serializedContext == null ? 0 : serializedContext.hashCode());
+            return result;
+        }
+    }
+
+    @ParametersAreNonnullByDefault
+    private class Overrides extends ItemOverrideList {
+
+        public Overrides() {
+            super(Lists.newArrayList());
+        }
+
+        @Override
+        @SneakyThrows
+        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+            Block block = null;
+            if (stack.getItem() instanceof ItemBlock) {
+                block = ((ItemBlock) stack.getItem()).getBlock();
+            }
+            final IBlockState state = block == null ? null : block.getDefaultState();
+            if (!stack.isEmpty() && stack.getItem().hasCustomProperties()) { // Handle parent model's overrides
+                @SuppressWarnings("deprecation") // Duplicate super logic, but called on the parent model overrides
+                ResourceLocation location = parent.getOverrides().applyOverride(stack, world, entity);
+                if (location != null) {
+                    // Use the override's location as cache key
+                    ModelResourceLocation overrideLoc = ModelLoader.getInventoryVariant(location.toString());
+                    IBakedModel newParent = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager().getModel(overrideLoc);
+                    return itemcache.get(overrideLoc, () -> withNewParent(newParent).createModel(state, model, null, 0));
+                }
+            }
+            ModelResourceLocation mrl = ModelUtil.getMesh(stack);
+            if (mrl == null) {
+                // this must be a missing/invalid model
+                return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
+            }
+            return itemcache.get(mrl, () -> createModel(state, model, null, 0));
+        }
     }
 }

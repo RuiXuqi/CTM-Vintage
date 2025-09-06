@@ -12,10 +12,10 @@ import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 @Config(modid = Tags.MOD_ID)
 @EventBusSubscriber(modid = Tags.MOD_ID)
 public class Configurations {
-    
+
     @Config.Comment("Disable connected textures entirely.")
     public static boolean disableCTM = false;
-    
+
     @Config.Comment("Choose whether the inside corner is disconnected on a CTM block - https://imgur.com/eUywLZ4")
     public static boolean connectInsideCTM = false;
 
