@@ -100,7 +100,7 @@ public enum TextureMetadataHandler {
                         }
                     }
                 }
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException ignored) {
             } // Ignore these, they are reported by vanilla
             catch (IOException e) {
                 e.printStackTrace();
@@ -146,7 +146,7 @@ public enum TextureMetadataHandler {
                         // FORGE WHYYYYY
                         if (multipartModelClass.isAssignableFrom(model.getClass())) {
                             Map<?, IModel> partModels = (Map<?, IModel>) multipartPartModels.get(model);
-                            textures = partModels.values().stream().map(m -> m.getTextures()).flatMap(Collection::stream).collect(Collectors.toSet());
+                            textures = partModels.values().stream().map(IModel::getTextures).flatMap(Collection::stream).collect(Collectors.toSet());
                             newDependencies.addAll(partModels.values().stream().flatMap(m -> m.getDependencies().stream()).collect(Collectors.toList()));
                         }
 
@@ -154,7 +154,7 @@ public enum TextureMetadataHandler {
                             IMetadataSectionCTM meta = null;
                             try {
                                 meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(tex));
-                            } catch (IOException e) {
+                            } catch (IOException ignored) {
                             } // Fallthrough
                             if (meta != null) {
                                 shouldWrap = true;

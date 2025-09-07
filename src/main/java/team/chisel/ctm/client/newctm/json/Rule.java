@@ -1,20 +1,14 @@
 package team.chisel.ctm.client.newctm.json;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 public final class Rule {
-    public static final Codec<Rule> CODEC = RecordCodecBuilder.create(i -> i.group(
-                    Codec.STRING.fieldOf("output").forGetter(Rule::output),
-                    Codec.INT.optionalFieldOf("from", 0).forGetter(Rule::from),
-                    Codec.STRING.optionalFieldOf("at").forGetter(Rule::at),
-                    Codec.STRING.listOf().optionalFieldOf("connected", List.of()).forGetter(Rule::connected),
-                    Codec.STRING.listOf().optionalFieldOf("unconnected", List.of()).forGetter(Rule::unconnected))
-            .apply(i, Rule::new));
     private final String output;
     private final int from;
     private final Optional<String> at;
@@ -27,6 +21,34 @@ public final class Rule {
         this.at = at;
         this.connected = connected;
         this.unconnected = unconnected;
+    }
+
+    public static Rule fromJson(JsonObject json) {
+        String output = json.get("output").getAsString();
+        int from = json.has("from") ? json.get("from").getAsInt() : 0;
+
+        Optional<String> at = Optional.empty();
+        if (json.has("at")) {
+            at = Optional.of(json.get("at").getAsString());
+        }
+
+        List<String> connected = new ArrayList<>();
+        if (json.has("connected")) {
+            JsonArray connectedArray = json.getAsJsonArray("connected");
+            for (JsonElement element : connectedArray) {
+                connected.add(element.getAsString());
+            }
+        }
+
+        List<String> unconnected = new ArrayList<>();
+        if (json.has("unconnected")) {
+            JsonArray unconnectedArray = json.getAsJsonArray("unconnected");
+            for (JsonElement element : unconnectedArray) {
+                unconnected.add(element.getAsString());
+            }
+        }
+
+        return new Rule(output, from, at, connected, unconnected);
     }
 
     public String output() {
@@ -48,32 +70,4 @@ public final class Rule {
     public List<String> unconnected() {
         return unconnected;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        Rule that = (Rule) obj;
-        return Objects.equals(this.output, that.output) &&
-                this.from == that.from &&
-                Objects.equals(this.at, that.at) &&
-                Objects.equals(this.connected, that.connected) &&
-                Objects.equals(this.unconnected, that.unconnected);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(output, from, at, connected, unconnected);
-    }
-
-    @Override
-    public String toString() {
-        return "Rule[" +
-                "output=" + output + ", " +
-                "from=" + from + ", " +
-                "at=" + at + ", " +
-                "connected=" + connected + ", " +
-                "unconnected=" + unconnected + ']';
-    }
-
 }

@@ -194,6 +194,9 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
         // Perhaps a smarter optimization could be done eventually?
 //        if (state.shouldSideBeRendered(world, pos, side)) {
         for (Dir dir : Dir.VALUES) {
+            //Note: We can't cache the state that we are checking about connection for as we want to ensure that
+            // we can take into account the side of the block we want to know the "state" of as if the block is
+            // a facade of some sort it might return different results based on where it is being queried from
             setConnectedState(dir, dir.isConnected(connectionCheck, world, pos, side));
         }
 //        }

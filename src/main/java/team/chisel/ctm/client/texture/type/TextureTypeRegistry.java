@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 /**
@@ -24,64 +25,86 @@ import java.util.stream.Collectors;
 public class TextureTypeRegistry {
 
     private static final Map<String, ITextureType> map = Maps.newHashMap();
+    public static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     @SuppressWarnings("unchecked")
     public static void preInit(FMLPreInitializationEvent event) {
-        Multimap<ASMData, String> annots = HashMultimap.create();
-        for (ASMData list : event.getAsmData().getAll(TextureTypeList.class.getName())) {
-            for (String value : ((List<Map<String, String>>) list.getAnnotationInfo().get("value")).stream().map(m -> m.get("value")).collect(Collectors.toList())) {
-                annots.put(list, value);
+        try {
+            lock.writeLock().lock();
+            Multimap<ASMData, String> annots = HashMultimap.create();
+            for (ASMData list : event.getAsmData().getAll(TextureTypeList.class.getName())) {
+                for (String value : ((List<Map<String, String>>) list.getAnnotationInfo().get("value")).stream().map(m -> m.get("value")).collect(Collectors.toList())) {
+                    annots.put(list, value);
+                }
             }
-        }
-        for (ASMData single : event.getAsmData().getAll(TextureType.class.getName())) {
-            if (single.getObjectName() != null) {
-                annots.put(single, (String) single.getAnnotationInfo().get("value"));
+            for (ASMData single : event.getAsmData().getAll(TextureType.class.getName())) {
+                if (single.getObjectName() != null) {
+                    annots.put(single, (String) single.getAnnotationInfo().get("value"));
+                }
             }
-        }
-        for (Entry<ASMData, Collection<String>> data : annots.asMap().entrySet()) {
-            ITextureType type;
-            try {
-                type = ((Class<? extends ITextureType>) Class.forName(data.getKey().getClassName())).newInstance();
-            } catch (InstantiationException e) {
-                // This might be a field, let's try that
+            for (Entry<ASMData, Collection<String>> data : annots.asMap().entrySet()) {
+                ITextureType type;
                 try {
-                    Class<?> c = Class.forName(data.getKey().getClassName());
-                    type = (ITextureType) c.getDeclaredField(data.getKey().getObjectName()).get(null);
-                } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException |
-                         ClassNotFoundException e1) {
-                    // nope
-                    throw Throwables.propagate(e1);
+                    type = ((Class<? extends ITextureType>) Class.forName(data.getKey().getClassName())).newInstance();
+                } catch (InstantiationException e) {
+                    // This might be a field, let's try that
+                    try {
+                        Class<?> c = Class.forName(data.getKey().getClassName());
+                        type = (ITextureType) c.getDeclaredField(data.getKey().getObjectName()).get(null);
+                    } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException |
+                             SecurityException |
+                             ClassNotFoundException e1) {
+                        // nope
+                        throw Throwables.propagate(e1);
+                    }
+                } catch (IllegalAccessException | ClassNotFoundException e) {
+                    throw Throwables.propagate(e);
                 }
-            } catch (IllegalAccessException | ClassNotFoundException e) {
-                throw Throwables.propagate(e);
-            }
-            for (String name : data.getValue()) {
-                if (StringUtils.isNullOrEmpty(name)) {
-                    name = data.getKey().getObjectName();
-                    name = name.substring(name.lastIndexOf('.') + 1);
+                for (String name : data.getValue()) {
+                    if (StringUtils.isNullOrEmpty(name)) {
+                        name = data.getKey().getObjectName();
+                        name = name.substring(name.lastIndexOf('.') + 1);
+                    }
+                    register(name, type);
                 }
-                register(name, type);
             }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     public static void register(String name, ITextureType type) {
-        String key = name.toLowerCase(Locale.ROOT);
-        if (map.containsKey(key) && map.get(key) != type) {
-            throw new IllegalArgumentException("Render Type with name " + key + " has already been registered!");
-        } else if (map.get(key) != type) {
-            map.put(key, type);
+        try {
+            lock.writeLock().lock();
+            String key = name.toLowerCase(Locale.ROOT);
+            if (map.containsKey(key) && map.get(key) != type) {
+                throw new IllegalArgumentException("Render Type with name " + key + " has already been registered!");
+            } else if (map.get(key) != type) {
+                map.put(key, type);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     public static ITextureType remove(String name) {
-        String key = name.toLowerCase(Locale.ROOT);
-        return map.remove(key);
+        try {
+            lock.writeLock().lock();
+            String key = name.toLowerCase(Locale.ROOT);
+            return map.remove(key);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     public static ITextureType getType(String name) {
-        String key = name.toLowerCase(Locale.ROOT);
-        return map.get(key);
+        try {
+            lock.readLock().lock();
+            String key = name.toLowerCase(Locale.ROOT);
+            return map.get(key);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public static boolean isValid(String name) {

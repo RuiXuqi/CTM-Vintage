@@ -1,42 +1,73 @@
 package team.chisel.ctm.client.newctm.json;
 
+import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.experimental.Delegate;
+import lombok.var;
+import org.apache.commons.lang3.tuple.Pair;
+import team.chisel.ctm.api.texture.ISubmap;
+import team.chisel.ctm.client.util.Submap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.var;
-import org.apache.commons.lang3.tuple.Pair;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
-import team.chisel.ctm.api.texture.ISubmap;
-import team.chisel.ctm.client.util.Submap;
-
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class MultiSubmap {
-    
+
     public abstract Iterable<Pair<String, ISubmap>> forName(String baseName);
-    
+
+    public static MultiSubmap fromJson(JsonObject json) {
+        if (json.has("width") && json.has("height")) {
+            int width = json.get("width").getAsInt();
+            int height = json.get("height").getAsInt();
+            return new Grid(width, height);
+        } else {
+            float width = json.get("width").getAsFloat();
+            float height = json.get("height").getAsFloat();
+            float offsetX = json.has("offsetX") ? json.get("offsetX").getAsFloat() : 0;
+            float offsetY = json.has("offsetY") ? json.get("offsetY").getAsFloat() : 0;
+            return new Single(width, height, offsetX, offsetY);
+        }
+    }
+
     public static class Single extends MultiSubmap implements ISubmap {
         
         @Delegate
         private final ISubmap submap;
-        
+
         public Single(float width, float height, float offsetX, float offsetY) {
             this.submap = Submap.fromUnitScale(width, height, offsetX, offsetY);
         }
-        
+
+        @Override
+        public float getWidth() {
+            return submap.getWidth();
+        }
+
+        @Override
+        public float getHeight() {
+            return submap.getHeight();
+        }
+
+        @Override
+        public float getXOffset() {
+            return submap.getXOffset();
+        }
+
+        @Override
+        public float getYOffset() {
+            return submap.getYOffset();
+        }
+
         @Override
         public Iterable<Pair<String, ISubmap>> forName(String baseName) {
             return Collections.singletonList(Pair.of(baseName, submap));
         }
     }
-    
+
     public static class Grid extends MultiSubmap {
-        
+
         private final List<Pair<String, ISubmap>> submaps = new ArrayList<>();
         @Getter
         private final int width, height;
@@ -51,7 +82,7 @@ public abstract class MultiSubmap {
                 }
             }
         }
-        
+
         @Override
         public Iterable<Pair<String, ISubmap>> forName(String baseName) {
             return submaps.stream().map(p -> Pair.of(baseName + p.getLeft(), p.getRight())).collect(Collectors.toList());

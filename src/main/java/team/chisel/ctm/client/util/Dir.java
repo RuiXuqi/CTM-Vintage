@@ -1,6 +1,7 @@
 package team.chisel.ctm.client.util;
 
 import com.google.gson.Gson;
+import lombok.var;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
+import java.util.List;
 
 import static net.minecraft.util.EnumFacing.*;
 
@@ -228,5 +230,22 @@ public enum Dir implements LocalDirection {
     @Override
     public String asJson() {
         return "{\"id\": \"" + name() + "\", \"directions\": " + new Gson().toJson(dirs) + "}";
+    }
+
+    public static LocalDirection fromDirections(List<EnumFacing> directions) {
+        return fromDirections(directions.toArray(new EnumFacing[0]));
+    }
+
+    public static LocalDirection fromDirections(EnumFacing... directions) {
+        for (var dir : values()) {
+            if (Arrays.equals(dir.dirs, directions)) {
+                return dir;
+            }
+        }
+        throw new UnsupportedOperationException("Currently invalid local direction");
+    }
+
+    public String getSerializedName() {
+        return name();
     }
 }

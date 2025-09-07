@@ -1,21 +1,15 @@
 package team.chisel.ctm.client.newctm.json;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public final class CTMLogicDefinition {
-    public static final Codec<CTMLogicDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
-                    Position.CODEC.listOf().fieldOf("positions").forGetter(CTMLogicDefinition::positions),
-                    Codec.unboundedMap(Codec.STRING, SubmapCodecs.CODEC)
-                            .fieldOf("submaps").forGetter(CTMLogicDefinition::submaps),
-                    Codec.unboundedMap(Codec.STRING, SubmapCodecs.CODEC)
-                            .optionalFieldOf("faces", Map.of()).forGetter(CTMLogicDefinition::faces),
-                    Rule.CODEC.listOf().fieldOf("rules").forGetter(CTMLogicDefinition::rules))
-            .apply(i, CTMLogicDefinition::new));
     private final List<Position> positions;
     private final Map<String, MultiSubmap> submaps;
     private final Map<String, MultiSubmap> faces;
@@ -26,6 +20,36 @@ public final class CTMLogicDefinition {
         this.submaps = submaps;
         this.faces = faces;
         this.rules = rules;
+    }
+
+    public static CTMLogicDefinition fromJson(JsonObject json) {
+        List<Position> positions = new ArrayList<>();
+        JsonArray positionsArray = json.getAsJsonArray("positions");
+        for (JsonElement element : positionsArray) {
+            positions.add(Position.fromJson(element.getAsJsonObject()));
+        }
+
+        Map<String, MultiSubmap> submaps = new HashMap<>();
+        JsonObject submapsObj = json.getAsJsonObject("submaps");
+        for (Map.Entry<String, JsonElement> entry : submapsObj.entrySet()) {
+            submaps.put(entry.getKey(), MultiSubmap.fromJson(entry.getValue().getAsJsonObject()));
+        }
+
+        Map<String, MultiSubmap> faces = new HashMap<>();
+        if (json.has("faces")) {
+            JsonObject facesObj = json.getAsJsonObject("faces");
+            for (Map.Entry<String, JsonElement> entry : facesObj.entrySet()) {
+                faces.put(entry.getKey(), MultiSubmap.fromJson(entry.getValue().getAsJsonObject()));
+            }
+        }
+
+        List<Rule> rules = new ArrayList<>();
+        JsonArray rulesArray = json.getAsJsonArray("rules");
+        for (JsonElement element : rulesArray) {
+            rules.add(Rule.fromJson(element.getAsJsonObject()));
+        }
+
+        return new CTMLogicDefinition(positions, submaps, faces, rules);
     }
 
     public List<Position> positions() {
@@ -43,30 +67,4 @@ public final class CTMLogicDefinition {
     public List<Rule> rules() {
         return rules;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        CTMLogicDefinition that = (CTMLogicDefinition) obj;
-        return Objects.equals(this.positions, that.positions) &&
-                Objects.equals(this.submaps, that.submaps) &&
-                Objects.equals(this.faces, that.faces) &&
-                Objects.equals(this.rules, that.rules);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(positions, submaps, faces, rules);
-    }
-
-    @Override
-    public String toString() {
-        return "CTMLogicDefinition[" +
-                "positions=" + positions + ", " +
-                "submaps=" + submaps + ", " +
-                "faces=" + faces + ", " +
-                "rules=" + rules + ']';
-    }
-
 }

@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import team.chisel.ctm.client.model.parsing.ModelLoaderCTM;
+import team.chisel.ctm.client.newctm.json.CTMDefinitionManager;
 import team.chisel.ctm.client.texture.IMetadataSectionCTM;
 import team.chisel.ctm.client.texture.type.TextureTypeRegistry;
 import team.chisel.ctm.client.util.CTMPackReloadListener;
@@ -32,6 +33,8 @@ public class CTM {
         Minecraft.getMinecraft().metadataSerializer.registerMetadataSectionType(new IMetadataSectionCTM.Serializer(), IMetadataSectionCTM.class);
 
         MinecraftForge.EVENT_BUS.register(TextureMetadataHandler.INSTANCE);
-        ((SimpleReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CTMPackReloadListener.INSTANCE);
+        SimpleReloadableResourceManager resourceManager = (SimpleReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
+        resourceManager.registerReloadListener(CTMPackReloadListener.INSTANCE);
+        resourceManager.registerReloadListener(new CTMDefinitionManager());
     }
 }

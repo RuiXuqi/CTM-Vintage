@@ -59,12 +59,14 @@ public class ConnectionCheck {
 //          return false;
 //      }
 
-        BlockPos obscuringPos = connection.offset(dir);
-
-        boolean disableObscured = disableObscuredFaceCheck.orElse(Configurations.connectInsideCTM);
-
         IBlockState con = getConnectionState(world, connection, dir, current);
-        IBlockState obscuring = disableObscured ? null : getConnectionState(world, obscuringPos, dir, current);
+        IBlockState obscuring;
+        if (disableObscuredFaceCheck.orElse(Configurations.connectInsideCTM)) {
+            obscuring = null;
+        } else {
+            BlockPos obscuringPos = connection.offset(dir);
+            obscuring = getConnectionState(world, obscuringPos, dir, current);
+        }
 
         // bad API user
         if (con == null) {
