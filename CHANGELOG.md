@@ -3,6 +3,7 @@
 ## [1.2.0]
 ### Changes
 - [Add JSON loading of logic definitions, implement OF and our own CTM](https://github.com/Chisel-Team/ConnectedTexturesMod/commit/6de3569a8441a804582c2c025d55a7d8139d5f46)
+- Cherry-pick commits to have proxy textures loaded.
 - ctm_full type is removed.
 
 ## [1.1.1]

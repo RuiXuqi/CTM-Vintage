@@ -232,6 +232,9 @@ idea {
     project {
         settings {
             runConfigurations {
+                "0. Apply Spotless"(Gradle) {
+                    taskNames = ["spotlessApply"]
+                }
                 "1. Run Client"(Gradle) {
                     taskNames = ["runClient"]
                 }
@@ -243,6 +246,9 @@ idea {
                 }
                 "4. Run Obfuscated Server"(Gradle) {
                     taskNames = ["runObfServer"]
+                }
+                "5. Build Mod"(Gradle) {
+                    taskNames = ["build"]
                 }
             }
             compiler.javac {
@@ -359,16 +365,3 @@ idea.project.settings {
 
 apply from: 'gradle/scripts/publishing.gradle'
 apply from: 'gradle/scripts/extra.gradle'
-
-spotless {
-    ratchetFrom '1.12/dev'
-
-    java {
-        target 'src/*/java/team/chisel/ctm/**/*.java'
-
-        leadingSpacesToTabs()
-        endWithNewline()
-        formatAnnotations()
-        trimTrailingWhitespace()
-    }
-}
