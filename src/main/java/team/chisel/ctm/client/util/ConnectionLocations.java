@@ -86,41 +86,26 @@ public enum ConnectionLocations {
     }
 
     public static ConnectionLocations fromFacing(EnumFacing facing) {
-        switch (facing) {
-            case NORTH:
-                return NORTH;
-            case SOUTH:
-                return SOUTH;
-            case EAST:
-                return EAST;
-            case WEST:
-                return WEST;
-            case UP:
-                return UP;
-            case DOWN:
-                return DOWN;
-            default:
-                return NORTH;
-        }
+        return switch (facing) {
+            case NORTH -> NORTH;
+            case SOUTH -> SOUTH;
+            case EAST -> EAST;
+            case WEST -> WEST;
+            case UP -> UP;
+            case DOWN -> DOWN;
+        };
     }
 
     public static EnumFacing toFacing(ConnectionLocations loc) {
-        switch (loc) {
-            case NORTH:
-                return EnumFacing.NORTH;
-            case SOUTH:
-                return EnumFacing.SOUTH;
-            case EAST:
-                return EnumFacing.EAST;
-            case WEST:
-                return EnumFacing.WEST;
-            case UP:
-                return EnumFacing.UP;
-            case DOWN:
-                return EnumFacing.DOWN;
-            default:
-                return EnumFacing.NORTH;
-        }
+        return switch (loc) {
+            case NORTH -> EnumFacing.NORTH;
+            case SOUTH -> EnumFacing.SOUTH;
+            case EAST -> EnumFacing.EAST;
+            case WEST -> EnumFacing.WEST;
+            case UP -> EnumFacing.UP;
+            case DOWN -> EnumFacing.DOWN;
+            default -> EnumFacing.NORTH;
+        };
     }
 
     public static List<ConnectionLocations> decode(long data) {

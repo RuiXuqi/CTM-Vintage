@@ -31,9 +31,13 @@ public class ConnectionCheck {
      * A simple check for if the given block can connect to the given direction on the given side.
      *
      * @param world
-     * @param current    The position of your block.
-     * @param connection The position of the block to check against.
-     * @param dir        The {@link EnumFacing side} of the block to check for connection status. This is <i>not</i> the direction to check in.
+     *            The world the positions are in.
+     * @param current
+     *            The position of your block.
+     * @param connection
+     *            The position of the block to check against.
+     * @param dir
+     *            The {@link EnumFacing side} of the block to check for connection status. This is <i>not</i> the direction to check in.
      * @return True if the given block can connect to the given location on the given side.
      */
     public final boolean isConnected(IBlockAccess world, BlockPos current, BlockPos connection, EnumFacing dir) {
@@ -46,10 +50,15 @@ public class ConnectionCheck {
      * A simple check for if the given block can connect to the given direction on the given side.
      *
      * @param world
-     * @param current    The position of your block.
-     * @param connection The position of the block to check against.
-     * @param dir        The {@link EnumFacing side} of the block to check for connection status. This is <i>not</i> the direction to check in.
-     * @param state      The state to check against for connection.
+     *            The world the positions are in.
+     * @param current
+     *            The position of your block.
+     * @param connection
+     *            The position of the block to check against.
+     * @param dir
+     *            The {@link EnumFacing side} of the block to check for connection status. This is <i>not</i> the direction to check in.
+     * @param state
+     *            The state to check against for connection.
      * @return True if the given block can connect to the given location on the given side.
      */
     @SuppressWarnings({"unused", "null"})

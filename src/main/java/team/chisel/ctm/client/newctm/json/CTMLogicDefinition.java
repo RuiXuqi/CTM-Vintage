@@ -1,5 +1,6 @@
 package team.chisel.ctm.client.newctm.json;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,19 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class CTMLogicDefinition {
-    private final List<Position> positions;
-    private final Map<String, MultiSubmap> submaps;
-    private final Map<String, MultiSubmap> faces;
-    private final List<Rule> rules;
-
-    public CTMLogicDefinition(List<Position> positions, Map<String, MultiSubmap> submaps, Map<String, MultiSubmap> faces, List<Rule> rules) {
-        this.positions = positions;
-        this.submaps = submaps;
-        this.faces = faces;
-        this.rules = rules;
-    }
-
+@Desugar
+public record CTMLogicDefinition(List<Position> positions, Map<String, MultiSubmap> submaps, Map<String, MultiSubmap> faces, List<Rule> rules) {
     public static CTMLogicDefinition fromJson(JsonObject json) {
         List<Position> positions = new ArrayList<>();
         JsonArray positionsArray = json.getAsJsonArray("positions");
@@ -50,21 +40,5 @@ public final class CTMLogicDefinition {
         }
 
         return new CTMLogicDefinition(positions, submaps, faces, rules);
-    }
-
-    public List<Position> positions() {
-        return positions;
-    }
-
-    public Map<String, MultiSubmap> submaps() {
-        return submaps;
-    }
-
-    public Map<String, MultiSubmap> faces() {
-        return faces;
-    }
-
-    public List<Rule> rules() {
-        return rules;
     }
 }

@@ -1,5 +1,6 @@
 package team.chisel.ctm.client.newctm;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.common.base.Preconditions;
 import com.google.gson.stream.JsonWriter;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -7,16 +8,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
-import lombok.var;
 import org.apache.commons.lang3.ArrayUtils;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.client.util.Submap;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -100,12 +97,12 @@ public class CTMLogicBakery {
                 }
             }
         }
-        return new CustomCTMLogic(lookups, asSortedArray(outputs, OutputFace[]::new), asSortedArray(bitmap, LocalDirection[]::new), new ConnectionCheck());
+        return new CustomCTMLogic(lookups, asSortedArray(outputs, OutputFace[]::new), asSortedArray(bitmap, LocalDirection[]::new));
     }
 
     private <T> T[] asSortedArray(Int2ObjectMap<T> indexedMap, IntFunction<T[]> ctor) {
         return indexedMap.int2ObjectEntrySet().stream()
-                .sorted((e1, e2) -> Integer.compare(e1.getIntKey(), e2.getIntKey()))
+                .sorted(Comparator.comparingInt(Int2ObjectMap.Entry::getIntKey))
                 .map(Map.Entry::getValue)
                 .toArray(ctor);
     }
@@ -137,7 +134,7 @@ public class CTMLogicBakery {
             writer.name("rules");
             writer.beginArray();
             {
-                for (var e : rules.int2ObjectEntrySet().stream().sorted((e1, e2) -> Integer.compare(e1.getIntKey(), e2.getIntKey())).collect(Collectors.toList())) {
+                for (var e : rules.int2ObjectEntrySet().stream().sorted(Comparator.comparingInt(Int2ObjectMap.Entry::getIntKey)).collect(Collectors.toList())) {
                     writer.jsonValue(e.getValue().asJson(orderedPositions));
                 }
             }
@@ -159,11 +156,11 @@ public class CTMLogicBakery {
         public final boolean val;
         public final int bit;
     }
+    @Value
+    private static class DesiredState {
 
-    private @Value class DesiredState {
-
-        private final Trinary[] input;
-        private final int output;
+        Trinary[] input;
+        int output;
 
         public DesiredState(int size, int output) {
             this.input = new Trinary[size];
@@ -224,10 +221,7 @@ public class CTMLogicBakery {
         }
     }
 
-    @Value
-    public class OutputFace {
-        int tex;
-        ISubmap uvs;
-        ISubmap face;
+    @Desugar
+    public record OutputFace(int tex, ISubmap uvs, ISubmap face) {
     }
 }

@@ -1,5 +1,6 @@
 package team.chisel.ctm.client.model;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.*;
@@ -7,7 +8,6 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.ToString;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -62,12 +62,10 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
     protected static final BlockRenderLayer[] LAYERS = BlockRenderLayer.values();
     private static final Cache<ModelResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.SECONDS)
-            .maximumSize(0)
             .build();
     private static final Cache<State, AbstractCTMBakedModel> modelcache = CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
-//            .maximumSize(5000)
-            .maximumSize(0)
+            .maximumSize(5000)
             .build();
     protected final ListMultimap<BlockRenderLayer, BakedQuad> genQuads = MultimapBuilder.enumKeys(BlockRenderLayer.class).arrayListValues().build();
     protected final Table<BlockRenderLayer, EnumFacing, List<BakedQuad>> faceQuads = Tables.newCustomTable(Maps.newEnumMap(BlockRenderLayer.class), () -> Maps.newEnumMap(EnumFacing.class));
@@ -250,22 +248,15 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
         return builder.build();
     }
 
-    @Getter
-    @RequiredArgsConstructor
-    @ToString
-    private static class State {
-        private final @Nonnull IBlockState cleanState;
-        private final @Nullable Object2LongMap<ICTMTexture<?>> serializedContext;
-        private final @Nonnull IBakedModel parent;
-
+    @Desugar
+    private record State(@Nonnull IBlockState cleanState, @Nullable Object2LongMap<ICTMTexture<?>> serializedContext, @Nonnull IBakedModel parent) {
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            } else if (obj == null || getClass() != obj.getClass()) {
                 return false;
-            if (getClass() != obj.getClass())
-                return false;
+            }
             State other = (State) obj;
 
             if (cleanState != other.cleanState) {

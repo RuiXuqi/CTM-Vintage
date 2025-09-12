@@ -34,7 +34,7 @@ public class TextureTypeMap implements ITextureType {
 
     @Override
     public ITextureContext getBlockRenderContext(IBlockState state, IBlockAccess world, @Nonnull BlockPos pos, ICTMTexture<?> tex) {
-        return type.getContext(pos, (TextureMap) tex);
+        return type.getContext(world, pos, (TextureMap) tex);
     }
 
     @Override

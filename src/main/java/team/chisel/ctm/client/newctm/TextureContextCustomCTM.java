@@ -8,6 +8,7 @@ import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.ITextureContext;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumMap;
 
 public class TextureContextCustomCTM implements ITextureContext {
@@ -24,16 +25,21 @@ public class TextureContextCustomCTM implements ITextureContext {
         this.tex = tex;
         this.logic = logic;
 
+        ConnectionCheck connectionCheckOverride = null;
+        if (this.tex instanceof ITextureConnection texCtm) {
+            connectionCheckOverride = texCtm.applyTo(new ConnectionCheck());
+        }
+
         for (EnumFacing face : EnumFacing.values()) {
-            ILogicCache ctm = createCTM(state);
+            ILogicCache ctm = createCTM(state, connectionCheckOverride);
             ctm.buildConnectionMap(world, pos, face);
             ctmData.put(face, ctm);
             this.data |= ctm.serialized() << (face.ordinal() * 10);
         }
     }
 
-    protected ILogicCache createCTM(@Nonnull IBlockState state) {
-        return logic.cached();
+    protected ILogicCache createCTM(@Nonnull IBlockState state, @Nullable ConnectionCheck connectionCheckOverride) {
+        return logic.cached(connectionCheckOverride);
     }
 
     public ILogicCache getCTM(EnumFacing face) {

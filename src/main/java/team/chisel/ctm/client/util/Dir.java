@@ -1,12 +1,10 @@
 package team.chisel.ctm.client.util;
 
 import com.google.gson.Gson;
-import lombok.var;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import team.chisel.ctm.api.util.NonnullType;
 import team.chisel.ctm.client.newctm.ConnectionCheck;
 import team.chisel.ctm.client.newctm.LocalDirection;
 
@@ -52,9 +50,9 @@ public enum Dir implements LocalDirection {
         }
     }
 
-    private final @NonnullType EnumFacing[] dirs;
+    private final @Nonnull EnumFacing[] dirs;
 
-    private final @NonnullType BlockPos[] offsets = new BlockPos[6];
+    private final @Nonnull BlockPos[] offsets = new BlockPos[6];
 
     Dir(EnumFacing... dirs) {
         this.dirs = dirs;
@@ -63,7 +61,7 @@ public enum Dir implements LocalDirection {
     private void buildCaches() {
         // Fill normalized dirs
         for (EnumFacing normal : EnumFacing.VALUES) {
-            @NonnullType EnumFacing[] normalized;
+            @Nonnull EnumFacing[] normalized;
             if (normal == NORMAL) {
                 normalized = dirs;
             } else if (normal == NORMAL.getOpposite()) {
@@ -190,38 +188,25 @@ public enum Dir implements LocalDirection {
         }
 
         if (facing.getAxis() != axis) {
-            switch (axis) {
-                case X:
-                    // Inverted results from EnumFacing#rotateX
-                    switch (facing) {
-                        case NORTH:
-                            return UP;
-                        case DOWN:
-                            return NORTH;
-                        case SOUTH:
-                            return DOWN;
-                        case UP:
-                            return SOUTH;
-                        default:
-                            return facing; // Invalid but ignored
-                    }
-                case Y:
-                    return facing.rotateYCCW();
-                case Z:
-                    // Inverted results from EnumFacing#rotateZ
-                    switch (facing) {
-                        case EAST:
-                            return EAST;
-                        case WEST:
-                            return WEST;
-                        case UP:
-                            return DOWN;
-                        case DOWN:
-                            return UP;
-                        default:
-                            return facing; // invalid but ignored
-                    }
-            }
+            return switch (axis) {
+                // Inverted results from EnumFacing#rotateX
+                case X -> switch (facing) {
+                    case NORTH -> UP;
+                    case DOWN -> NORTH;
+                    case SOUTH -> DOWN;
+                    case UP -> SOUTH;
+                    default -> facing; // Invalid but ignored
+                };
+                case Y -> facing.rotateYCCW();
+                // Inverted results from EnumFacing#rotateZ
+                case Z -> switch (facing) {
+                    case EAST -> EAST;
+                    case WEST -> WEST;
+                    case UP -> DOWN;
+                    case DOWN -> UP;
+                    default -> facing; // invalid but ignored
+                };
+            };
         }
 
         return facing;

@@ -20,7 +20,6 @@ import org.lwjgl.util.vector.Vector;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import team.chisel.ctm.api.texture.ISubmap;
-import team.chisel.ctm.api.util.NonnullType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -460,7 +459,7 @@ public class Quad {
     }
 
     @ToString
-    public class UVs implements ISubmap {
+    public static class UVs implements ISubmap {
 
         @Getter
         private final TextureAtlasSprite sprite;
@@ -568,7 +567,7 @@ public class Quad {
             return data == null ? new Vector2f[]{new Vector2f(minU, minV), new Vector2f(minU, maxV), new Vector2f(maxU, maxV), new Vector2f(maxU, minV)} : data;
         }
 
-        private Vector2f[] normalize(Vector2f min, Vector2f max, @NonnullType Vector2f... vecs) {
+        private Vector2f[] normalize(Vector2f min, Vector2f max, @Nonnull Vector2f... vecs) {
             Vector2f[] ret = new Vector2f[vecs.length];
             for (int i = 0; i < ret.length; i++) {
                 ret[i] = normalize(min, max, vecs[i]);
@@ -580,7 +579,7 @@ public class Quad {
             return new Vector2f(Quad.normalize(min.x, max.x, vec.x), Quad.normalize(min.y, max.y, vec.y));
         }
 
-        private Vector2f[] lerp(Vector2f min, Vector2f max, @NonnullType Vector2f... vecs) {
+        private Vector2f[] lerp(Vector2f min, Vector2f max, @Nonnull Vector2f... vecs) {
             Vector2f[] ret = new Vector2f[vecs.length];
             for (int i = 0; i < ret.length; i++) {
                 ret[i] = lerp(min, max, vecs[i]);
@@ -594,18 +593,9 @@ public class Quad {
 
         public int getQuadrant() {
             if (maxU <= 0.5f) {
-                if (maxV <= 0.5f) {
-                    return 3;
-                } else {
-                    return 0;
-                }
-            } else {
-                if (maxV <= 0.5f) {
-                    return 2;
-                } else {
-                    return 1;
-                }
+                return maxV <= 0.5f ? 3 : 0;
             }
+            return maxV <= 0.5f ? 2 : 1;
         }
 
         @Override

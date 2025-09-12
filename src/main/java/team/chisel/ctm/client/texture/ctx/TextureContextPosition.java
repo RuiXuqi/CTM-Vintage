@@ -1,7 +1,8 @@
 package team.chisel.ctm.client.texture.ctx;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import team.chisel.ctm.api.texture.ITextureContext;
 
 import javax.annotation.Nonnull;
@@ -11,15 +12,15 @@ public class TextureContextPosition implements ITextureContext {
     protected @Nonnull BlockPos position;
 
     public TextureContextPosition(@Nonnull BlockPos pos) {
-        this.position = pos;
+        this.position = pos.toImmutable();
     }
 
     public TextureContextPosition(int x, int y, int z) {
         this(new BlockPos(x, y, z));
     }
 
-    public TextureContextPosition applyOffset() {
-        this.position = position.add(OffsetProviderRegistry.INSTANCE.getOffset(Minecraft.getMinecraft().world, position));
+    public TextureContextPosition applyOffset(IBlockAccess world) {
+        this.position = position.add(OffsetProviderRegistry.INSTANCE.getOffset((World) world, position));
         return this;
     }
 

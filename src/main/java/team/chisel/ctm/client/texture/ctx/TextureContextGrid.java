@@ -1,33 +1,38 @@
 package team.chisel.ctm.client.texture.ctx;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.common.base.Preconditions;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.IBlockAccess;
 import team.chisel.ctm.client.texture.render.TextureMap;
 import team.chisel.ctm.client.util.FaceOffset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.vecmath.Point2i;
 import java.util.EnumMap;
 
 @ParametersAreNonnullByDefault
 public abstract class TextureContextGrid extends TextureContextPosition {
 
+    @Desugar
+    public record Point2i(int x, int y) {
+    }
+
     private final EnumMap<EnumFacing, Point2i> textureCoords = new EnumMap<>(EnumFacing.class);
     private final long serialized;
 
     @SuppressWarnings("null")
-    public TextureContextGrid(BlockPos pos, TextureMap tex, boolean applyOffset) {
+    public TextureContextGrid(IBlockAccess world, BlockPos pos, TextureMap tex, boolean applyOffset) {
         super(pos);
 
         // Since we can only return a long, we must limit to 10 bits of data per face = 60 bits
         Preconditions.checkArgument(tex.getXSize() * tex.getYSize() < 1024, "V* Texture size too large for texture %s", tex.getParticle());
 
         if (applyOffset) {
-            applyOffset();
+            applyOffset(world);
         }
 
         long serialized = 0;
@@ -58,8 +63,8 @@ public abstract class TextureContextGrid extends TextureContextPosition {
 
     public static class Patterned extends TextureContextGrid {
 
-        public Patterned(BlockPos pos, TextureMap tex, boolean applyOffset) {
-            super(pos, tex, applyOffset);
+        public Patterned(IBlockAccess world, BlockPos pos, TextureMap tex, boolean applyOffset) {
+            super(world, pos, tex, applyOffset);
         }
 
         @Override
@@ -107,8 +112,8 @@ public abstract class TextureContextGrid extends TextureContextPosition {
 
         private static final java.util.Random rand = new java.util.Random();
 
-        public Random(BlockPos pos, TextureMap tex, boolean applyOffset) {
-            super(pos, tex, applyOffset);
+        public Random(IBlockAccess world, BlockPos pos, TextureMap tex, boolean applyOffset) {
+            super(world, pos, tex, applyOffset);
         }
 
         @Override

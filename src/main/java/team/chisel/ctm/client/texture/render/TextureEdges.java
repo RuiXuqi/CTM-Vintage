@@ -30,7 +30,7 @@ public class TextureEdges extends TextureCTM<TextureTypeEdges> {
 
         CTMLogicEdges logic = (CTMLogicEdges) ((TextureContextCTM) context).getCTM(bq.getFace());
         if (logic.isObscured()) {
-            return Arrays.stream(quad.transformUVs(sprites[2]).subdivide(4)).filter(Objects::nonNull).map(q -> q.rebake()).collect(Collectors.toList());
+            return Arrays.stream(quad.transformUVs(sprites[2]).subdivide(4)).filter(Objects::nonNull).map(Quad::rebake).collect(Collectors.toList());
         }
 
         return super.transformQuad(bq, context, quadGoal);

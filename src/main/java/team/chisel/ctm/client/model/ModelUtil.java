@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ItemModelMesherForge;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.IRegistryDelegate;
 import team.chisel.ctm.CTM;
 
@@ -26,7 +26,7 @@ public class ModelUtil {
 
     static {
         try {
-            _locations = MethodHandles.lookup().unreflectGetter(ReflectionHelper.findField(ItemModelMesherForge.class, "locations"));
+            _locations = MethodHandles.lookup().unreflectGetter(ObfuscationReflectionHelper.findField(ItemModelMesherForge.class, "locations"));
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

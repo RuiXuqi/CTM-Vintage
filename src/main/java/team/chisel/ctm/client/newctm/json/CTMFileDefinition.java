@@ -1,5 +1,6 @@
 package team.chisel.ctm.client.newctm.json;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -7,13 +8,8 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class CTMFileDefinition {
-    private final List<String> logics;
-
-    public CTMFileDefinition(List<String> logics) {
-        this.logics = logics;
-    }
-
+@Desugar
+public record CTMFileDefinition(List<String> logics) {
     public static CTMFileDefinition fromJson(JsonObject json) {
         List<String> logics = new ArrayList<>();
         if (json.has("logics") && json.get("logics").isJsonArray()) {
@@ -23,9 +19,5 @@ public final class CTMFileDefinition {
             }
         }
         return new CTMFileDefinition(logics);
-    }
-
-    public List<String> logics() {
-        return logics;
     }
 }

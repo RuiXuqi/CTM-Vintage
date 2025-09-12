@@ -3,7 +3,6 @@ package team.chisel.ctm.client.newctm.json;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.var;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
@@ -52,11 +51,14 @@ public class CTMDefinitionManager implements ISelectiveResourceReloadListener {
             }
         }
         for (var e : def.faces().entrySet()) {
-            e.getValue().forName(e.getKey()).forEach(p -> faceNames.put(p.getLeft(), p.getRight()));
+            for (var p : e.getValue().forName(e.getKey())) {
+                faceNames.put(p.getLeft(), p.getRight());
+            }
         }
         for (var rule : def.rules()) {
-            var submap = submapNames.get(rule.output()).getLeft();
-            var ruleId = submapNames.get(rule.output()).getRight();
+            var submapData = submapNames.get(rule.output());
+            var submap = submapData.getLeft();
+            var ruleId = submapData.getRight();
             bakery.output(ruleId, rule.from(), submap, rule.at().map(faceNames::get).orElse(Submap.X1));
             for (var connected : rule.connected()) {
                 bakery.when(bitNames.getInt(connected), true);
@@ -100,7 +102,7 @@ public class CTMDefinitionManager implements ISelectiveResourceReloadListener {
                         IResource resource = resourceManager.getResource(new ResourceLocation(domain, "ctm_logic/" + logic + ".json"));
                         loadCTMLogicDefinition(resource);
                     } catch (Exception e) {
-                        CTM.logger.warn("Failed to read CTM definition {}: ", logic, e);
+                        CTM.logger.warn("Failed to read CTM definition: {}", logic, e);
                     }
                 }
             }

@@ -3,6 +3,7 @@ package team.chisel.ctm.api.util;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenCustomHashMap;
+import lombok.EqualsAndHashCode;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -22,6 +23,7 @@ import java.util.Map.Entry;
 /**
  * List of IBlockRenderContext's
  */
+@EqualsAndHashCode(of = "serialized")
 @ParametersAreNonnullByDefault
 public class RenderContextList {
 

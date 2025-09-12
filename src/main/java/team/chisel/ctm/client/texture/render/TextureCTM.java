@@ -1,10 +1,10 @@
 package team.chisel.ctm.client.texture.render;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -14,6 +14,7 @@ import team.chisel.ctm.Configurations;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.newctm.ConnectionCheck;
+import team.chisel.ctm.client.newctm.ITextureConnection;
 import team.chisel.ctm.client.texture.ctx.TextureContextCTM;
 import team.chisel.ctm.client.texture.type.TextureTypeCTM;
 import team.chisel.ctm.client.util.BlockstatePredicateParser;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
 @Accessors(fluent = true)
-public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
+public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> implements ITextureConnection {
 
     private static final BlockstatePredicateParser predicateParser = new BlockstatePredicateParser();
 
@@ -54,7 +55,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
 
     public boolean connectTo(ConnectionCheck ctm, IBlockState from, IBlockState to, EnumFacing dir) {
         try {
-            return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to)) ? 1 : 0) == 1;
+            return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to) && connectionChecks.test(dir, from)) ? 1 : 0) == 1;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -90,11 +91,8 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> {
         return super.makeQuad(bq, context).derotate();
     }
 
-    @RequiredArgsConstructor
-    private static final class CacheKey {
-        private final IBlockState from;
-        private final EnumFacing dir;
-
+    @Desugar
+    private record CacheKey(IBlockState from, EnumFacing dir) {
         @Override
         public int hashCode() {
             final int prime = 31;

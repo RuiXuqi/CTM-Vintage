@@ -34,8 +34,8 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     @Getter
     protected BlockRenderLayer layer;
 
-    @SuppressWarnings("null")
     protected @NonnullType TextureAtlasSprite @NonnullType [] sprites;
+    protected boolean isProxy;
 
     @Deprecated
     protected boolean fullbright;
@@ -55,6 +55,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
         this.type = type;
         this.layer = info.getRenderLayer();
         this.sprites = info.getSprites();
+        this.isProxy = info.isProxy();
         this.fullbright = info.getFullbright();
         if (info.getInfo().isPresent()) {
             JsonElement light = info.getInfo().get().get("light");

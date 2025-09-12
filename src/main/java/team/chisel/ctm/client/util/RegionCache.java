@@ -53,8 +53,8 @@ public class RegionCache implements IBlockAccess {
         // We do NOT use getPassthrough() here so as to skip the null-validation - it's obviously valid to be null here
         if (this.passthrough.get() != passthrough) {
             stateCache.clear();
+            this.passthrough = new WeakReference<>(passthrough);
         }
-        this.passthrough = new WeakReference<>(passthrough);
         return this;
     }
 
@@ -74,11 +74,14 @@ public class RegionCache implements IBlockAccess {
     @Override
     public IBlockState getBlockState(BlockPos pos) {
         long address = pos.toLong();
-        IBlockState ret = stateCache.get(address);
-        if (ret == null) {
-            stateCache.put(address, ret = getPassthrough().getBlockState(pos));
+        var state = stateCache.get(address);
+
+        if (state == null) {
+            state = getPassthrough().getBlockState(pos);
+            stateCache.put(address, state);
         }
-        return ret;
+
+        return state;
     }
 
     @Override

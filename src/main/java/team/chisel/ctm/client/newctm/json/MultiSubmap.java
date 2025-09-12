@@ -3,7 +3,6 @@ package team.chisel.ctm.client.newctm.json;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.experimental.Delegate;
-import lombok.var;
 import org.apache.commons.lang3.tuple.Pair;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.client.util.Submap;

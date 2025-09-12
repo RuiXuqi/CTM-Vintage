@@ -10,19 +10,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class FaceOffset {
     public static BlockPos getBlockPosOffsetFromFaceOffset(EnumFacing facing, int xOffset, int yOffset) {
-        switch (facing) {
-            default: // UP
-                return new BlockPos(xOffset, 0, -yOffset);
-            case DOWN:
-                return new BlockPos(xOffset, 0, yOffset);
-            case NORTH:
-                return new BlockPos(-xOffset, yOffset, 0);
-            case SOUTH:
-                return new BlockPos(xOffset, yOffset, 0);
-            case WEST:
-                return new BlockPos(0, yOffset, xOffset);
-            case EAST:
-                return new BlockPos(0, yOffset, -xOffset);
-        }
+        return switch (facing) {
+            // UP
+            default -> new BlockPos(xOffset, 0, -yOffset);
+            case DOWN -> new BlockPos(xOffset, 0, yOffset);
+            case NORTH -> new BlockPos(-xOffset, yOffset, 0);
+            case SOUTH -> new BlockPos(xOffset, yOffset, 0);
+            case WEST -> new BlockPos(0, yOffset, xOffset);
+            case EAST -> new BlockPos(0, yOffset, -xOffset);
+        };
     }
 }

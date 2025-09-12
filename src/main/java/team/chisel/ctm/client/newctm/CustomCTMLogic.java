@@ -2,13 +2,13 @@ package team.chisel.ctm.client.newctm;
 
 import com.google.common.annotations.VisibleForTesting;
 import lombok.RequiredArgsConstructor;
-import lombok.var;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.client.newctm.CTMLogicBakery.OutputFace;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -18,28 +18,34 @@ public class CustomCTMLogic implements ICTMLogic {
     public final int[][] lookups;
     private final OutputFace[] tiles;
     private final LocalDirection[] directions;
-    private final ConnectionCheck connectionCheck;
+    private final ConnectionCheck connectionCheck = new ConnectionCheck();
     private List<ISubmap> outputSubmapCache;
     private int textureCountCache = -1;
 
     @Override
     public int[] getSubmapIds(IBlockAccess world, BlockPos pos, EnumFacing side) {
+        return getSubmapIds(world, pos, side, connectionCheck);
+    }
+
+    private int[] getSubmapIds(IBlockAccess world, BlockPos pos, EnumFacing side, ConnectionCheck connectionCheck) {
         int key = 0;
         for (int i = 0; i < directions.length; i++) {
-            BlockPos offset = directions[i].getOffset(side);
-            BlockPos conPos = pos.add(offset.getX(), offset.getY(), offset.getZ());
-            key |= (connectionCheck.isConnected(world, pos, conPos, side) ? 1 : 0) << i;
+            boolean isConnected = directions[i].isConnected(connectionCheck, world, pos, side);
+            key |= (isConnected ? 1 : 0) << i;
         }
         if (key >= lookups.length || lookups[key] == null) {
             throw new IllegalStateException("Input state found that is not in lookup table: " + Integer.toBinaryString(key));
         }
-        int[] tileIds = lookups[key];
-        return tileIds;
+        return lookups[key];
     }
 
     @Override
     public OutputFace[] getSubmaps(IBlockAccess world, BlockPos pos, EnumFacing side) {
         var tileIds = getSubmapIds(world, pos, side);
+        return getSubmaps(tileIds);
+    }
+
+    private OutputFace[] getSubmaps(int[] tileIds) {
         OutputFace[] ret = new OutputFace[tileIds.length];
         for (int i = 0; i < ret.length; i++) {
             ret[i] = tiles[tileIds[i]];
@@ -48,8 +54,8 @@ public class CustomCTMLogic implements ICTMLogic {
     }
 
     @Override
-    public ILogicCache cached() {
-        return this.new Cache();
+    public ILogicCache cached(@Nullable ConnectionCheck connectionCheck) {
+        return this.new Cache(connectionCheck);
     }
 
     @Override
@@ -57,7 +63,7 @@ public class CustomCTMLogic implements ICTMLogic {
         if (outputSubmapCache == null) {
             Set<ISubmap> seen = new HashSet<>();
             for (var tile : tiles) {
-                seen.add(tile.getFace());
+                seen.add(tile.face());
             }
             outputSubmapCache = new ArrayList<>(seen);
         }
@@ -65,11 +71,16 @@ public class CustomCTMLogic implements ICTMLogic {
     }
 
     @Override
+    public ISubmap getFallbackUvs() {
+        return tiles.length == 0 ? ICTMLogic.super.getFallbackUvs() : tiles[0].uvs();
+    }
+
+    @Override
     public int requiredTextures() {
         if (textureCountCache < 0) {
             BitSet seen = new BitSet();
             for (var tile : tiles) {
-                seen.set(tile.getTex());
+                seen.set(tile.tex());
             }
             textureCountCache = seen.cardinality();
         }
@@ -78,8 +89,14 @@ public class CustomCTMLogic implements ICTMLogic {
 
     private class Cache implements ILogicCache {
 
+        @Nullable
+        private final ConnectionCheck connectionCheckOverride;
         private int[] cachedSubmapIds;
         private OutputFace[] cachedSubmaps;
+
+        public Cache(@Nullable ConnectionCheck connectionCheck) {
+            this.connectionCheckOverride = connectionCheck;
+        }
 
         @Override
         public OutputFace[] getCachedSubmaps() {
@@ -102,8 +119,11 @@ public class CustomCTMLogic implements ICTMLogic {
 
         @Override
         public void buildConnectionMap(IBlockAccess world, BlockPos pos, EnumFacing side) {
-            this.cachedSubmapIds = CustomCTMLogic.this.getSubmapIds(world, pos, side);
-            this.cachedSubmaps = CustomCTMLogic.this.getSubmaps(world, pos, side);
+            this.cachedSubmapIds = CustomCTMLogic.this.getSubmapIds(world, pos, side, connectionCheckOverride);
+            //Manually call with the computed submap ids to avoid having to calculate them a second type
+            // like getSubmaps(IBlockAccess, BlockPos, EnumFacing) needs to do, and allows us to use
+            // data that is based on our connection check override
+            this.cachedSubmaps = CustomCTMLogic.this.getSubmaps(this.cachedSubmapIds);
         }
     }
 }

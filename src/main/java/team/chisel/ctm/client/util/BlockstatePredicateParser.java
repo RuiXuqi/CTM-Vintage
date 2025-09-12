@@ -1,10 +1,9 @@
 package team.chisel.ctm.client.util;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import lombok.Value;
 import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
@@ -81,11 +80,16 @@ public class BlockstatePredicateParser {
         private final BiFunction<Predicate<IBlockState>, Predicate<IBlockState>, Predicate<IBlockState>> composer;
     }
 
-    @Value
-    static class MultiPropertyPredicate<T extends Comparable<T>> implements Predicate<IBlockState> {
-        private Block block;
-        private IProperty<T> prop;
-        private Set<T> validValues;
+    @Desugar
+    private record PropertyPredicate<T extends Comparable<T>>(Block block, IProperty<T> prop, T value, ComparisonType type) implements Predicate<IBlockState> {
+        @Override
+        public boolean test(IBlockState t) {
+            return t.getBlock() == block && type.compareFunc.test(t.getValue(prop).compareTo(value));
+        }
+    }
+
+    @Desugar
+    private record MultiPropertyPredicate<T extends Comparable<T>>(Block block, IProperty<T> prop, Set<T> validValues) implements Predicate<IBlockState> {
 
         @Override
         public boolean test(IBlockState t) {
@@ -93,35 +97,16 @@ public class BlockstatePredicateParser {
         }
     }
 
-    @Value
-    class PropertyPredicate<T extends Comparable<T>> implements Predicate<IBlockState> {
-        private Block block;
-        private IProperty<T> prop;
-        private T value;
-        private ComparisonType type;
-
-        @Override
-        public boolean test(IBlockState t) {
-            return t.getBlock() == block && type.compareFunc.test(t.getValue(prop).compareTo(value));
-        }
-    }
-
-    @Value
-    class BlockPredicate implements Predicate<IBlockState> {
-        private Block block;
-
+    @Desugar
+    private record BlockPredicate(Block block) implements Predicate<IBlockState> {
         @Override
         public boolean test(IBlockState t) {
             return t.getBlock() == block;
         }
     }
 
-    @RequiredArgsConstructor
-    @ToString
-    class PredicateComposition implements Predicate<IBlockState> {
-        private final Composition type;
-        private final List<Predicate<IBlockState>> composed;
-
+    @Desugar
+    private record PredicateComposition(Composition type, List<Predicate<IBlockState>> composed) implements Predicate<IBlockState> {
         @Override
         public boolean test(IBlockState t) {
             if (type == Composition.AND) {
@@ -142,9 +127,9 @@ public class BlockstatePredicateParser {
         }
     }
 
-    class PredicateDeserializer implements JsonDeserializer<Predicate<IBlockState>> {
+    static class PredicateDeserializer implements JsonDeserializer<Predicate<IBlockState>> {
 
-        final Predicate<IBlockState> EMPTY = p -> false;
+        private static final Predicate<IBlockState> EMPTY = p -> false;
 
         // Unlikely that this will be threaded, but I think foamfix tries, so let's be safe
         // A global cache for the default predicate for use in creating deferring predicates
@@ -194,7 +179,7 @@ public class BlockstatePredicateParser {
                         predicates.add(p);
                     }
                 }
-                return predicates.size() == 0 ? EMPTY : predicates.size() == 1 ? predicates.get(0) : new PredicateComposition(Composition.OR, predicates);
+                return predicates.isEmpty() ? EMPTY : predicates.size() == 1 ? predicates.get(0) : new PredicateComposition(Composition.OR, predicates);
             }
             throw new JsonSyntaxException("Predicate deserialization expects an object or an array. Found: " + json);
         }
