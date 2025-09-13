@@ -1,12 +1,20 @@
 # Changelog
 
+## [1.2.1]
+
+### Changes
+- [Fix how we check if the first texture of a custom ctm texture needs to have fallback uvs applied](https://github.com/Chisel-Team/ConnectedTexturesMod/commit/6de73e6048c21cb9e830c0c7370fdbdd0a84638d)
+- [Use the passed in block state for purposes of checking the connection state](https://github.com/Chisel-Team/ConnectedTexturesMod/commit/0a0331362b1d88efd3dd3a96a9f2aede2cd86ef7)
+
 ## [1.2.0]
+
 ### Changes
 - [Add JSON loading of logic definitions, implement OF and our own CTM](https://github.com/Chisel-Team/ConnectedTexturesMod/commit/6de3569a8441a804582c2c025d55a7d8139d5f46)
 - Cherry-pick commits to have proxy textures loaded.
 - ctm_full type is removed.
 
 ## [1.1.1]
+
 ### Fixes
 - Fix emissive lighting math causing broken item rendering
   - True fix. It is caused by the cherry-pick.
