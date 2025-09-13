@@ -8,13 +8,14 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.texture.ITextureType;
-import team.chisel.ctm.api.util.NonnullType;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.util.Quad;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     @Getter
     protected BlockRenderLayer layer;
 
-    protected @NonnullType TextureAtlasSprite @NonnullType [] sprites;
+    protected @NotNull TextureAtlasSprite @NotNull [] sprites;
     protected boolean isProxy;
 
     @Deprecated
@@ -90,7 +91,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
         return Arrays.stream(sprites).map(s -> new ResourceLocation(s.getIconName())).collect(Collectors.toList());
     }
 
-    protected Quad makeQuad(BakedQuad bq, @Nullable ITextureContext context) {
+    protected Quad makeQuad(@Nonnull BakedQuad bq, @Nullable ITextureContext context) {
         Quad q = Quad.from(bq);
         if (hasLight) {
             q = q.setLight(blocklight, skylight);

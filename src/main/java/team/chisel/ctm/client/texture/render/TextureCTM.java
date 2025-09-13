@@ -87,7 +87,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
     }
 
     @Override
-    protected Quad makeQuad(BakedQuad bq, ITextureContext context) {
+    protected Quad makeQuad(BakedQuad bq, @Nullable ITextureContext context) {
         return super.makeQuad(bq, context).derotate();
     }
 
