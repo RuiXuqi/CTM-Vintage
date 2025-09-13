@@ -17,21 +17,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @TextureType("eldritch")
 public class TextureTypeEldritch implements ITextureType {
 
-    @Override
-    public ITextureContext getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
-        return new Context(pos);
-    }
-
-    @Override
-    public ITextureContext getContextFromData(long data) {
-        return new Context(BlockPos.fromLong(data));
-    }
-
-    @Override
-    public ICTMTexture<TextureTypeEldritch> makeTexture(TextureInfo info) {
-        return new TextureEldritch(this, info);
-    }
-
     public static class Context extends TextureContextPosition {
 
         private final BlockPos wrappedpos;
@@ -50,5 +35,20 @@ public class TextureTypeEldritch implements ITextureType {
         public long getCompressedData() {
             return getPosition().toLong();
         }
+    }
+
+    @Override
+    public ITextureContext getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
+        return new Context(pos);
+    }
+
+    @Override
+    public ITextureContext getContextFromData(long data) {
+        return new Context(BlockPos.fromLong(data));
+    }
+
+    @Override
+    public ICTMTexture<TextureTypeEldritch> makeTexture(TextureInfo info) {
+        return new TextureEldritch(this, info);
     }
 }

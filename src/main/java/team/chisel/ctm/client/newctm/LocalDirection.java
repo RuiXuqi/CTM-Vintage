@@ -13,10 +13,11 @@ public interface LocalDirection {
      * @param ctm   The CTM instance to use for logic.
      * @param world The world the block is in.
      * @param pos   The position of your block.
+     * @param state The state of your block.
      * @param side  The side of the current face.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
-    boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, EnumFacing side);
+    boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side);
 
     /**
      * Finds if this block is connected for the given side in this Dir.
@@ -24,11 +25,12 @@ public interface LocalDirection {
      * @param ctm   The CTM instance to use for logic.
      * @param world The world the block is in.
      * @param pos   The position of your block.
+     * @param state The state of your block.
      * @param side  The side of the current face.
-     * @param state The state to check for connection with.
+     * @param connectionState The state to check for connection with.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
-    boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state);
+    boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side, IBlockState connectionState);
 
     LocalDirection relativize(EnumFacing normal);
 

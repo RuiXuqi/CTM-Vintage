@@ -2,6 +2,7 @@ package team.chisel.ctm.client.newctm;
 
 import com.google.common.annotations.VisibleForTesting;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -23,14 +24,14 @@ public class CustomCTMLogic implements ICTMLogic {
     private int textureCountCache = -1;
 
     @Override
-    public int[] getSubmapIds(IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return getSubmapIds(world, pos, side, connectionCheck);
+    public int[] getSubmapIds(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
+        return getSubmapIds(world, pos, state, side, connectionCheck);
     }
 
-    private int[] getSubmapIds(IBlockAccess world, BlockPos pos, EnumFacing side, ConnectionCheck connectionCheck) {
+    private int[] getSubmapIds(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side, ConnectionCheck connectionCheck) {
         int key = 0;
         for (int i = 0; i < directions.length; i++) {
-            boolean isConnected = directions[i].isConnected(connectionCheck, world, pos, side);
+            boolean isConnected = directions[i].isConnected(connectionCheck, world, pos, state, side);
             key |= (isConnected ? 1 : 0) << i;
         }
         if (key >= lookups.length || lookups[key] == null) {
@@ -40,8 +41,8 @@ public class CustomCTMLogic implements ICTMLogic {
     }
 
     @Override
-    public OutputFace[] getSubmaps(IBlockAccess world, BlockPos pos, EnumFacing side) {
-        var tileIds = getSubmapIds(world, pos, side);
+    public OutputFace[] getSubmaps(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
+        var tileIds = getSubmapIds(world, pos, state, side);
         return getSubmaps(tileIds);
     }
 
@@ -118,8 +119,8 @@ public class CustomCTMLogic implements ICTMLogic {
         }
 
         @Override
-        public void buildConnectionMap(IBlockAccess world, BlockPos pos, EnumFacing side) {
-            this.cachedSubmapIds = CustomCTMLogic.this.getSubmapIds(world, pos, side, connectionCheckOverride);
+        public void buildConnectionMap(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
+            this.cachedSubmapIds = CustomCTMLogic.this.getSubmapIds(world, pos, state, side, connectionCheckOverride);
             //Manually call with the computed submap ids to avoid having to calculate them a second type
             // like getSubmaps(IBlockAccess, BlockPos, EnumFacing) needs to do, and allows us to use
             // data that is based on our connection check override

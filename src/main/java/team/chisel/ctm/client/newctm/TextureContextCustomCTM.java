@@ -32,7 +32,7 @@ public class TextureContextCustomCTM implements ITextureContext {
 
         for (EnumFacing face : EnumFacing.values()) {
             ILogicCache ctm = createCTM(state, connectionCheckOverride);
-            ctm.buildConnectionMap(world, pos, face);
+            ctm.buildConnectionMap(world, pos, state, face);
             ctmData.put(face, ctm);
             this.data |= ctm.serialized() << (face.ordinal() * 10);
         }

@@ -37,4 +37,21 @@ public interface IFacade {
         return getFacade(world, pos, side);
     }
 
+    /**
+     * Gets the blockstate this facade appears as.
+     *
+     * @param world           {@link World}
+     * @param pos             The Blocks position
+     * @param side            The side being rendered, NOT the side being connected from.
+     *                        <p>
+     *                        This value can be null if no side is specified. Please handle this appropriately.
+     * @param connectionState The blockstate of the block being connected to.
+     * @param connection      The position of the block being connected to.
+     * @return The blockstate which your block appears as.
+     */
+    @Nonnull
+    default IBlockState getFacade(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nullable EnumFacing side, @Nonnull IBlockState connectionState, @Nonnull BlockPos connection) {
+        return getFacade(world, pos, side);
+    }
+
 }

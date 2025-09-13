@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
@@ -25,27 +24,6 @@ public class TextureTypeEdges extends TextureTypeCTM {
     @Override
     public ICTMTexture<? extends TextureTypeCTM> makeTexture(TextureInfo info) {
         return new TextureEdges(this, info);
-    }
-
-    @Override
-    public TextureContextCTM getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
-        return new TextureContextCTM(state, world, pos, (TextureEdges) tex) {
-
-            @Override
-            protected CTMLogic createCTM(IBlockState state) {
-                CTMLogic parent = super.createCTM(state);
-                // FIXME
-                CTMLogic ret = new CTMLogicEdges();
-                ret.connectionCheck.ignoreStates(parent.connectionCheck.ignoreStates()).stateComparator(parent.connectionCheck.stateComparator());
-                ret.connectionCheck.disableObscuredFaceCheck = parent.connectionCheck.disableObscuredFaceCheck;
-                return ret;
-            }
-        };
-    }
-
-    @Override
-    public int requiredTextures() {
-        return 3;
     }
 
     @ParametersAreNonnullByDefault
@@ -75,6 +53,27 @@ public class TextureTypeEdges extends TextureTypeCTM {
         }
     }
 
+    @Override
+    public TextureContextCTM getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
+        return new TextureContextCTM(state, world, pos, (TextureEdges) tex) {
+
+            @Override
+            protected CTMLogic createCTM(IBlockState state) {
+                CTMLogic parent = super.createCTM(state);
+                // FIXME
+                CTMLogic ret = new CTMLogicEdges();
+                ret.connectionCheck.ignoreStates(parent.connectionCheck.ignoreStates()).stateComparator(parent.connectionCheck.stateComparator());
+                ret.connectionCheck.disableObscuredFaceCheck = parent.connectionCheck.disableObscuredFaceCheck;
+                return ret;
+            }
+        };
+    }
+
+    @Override
+    public int requiredTextures() {
+        return 3;
+    }
+
     public static class ConnectionCheckEdges extends ConnectionCheck {
 
         @Setter
@@ -82,24 +81,24 @@ public class TextureTypeEdges extends TextureTypeCTM {
         private boolean obscured;
 
         @Override
-        public boolean isConnected(IBlockAccess world, BlockPos current, BlockPos connection, EnumFacing dir, IBlockState state) {
+        public boolean isConnected(IBlockAccess world, BlockPos current, IBlockState currentState, BlockPos connection, EnumFacing dir, IBlockState state) {
             if (isObscured()) {
                 return false;
             }
-            IBlockState obscuring = getConnectionState(world, current.offset(dir), dir, current);
+            IBlockState obscuring = getConnectionState(world, current.offset(dir), dir, current, currentState);
             if (stateComparator(state, obscuring, dir)) {
                 setObscured(true);
                 return false;
             }
 
-            IBlockState con = getConnectionState(world, connection, dir, current);
-            IBlockState obscuringcon = getConnectionState(world, connection.offset(dir), dir, current);
+            IBlockState con = getConnectionState(world, connection, dir, current, currentState);
+            IBlockState obscuringcon = getConnectionState(world, connection.offset(dir), dir, current, currentState);
 
             if (stateComparator(state, con, dir) || stateComparator(state, obscuringcon, dir)) {
                 Vec3d difference = new Vec3d(connection.subtract(current));
                 if (difference.lengthSquared() > 1) {
                     difference = difference.normalize();
-                    if (dir.getAxis() == Axis.Z) {
+                    if (dir.getAxis() == EnumFacing.Axis.Z) {
                         difference = difference.rotateYaw((float) (-Math.PI / 2));
                     }
                     float ang = (float) Math.PI / 4;
@@ -113,8 +112,8 @@ public class TextureTypeEdges extends TextureTypeCTM {
                     }
                     BlockPos posA = new BlockPos(vA).add(current);
                     BlockPos posB = new BlockPos(vB).add(current);
-                    return (getConnectionState(world, posA, dir, current) == state && !stateComparator(state, getConnectionState(world, posA.offset(dir), dir, current), dir))
-                            || (getConnectionState(world, posB, dir, current) == state && !stateComparator(state, getConnectionState(world, posB.offset(dir), dir, current), dir));
+                    return (getConnectionState(world, posA, dir, current, currentState) == state && !stateComparator(state, getConnectionState(world, posA.offset(dir), dir, current, currentState), dir))
+                            || (getConnectionState(world, posB, dir, current, currentState) == state && !stateComparator(state, getConnectionState(world, posB.offset(dir), dir, current, currentState), dir));
                 } else {
                     return true;
                 }

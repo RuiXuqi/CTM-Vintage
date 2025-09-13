@@ -1,5 +1,6 @@
 package team.chisel.ctm.client.newctm;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -14,5 +15,5 @@ public interface ILogicCache {
     /**
      * Builds the connection map and stores it in this CTM instance.
      */
-    void buildConnectionMap(IBlockAccess world, BlockPos pos, EnumFacing side);
+    void buildConnectionMap(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side);
 }

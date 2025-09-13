@@ -106,12 +106,13 @@ public enum Dir implements LocalDirection {
      * @param ctm   The CTM instance to use for logic.
      * @param world The world the block is in.
      * @param pos   The position of your block.
+     * @param state The state of your block.
      * @param side  The side of the current face.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
     @Override
-    public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return ctm.isConnected(world, pos, applyConnection(pos, side), side);
+    public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
+        return ctm.isConnected(world, pos, state, applyConnection(pos, side), side);
     }
 
     /**
@@ -120,13 +121,14 @@ public enum Dir implements LocalDirection {
      * @param ctm   The CTM instance to use for logic.
      * @param world The world the block is in.
      * @param pos   The position of your block.
+     * @param state The state of your block.
      * @param side  The side of the current face.
-     * @param state The state to check for connection with.
+     * @param connectionState The state to check for connection with.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
     @Override
-    public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state) {
-        return ctm.isConnected(world, pos, applyConnection(pos, side), side, state);
+    public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side, IBlockState connectionState) {
+        return ctm.isConnected(world, pos, state, applyConnection(pos, side), side, connectionState);
     }
 
     /**

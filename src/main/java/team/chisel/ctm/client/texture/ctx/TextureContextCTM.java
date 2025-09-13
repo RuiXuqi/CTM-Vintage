@@ -24,7 +24,7 @@ public class TextureContextCTM implements ITextureContext {
 
         for (EnumFacing face : EnumFacing.VALUES) {
             CTMLogic ctm = createCTM(state);
-            ctm.getSubmapIds(world, pos, face);
+            ctm.getSubmapIds(world, pos, state, face);
             ctmData.put(face, ctm);
             this.data |= ctm.serialized() << (face.ordinal() * 10);
         }

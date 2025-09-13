@@ -34,16 +34,18 @@ public class ConnectionCheck {
      *            The world the positions are in.
      * @param current
      *            The position of your block.
+     * @param currentState
+     *            The current state of your block.
      * @param connection
      *            The position of the block to check against.
      * @param dir
      *            The {@link EnumFacing side} of the block to check for connection status. This is <i>not</i> the direction to check in.
      * @return True if the given block can connect to the given location on the given side.
      */
-    public final boolean isConnected(IBlockAccess world, BlockPos current, BlockPos connection, EnumFacing dir) {
+    public final boolean isConnected(IBlockAccess world, BlockPos current, IBlockState currentState, BlockPos connection, EnumFacing dir) {
 
-        IBlockState state = getConnectionState(world, current, dir, connection);
-        return isConnected(world, current, connection, dir, state);
+        IBlockState state = getConnectionState(world, current, currentState, dir, connection, world.getBlockState(connection));
+        return isConnected(world, current, currentState, connection, dir, state);
     }
 
     /**
@@ -62,19 +64,19 @@ public class ConnectionCheck {
      * @return True if the given block can connect to the given location on the given side.
      */
     @SuppressWarnings({"unused", "null"})
-    public boolean isConnected(IBlockAccess world, BlockPos current, BlockPos connection, EnumFacing dir, IBlockState state) {
+    public boolean isConnected(IBlockAccess world, BlockPos current, IBlockState currentState, BlockPos connection, EnumFacing dir, IBlockState state) {
 
 //      if (CTMLib.chiselLoaded() && connectionBlocked(world, x, y, z, dir.ordinal())) {
 //          return false;
 //      }
 
-        IBlockState con = getConnectionState(world, connection, dir, current);
+        IBlockState con = getConnectionState(world, connection, world.getBlockState(connection), dir, current, currentState);
         IBlockState obscuring;
         if (disableObscuredFaceCheck.orElse(Configurations.connectInsideCTM)) {
             obscuring = null;
         } else {
             BlockPos obscuringPos = connection.offset(dir);
-            obscuring = getConnectionState(world, obscuringPos, dir, current);
+            obscuring = getConnectionState(world, obscuringPos, world.getBlockState(obscuringPos), dir, current, currentState);
         }
 
         // bad API user
@@ -107,13 +109,16 @@ public class ConnectionCheck {
 //        return false;
 //    }
 
-    public IBlockState getConnectionState(IBlockAccess world, BlockPos pos, @Nullable EnumFacing side, BlockPos connection) {
-        IBlockState state = world.getBlockState(pos);
+    public IBlockState getConnectionState(IBlockAccess world, BlockPos pos, @Nullable EnumFacing side, BlockPos connection, IBlockState connectionState) {
+        return getConnectionState(world, pos, world.getBlockState(pos), side, connection, connectionState);
+    }
+
+    public IBlockState getConnectionState(IBlockAccess world, BlockPos pos, IBlockState state, @Nullable EnumFacing side, BlockPos connection, IBlockState connectionState) {
         if (actualStates()) {
             state = state.getActualState(world, pos);
         }
-        if (state.getBlock() instanceof IFacade) {
-            return ((IFacade) state.getBlock()).getFacade(world, pos, side, connection);
+        if (state.getBlock() instanceof IFacade facade) {
+            return facade.getFacade(world, pos, side, connectionState, connection);
         }
         return state;
     }
