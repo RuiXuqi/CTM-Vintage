@@ -8,10 +8,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.texture.ITextureType;
+import team.chisel.ctm.api.util.NonnullType;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.util.Quad;
 
@@ -35,7 +35,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     @Getter
     protected BlockRenderLayer layer;
 
-    protected @NotNull TextureAtlasSprite @NotNull [] sprites;
+    protected @NonnullType TextureAtlasSprite @NonnullType [] sprites;
     protected boolean isProxy;
 
     @Deprecated

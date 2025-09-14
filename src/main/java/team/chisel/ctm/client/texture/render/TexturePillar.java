@@ -3,7 +3,6 @@ package team.chisel.ctm.client.texture.render;
 import com.google.common.collect.Lists;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.util.EnumFacing;
-import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
@@ -14,6 +13,7 @@ import team.chisel.ctm.client.texture.type.TextureTypePillar;
 import team.chisel.ctm.client.util.Quad;
 import team.chisel.ctm.client.util.Submap;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
@@ -38,7 +38,7 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
     }
 
     @Override
-    protected Quad makeQuad(@NotNull BakedQuad bq, @Nullable ITextureContext context) {
+    protected Quad makeQuad(@Nonnull BakedQuad bq, @Nullable ITextureContext context) {
         return super.makeQuad(bq, context).derotate();
     }
 
