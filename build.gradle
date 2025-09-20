@@ -64,6 +64,10 @@ configurations {
     runtimeOnly.extendsFrom(modRuntimeOnly)
 }
 
+configurations.configureEach {
+    exclude group: 'org.jetbrains', module: 'annotations'
+}
+
 unimined.minecraft {
     version "1.12.2"
 
