@@ -1,25 +1,57 @@
-A fork of ConnectedTexturesMod with some new features. VERY unstable and dangerous.
+# CTM Vintage [![Curseforge](http://cf.way2muchnoise.eu/full_1350228_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/ctm-vintage) [![Curseforge](http://cf.way2muchnoise.eu/versions/For%20MC_1350228_all.svg)](https://www.curseforge.com/minecraft/mc-mods/ctm-vintage)
 
-Now you can use some new ctm types like ctm_vertical, sctm in 1.12.2. The json loading system is also backported, though it needs a ctm.json file as index in the mod's domain.
+A fork of [Chisel Team's ConnectedTexturesMod](https://www.curseforge.com/minecraft/mc-mods/ctm) with backported features.
 
-# ConnectedTexturesMod [![Discord](https://img.shields.io/discord/166066006186262529.svg?colorB=7289DA&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAABWAgMAAABnZYq0AAAACVBMVEUAAB38%2FPz%2F%2F%2F%2Bm8P%2F9AAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfhBxwQJhxy2iqrAAABoElEQVRIx7WWzdGEIAyGgcMeKMESrMJ6rILZCiiBg4eYKr%2Fd1ZAfgXFm98sJfAyGNwno3G9sLucgYGpQ4OGVRxQTREMDZjF7ILSWjoiHo1n%2BE03Aw8p7CNY5IhkYd%2F%2F6MtO3f8BNhR1QWnarCH4tr6myl0cWgUVNcfMcXACP1hKrGMt8wcAyxide7Ymcgqale7hN6846uJCkQxw6GG7h2MH4Czz3cLqD1zHu0VOXMfZjHLoYvsdd0Q7ZvsOkafJ1P4QXxrWFd14wMc60h8JKCbyQvImzlFjyGoZTKzohwWR2UzSONHhYXBQOaKKsySsahwGGDnb%2FiYPJw22sCqzirSULYy1qtHhXGbtgrM0oagBV4XiTJok3GoLoDNH8ooTmBm7ZMsbpFzi2bgPGoXWXME6XT%2BRJ4GLddxJ4PpQy7tmfoU2HPN6cKg%2BledKHBKlF8oNSt5w5g5o8eXhu1IOlpl5kGerDxIVT%2BztzKepulD8utXqpChamkzzuo7xYGk%2FkpSYuviLXun5bzdRf0Krejzqyz7Z3p0I1v2d6HmA07dofmS48njAiuMgAAAAASUVORK5CYII%3D)](http://discord.gg/0vVjLvWg5kyQwnHG) [![Curseforge](http://cf.way2muchnoise.eu/full_267602_downloads.svg)](https://minecraft.curseforge.com/projects/ctm) [![Curseforge](http://cf.way2muchnoise.eu/versions/For%20MC_267602_all.svg)](https://minecraft.curseforge.com/projects/ctm)
+Now you can use some new ctm types like ctm\_horizontal in 1.12.2. The json loading system is also backported, though it needs a ctm.json file as index in the mod's domain. The logic format should be the same as the one in modern versions.
 
-Extentions to the vanilla model system to allow contextual rendering in much more complex ways.
+For developers, there should not be any resource format changes needed. But you may need to update java codes since some logic is moved to ConnectionCheck. Also, IFacade now supports custom connection block state. Implement it if needed.
 
-## What is CTM?
+It is incompatible with Chisel now. A fork to fix is planned.
 
-CTM originates from the render code that powered [Chisel](https://github.com/Chisel-Team/Chisel) through MC 1.10. Since then, it has been split, and made into its own fully functional library mod.
+Sadly Chisel Team haven't updated their Wiki yet. Here are some examples for reference.
 
-CTM allows resourcepack authors and modders alike to create complex render effects, such as connected textures, patterned textures, glowing elements, and more. Best of all, it allows all of this without any code dependencies whatsoever!
+# Json Logic
 
-That's right, CTM can be used without ever writing a line of code, everything you need is exposed to the resource system, through model and mcmeta JSON files. For specific implementation details, please read the [wiki](https://github.com/Chisel-Team/ConnectedTexturesMod/wiki).
+To load customized json ctm logic, there should be a "ctm.json" file in the mod's root domain like "assets/modid/ctm.json". The "ctm.json" will be loaded like sounds.json, so resource pack can contain their own types without writting the old items from the original file.
 
-## How does it work?
+assets/ctm/ctm.json in CTM Vintage
 
-CTM tries to do everything "by the book" as far as rendering is concerned. This means that there is no ASM hook for 1.7-style rendering, everything is handled via baked models. CTM takes the baked model provided by vanilla and transforms it on demand to suit the extra rendering effects specified in the special CTM JSON data. Additionally, it provides ways for mods and resourcepacks to be entirely non-depdendant on CTM, they can render something entirely different when CTM is present with a few extra lines of JSON.
+`{ "logics": [ "ctm", "optifine_full" ] }`
 
-# Setup Instructions
+CTM Vintage will search the items in "assets/modid/ctm\_logic", according to "assets/ctm/ctm.json", and register them ctm type in "modid:item".
 
-CTM is a normal mod, that is, all that is necessary to set up your own workspace is `gradlew sDecW` and then set up for your IDE of choice. See the [Forge Docs page on mod setup](http://mcforge.readthedocs.io/en/latest/gettingstarted/) for more info.
+You can also write items in sub folders like "mylogic/ctm" and put json logic file in "assets/modid/ctm\_logic/mylogic/ctm.json". It will be "modid:mylogic/ctm" in ctm type.
 
-For information on contributing to CTM, see [the CONTRIBUTING guide](https://github.com/Chisel-Team/ConnectedTexturesMod/.github/CONTRIBUTING.md)
+In the case above, it will search for "assets/ctm/ctm\_logic/ctm.json" "assets/ctm/ctm\_logic/optifine\_full.json", and "ctm:ctm" "ctm:optifine\_full" is registered.
+
+assets/ctm/ctm\_logic/ctm.json in CTM Vintage, copied from the original CTM
+
+`{ "positions": [ {"id": "TOP", "directions": ["up"]}, {"id": "TOP_RIGHT", "directions": ["up","east"]}, {"id": "RIGHT", "directions": ["east"]}, {"id": "BOTTOM_RIGHT", "directions": ["down","east"]}, {"id": "BOTTOM", "directions": ["down"]}, {"id": "BOTTOM_LEFT", "directions": ["down","west"]}, {"id": "LEFT", "directions": ["west"]}, {"id": "TOP_LEFT", "directions": ["up","west"]} ], "submaps": { "": { "type": "grid", "width": 4, "height": 4 }, "original": { "type": "grid", "width": 2, "height": 2 } }, "faces": { "": { "type": "grid", "width": 2, "height": 2 } }, "rules": [ {"output":"0,0", "from":1, "at":"0,0", "connected":["TOP","LEFT","TOP_LEFT"]}, {"output":"1,0", "from":1, "at":"1,0", "connected":["TOP","RIGHT","TOP_RIGHT"]}, {"output":"2,0", "from":1, "at":"0,0", "connected":["TOP"],"unconnected":["LEFT"]}, {"output":"3,0", "from":1, "at":"1,0", "connected":["TOP"],"unconnected":["RIGHT"]}, {"output":"0,1", "from":1, "at":"0,1", "connected":["BOTTOM","LEFT","BOTTOM_LEFT"]}, {"output":"1,1", "from":1, "at":"1,1", "connected":["BOTTOM","RIGHT","BOTTOM_RIGHT"]}, {"output":"2,1", "from":1, "at":"0,1", "connected":["BOTTOM"],"unconnected":["LEFT"]}, {"output":"3,1", "from":1, "at":"1,1", "connected":["BOTTOM"],"unconnected":["RIGHT"]}, {"output":"0,2", "from":1, "at":"0,0", "connected":["LEFT"],"unconnected":["TOP"]}, {"output":"1,2", "from":1, "at":"1,0", "connected":["RIGHT"],"unconnected":["TOP"]}, {"output":"2,2", "from":1, "at":"0,0", "connected":["TOP","LEFT"],"unconnected":["TOP_LEFT"]}, {"output":"3,2", "from":1, "at":"1,0", "connected":["TOP","RIGHT"],"unconnected":["TOP_RIGHT"]}, {"output":"0,3", "from":1, "at":"0,1", "connected":["LEFT"],"unconnected":["BOTTOM"]}, {"output":"1,3", "from":1, "at":"1,1", "connected":["RIGHT"],"unconnected":["BOTTOM"]}, {"output":"2,3", "from":1, "at":"0,1", "connected":["BOTTOM","LEFT"],"unconnected":["BOTTOM_LEFT"]}, {"output":"3,3", "from":1, "at":"1,1", "connected":["BOTTOM","RIGHT"],"unconnected":["BOTTOM_RIGHT"]}, {"output":"original0,0", "from":0, "at":"0,0", "unconnected":["TOP","LEFT"]}, {"output":"original1,0", "from":0, "at":"1,0", "unconnected":["TOP","RIGHT"]}, {"output":"original0,1", "from":0, "at":"0,1", "unconnected":["BOTTOM","LEFT"]}, {"output":"original1,1", "from":0, "at":"1,1", "unconnected":["BOTTOM","RIGHT"]} ] }`
+
+There are changes in optifine\_full.json. The grid is changed to 12x12 (192x192px or multiple), a square. Otherwise, forge will recognize it as an animated texture and stop it from loading.
+
+# Proxy
+
+The proxy loading logic is updated, allowing you to write them like this from Mekanism.
+
+assets/mekanism/textures/block/thermal\_evaporation\_block\_1.png(16x16px)
+
+![image](https://media.forgecdn.net/attachments/description/1350228/description_645bdb00-e60b-4a64-a521-24e70e72d9c9.png)
+
+assets/mekanism/textures/block/thermal\_evaporation\_block\_1.png.mcmeta
+
+`{ "ctm": { "ctm_version": 1, "proxy": "mekanism:ctm/thermal_evaporation_block_1_full", "type": "CTM", "layer": "SOLID", "textures": [ "mekanism:ctm/thermal_evaporation_block_1" ] } }`
+
+assets/mekanism/textures/ctm/thermal\_evaporation\_block\_1.png(16x16px)
+
+![image](https://media.forgecdn.net/attachments/description/1350228/description_f78081d3-e78b-474e-96c4-18f5310df669.png)
+
+assets/mekanism/textures/ctm/thermal\_evaporation\_block\_1\_full.png(192x192px)
+
+![image](https://media.forgecdn.net/attachments/description/1350228/description_afc510ba-775b-4eac-aa63-e9504665f42c.png)
+
+assets/mekanism/textures/ctm/thermal\_evaporation\_block\_1\_full.png.mcmeta
+
+`{ "ctm": { "ctm_version": 1, "type": "ctm:optifine_full" } }`
+
+The final texture will be thermal\_evaporation\_block\_1\_full.png loaded in ctm:optifine\_full.
