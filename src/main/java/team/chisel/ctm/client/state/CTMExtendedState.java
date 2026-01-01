@@ -1,14 +1,6 @@
 package team.chisel.ctm.client.state;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.common.collect.ImmutableMap;
-
 import lombok.Getter;
 import lombok.experimental.Delegate;
 import net.minecraft.block.properties.IProperty;
@@ -18,43 +10,48 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
-import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.util.RenderContextList;
 import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 import team.chisel.ctm.client.util.ProfileUtil;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public class CTMExtendedState extends BlockStateBase implements IExtendedBlockState {
 
     interface Exclusions {
         public <T extends Comparable<T>> T getValue(IProperty<T> property);
-        
+
         public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value);
-        
+
         public <T extends Comparable<T>> IBlockState cycleProperty(IProperty<T> property);
     }
-    
+
     @Delegate(excludes = Exclusions.class)
     private final IBlockState wrapped;
     private final IBlockState clean;
-    
+
     private final boolean extended;
     private final @Nullable IExtendedBlockState extState;
-    
+
     @Getter
     private final IBlockAccess world;
     @Getter
     private final BlockPos pos;
-    
+
     private @Nullable RenderContextList ctxCache;
-    
+
     @SuppressWarnings("null")
     public CTMExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
         ProfileUtil.start("ctm_extended_state");
         this.wrapped = state;
         this.world = world;
         this.pos = pos;
-        
+
         this.extended = wrapped instanceof IExtendedBlockState;
         if (extended) {
             extState = (IExtendedBlockState) wrapped;
@@ -69,7 +66,7 @@ public class CTMExtendedState extends BlockStateBase implements IExtendedBlockSt
     public CTMExtendedState(IBlockState state, CTMExtendedState parent) {
         this(state, parent.world, parent.pos);
     }
-    
+
     public RenderContextList getContextList(IBlockState state, AbstractCTMBakedModel model) {
         if (ctxCache == null) {
             ctxCache = new RenderContextList(state, model.getCTMTextures(), world, pos);
@@ -101,7 +98,7 @@ public class CTMExtendedState extends BlockStateBase implements IExtendedBlockSt
     public IBlockState getClean() {
         return clean;
     }
-    
+
     // Lombok chokes on these for some reason
 
     @Override

@@ -1,21 +1,6 @@
 package team.chisel.ctm.client.model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import javax.vecmath.Matrix4f;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.common.collect.ObjectArrays;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -23,15 +8,23 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformT
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import org.apache.commons.lang3.tuple.Pair;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.RenderContextList;
 import team.chisel.ctm.client.util.BakedQuadRetextured;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.vecmath.Matrix4f;
+import java.util.*;
+import java.util.Map.Entry;
+
 @ParametersAreNonnullByDefault
 public class ModelBakedCTM extends AbstractCTMBakedModel {
-    
+
     public ModelBakedCTM(IModelCTM model, IBakedModel parent) {
         super(model, parent);
     }
@@ -42,7 +35,7 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
     protected AbstractCTMBakedModel createModel(@Nullable IBlockState state, IModelCTM model, @Nullable RenderContextList ctx, long rand) {
         IBakedModel parent = getParent(rand);
         while (parent instanceof ModelBakedCTM) {
-            parent = ((AbstractCTMBakedModel)parent).getParent(rand);
+            parent = ((AbstractCTMBakedModel) parent).getParent(rand);
         }
 
         AbstractCTMBakedModel ret = new ModelBakedCTM(model, parent);
@@ -55,7 +48,7 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
                 } else {
                     quads = ret.genQuads.get(layer);
                 }
-                
+
                 // Linked to maintain the order of quads
                 Map<BakedQuad, ICTMTexture<?>> texturemap = new LinkedHashMap<>();
                 // Gather all quads and map them to their textures
@@ -91,17 +84,17 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
         }
         return ret;
     }
-    
+
     @Override
     public @Nonnull TextureAtlasSprite getParticleTexture() {
         return Optional.ofNullable(getModel().getTexture(getParent().getParticleTexture().getIconName()))
                 .map(ICTMTexture::getParticle)
                 .orElse(getParent().getParticleTexture());
     }
-    
+
     @Override
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(TransformType cameraTransformType) {
-    	// FIXME this won't work if parent returns a different model (shouldn't happen for vanilla)
-    	return Pair.of(this, getParent().handlePerspective(cameraTransformType).getRight());
+        // FIXME this won't work if parent returns a different model (shouldn't happen for vanilla)
+        return Pair.of(this, getParent().handlePerspective(cameraTransformType).getRight());
     }
 }

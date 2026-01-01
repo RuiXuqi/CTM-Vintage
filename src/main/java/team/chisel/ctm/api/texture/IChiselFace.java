@@ -1,15 +1,15 @@
 package team.chisel.ctm.api.texture;
 
-import java.util.List;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import javax.annotation.Nonnull;
-
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import java.util.List;
 
 @Deprecated
 public interface IChiselFace {
 
     List<ICTMTexture<?>> getTextureList();
 
-    @Nonnull TextureAtlasSprite getParticle();
+    @Nonnull
+    TextureAtlasSprite getParticle();
 }

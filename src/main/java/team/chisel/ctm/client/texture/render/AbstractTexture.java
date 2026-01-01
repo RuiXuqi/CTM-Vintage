@@ -1,15 +1,7 @@
 package team.chisel.ctm.client.texture.render;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import lombok.Getter;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,6 +14,12 @@ import team.chisel.ctm.api.texture.ITextureType;
 import team.chisel.ctm.api.util.NonnullType;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.util.Quad;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 
 /**
@@ -37,7 +35,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     protected BlockRenderLayer layer;
 
     @SuppressWarnings("null")
-    protected @NonnullType TextureAtlasSprite @NonnullType[] sprites;
+    protected @NonnullType TextureAtlasSprite @NonnullType [] sprites;
 
     @Deprecated
     protected boolean fullbright;
@@ -73,7 +71,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
             }
         }
     }
-    
+
     private final int parseLightValue(@Nullable JsonElement data) {
         if (data != null && data.isJsonPrimitive() && data.getAsJsonPrimitive().isNumber()) {
             return MathHelper.clamp(data.getAsInt(), 0, 15);
@@ -85,7 +83,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     public TextureAtlasSprite getParticle() {
         return sprites[0];
     }
-    
+
     @Override
     public Collection<ResourceLocation> getTextures() {
         return Arrays.stream(sprites).map(s -> new ResourceLocation(s.getIconName())).collect(Collectors.toList());

@@ -1,12 +1,8 @@
 package team.chisel.ctm.api.texture;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import team.chisel.ctm.client.texture.type.TextureTypeCTMV;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation to register an {@link ITextureType}.
@@ -19,7 +15,7 @@ import team.chisel.ctm.client.texture.type.TextureTypeCTMV;
  * For an example of this, see {@link TextureTypeCTMV}.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.FIELD })
+@Target({ElementType.TYPE, ElementType.FIELD})
 @Repeatable(TextureTypeList.class)
 public @interface TextureType {
 
@@ -27,7 +23,7 @@ public @interface TextureType {
      * The name used in JSON files to select this texture type. For example, connected textures would be "ctm"
      * <p>
      * This value can be left out to use the name of the class/field being annotated.
-     * 
+     *
      * @return The name of the texture type.
      */
     String value() default "";

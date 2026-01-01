@@ -27,21 +27,20 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
 
     public enum MapType {
         RANDOM {
-
             @Override
             protected List<BakedQuad> transformQuad(TextureMap tex, BakedQuad quad, @Nullable ITextureContext context, int quadGoal) {
 
-                Point2i textureCoords = context == null ? new Point2i(1, 1) : ((TextureContextGrid)context).getTextureCoords(quad.getFace());
-                
+                Point2i textureCoords = context == null ? new Point2i(1, 1) : ((TextureContextGrid) context).getTextureCoords(quad.getFace());
+
                 float intervalX = 16f / tex.getXSize();
                 float intervalY = 16f / tex.getYSize();
-                
+
                 float maxU = textureCoords.x * intervalX;
                 float maxV = textureCoords.y * intervalY;
                 ISubmap uvs = new Submap(intervalX, intervalY, maxU - intervalX, maxV - intervalY);
 
                 Quad q = tex.makeQuad(quad, context).setFullbright(tex.fullbright);
-                
+
                 // TODO move this code somewhere else, it's copied from below
                 if (quadGoal != 4) {
                     return Collections.singletonList(q.transformUVs(tex.sprites[0], uvs).setFullbright(tex.fullbright).rebake());
@@ -56,19 +55,18 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
                     return Arrays.stream(quads).filter(Objects::nonNull).map(Quad::rebake).collect(Collectors.toList());
                 }
             }
-            
+
             @Override
             public ITextureContext getContext(@Nonnull BlockPos pos, @Nonnull TextureMap tex) {
                 return new TextureContextGrid.Random(pos, tex, true);
             }
         },
         PATTERNED {
-
             @Override
             protected List<BakedQuad> transformQuad(TextureMap tex, BakedQuad quad, @Nullable ITextureContext context, int quadGoal) {
-                
-                Point2i textureCoords = context == null ? new Point2i(0, 0) : ((TextureContextGrid)context).getTextureCoords(quad.getFace());
-                
+
+                Point2i textureCoords = context == null ? new Point2i(0, 0) : ((TextureContextGrid) context).getTextureCoords(quad.getFace());
+
                 float intervalU = 16f / tex.xSize;
                 float intervalV = 16f / tex.ySize;
 
@@ -92,7 +90,7 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
                     return Arrays.stream(quads).filter(Objects::nonNull).map(Quad::rebake).collect(Collectors.toList());
                 }
             }
-            
+
             @Override
             public ITextureContext getContext(@Nonnull BlockPos pos, @Nonnull TextureMap tex) {
                 return new TextureContextGrid.Patterned(pos, tex, true);
@@ -100,7 +98,7 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
         };
 
         protected abstract List<BakedQuad> transformQuad(TextureMap tex, BakedQuad quad, @Nullable ITextureContext context, int quadGoal);
-        
+
         @Nonnull
         public ITextureContext getContext(@Nonnull BlockPos pos, @Nonnull TextureMap tex) {
             return new TextureContextPosition(pos);

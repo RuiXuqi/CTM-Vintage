@@ -1,14 +1,11 @@
 package team.chisel.ctm.client.texture.type;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
@@ -20,6 +17,8 @@ import team.chisel.ctm.client.texture.render.TextureEdges;
 import team.chisel.ctm.client.util.CTMLogic;
 import team.chisel.ctm.client.util.Dir;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 @TextureType("edges")
 public class TextureTypeEdges extends TextureTypeCTM {
 
@@ -27,15 +26,15 @@ public class TextureTypeEdges extends TextureTypeCTM {
     public ICTMTexture<? extends TextureTypeCTM> makeTexture(TextureInfo info) {
         return new TextureEdges(this, info);
     }
-    
+
     @RequiredArgsConstructor
     @ParametersAreNonnullByDefault
     public static class CTMLogicEdges extends CTMLogic {
-        
+
         @Setter
         @Getter
         private boolean obscured;
-        
+
         @Override
         public boolean isConnected(IBlockAccess world, BlockPos current, BlockPos connection, EnumFacing dir, IBlockState state) {
             if (isObscured()) {
@@ -49,7 +48,7 @@ public class TextureTypeEdges extends TextureTypeCTM {
 
             IBlockState con = getConnectionState(world, connection, dir, current);
             IBlockState obscuringcon = getConnectionState(world, connection.offset(dir), dir, current);
-            
+
             if (stateComparator(state, con, dir) || stateComparator(state, obscuringcon, dir)) {
                 Vec3d difference = new Vec3d(connection.subtract(current));
                 if (difference.lengthSquared() > 1) {
@@ -69,14 +68,14 @@ public class TextureTypeEdges extends TextureTypeCTM {
                     BlockPos posA = new BlockPos(vA).add(current);
                     BlockPos posB = new BlockPos(vB).add(current);
                     return (getConnectionState(world, posA, dir, current) == state && !stateComparator(state, getConnectionState(world, posA.offset(dir), dir, current), dir))
-                        || (getConnectionState(world, posB, dir, current) == state && !stateComparator(state, getConnectionState(world, posB.offset(dir), dir, current), dir));
+                            || (getConnectionState(world, posB, dir, current) == state && !stateComparator(state, getConnectionState(world, posB.offset(dir), dir, current), dir));
                 } else {
                     return true;
                 }
             }
             return false;
         }
-        
+
         @Override
         protected void fillSubmaps(int idx) {
             Dir[] dirs = submapMap[idx];
@@ -86,17 +85,17 @@ public class TextureTypeEdges extends TextureTypeCTM {
                 super.fillSubmaps(idx);
             }
         }
-        
+
         @Override
         public long serialized() {
             return isObscured() ? (super.serialized() | (1 << 8)) : super.serialized();
         }
     }
-    
+
     @Override
     public TextureContextCTM getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
         return new TextureContextCTM(state, world, pos, (TextureEdges) tex) {
-            
+
             @Override
             protected CTMLogic createCTM(IBlockState state) {
                 CTMLogic parent = super.createCTM(state);

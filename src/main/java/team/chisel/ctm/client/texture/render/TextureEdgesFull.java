@@ -1,12 +1,6 @@
 package team.chisel.ctm.client.texture.render;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import team.chisel.ctm.api.texture.ISubmap;
@@ -18,6 +12,11 @@ import team.chisel.ctm.client.texture.type.TextureTypeEdges.CTMLogicEdges;
 import team.chisel.ctm.client.util.Dir;
 import team.chisel.ctm.client.util.Quad;
 import team.chisel.ctm.client.util.Submap;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class TextureEdgesFull extends TextureEdges {
 
@@ -31,8 +30,8 @@ public class TextureEdgesFull extends TextureEdges {
         if (context == null) {
             return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());
         }
-        
-        CTMLogicEdges ctm = (CTMLogicEdges) ((TextureContextCTM)context).getCTM(bq.getFace());
+
+        CTMLogicEdges ctm = (CTMLogicEdges) ((TextureContextCTM) context).getCTM(bq.getFace());
         TextureAtlasSprite sprite;
         ISubmap submap = null;
         // Short circuit zero connections, as this is almost always the most common case
@@ -41,10 +40,10 @@ public class TextureEdgesFull extends TextureEdges {
             submap = Submap.X1;
         } else {
             sprite = sprites[1];
-            boolean top     = ctm.connected(Dir.TOP)    || ctm.connectedAnd(Dir.TOP_LEFT, Dir.TOP_RIGHT);
-            boolean right   = ctm.connected(Dir.RIGHT)  || ctm.connectedAnd(Dir.TOP_RIGHT, Dir.BOTTOM_RIGHT);
-            boolean bottom  = ctm.connected(Dir.BOTTOM) || ctm.connectedAnd(Dir.BOTTOM_LEFT, Dir.BOTTOM_RIGHT);
-            boolean left    = ctm.connected(Dir.LEFT)   || ctm.connectedAnd(Dir.TOP_LEFT, Dir.BOTTOM_LEFT);
+            boolean top = ctm.connected(Dir.TOP) || ctm.connectedAnd(Dir.TOP_LEFT, Dir.TOP_RIGHT);
+            boolean right = ctm.connected(Dir.RIGHT) || ctm.connectedAnd(Dir.TOP_RIGHT, Dir.BOTTOM_RIGHT);
+            boolean bottom = ctm.connected(Dir.BOTTOM) || ctm.connectedAnd(Dir.BOTTOM_LEFT, Dir.BOTTOM_RIGHT);
+            boolean left = ctm.connected(Dir.LEFT) || ctm.connectedAnd(Dir.TOP_LEFT, Dir.BOTTOM_LEFT);
             if (ctm.isObscured() || (top && bottom) || (right && left)) {
                 submap = Submap.X4[2][1];
             } else if (!(top || right || bottom || left) && ctm.connectedAnd(Dir.TOP_LEFT, Dir.BOTTOM_RIGHT)) {
@@ -80,11 +79,11 @@ public class TextureEdgesFull extends TextureEdges {
                 submap = Submap.X1;
             }
         }
-        
+
         if (quadGoal == 1) {
             return Collections.singletonList(quad.transformUVs(sprite, submap).rebake());
         }
-        
+
         final ISubmap sm = submap;
         return Lists.newArrayList(quad.subdivide(quadGoal)).stream()
                 .filter(Objects::nonNull)

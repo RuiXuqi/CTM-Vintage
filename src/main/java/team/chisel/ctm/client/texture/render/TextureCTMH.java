@@ -1,8 +1,5 @@
 package team.chisel.ctm.client.texture.render;
 
-import java.util.Collections;
-import java.util.List;
-
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.texture.ITextureContext;
@@ -13,6 +10,9 @@ import team.chisel.ctm.client.util.CTMLogic;
 import team.chisel.ctm.client.util.Dir;
 import team.chisel.ctm.client.util.Quad;
 import team.chisel.ctm.client.util.Submap;
+
+import java.util.Collections;
+import java.util.List;
 
 public class TextureCTMH extends TextureCTM<TextureTypeCTMH> {
 

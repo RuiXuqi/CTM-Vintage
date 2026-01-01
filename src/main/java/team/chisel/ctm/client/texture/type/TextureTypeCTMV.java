@@ -19,19 +19,19 @@ public class TextureTypeCTMV implements ITextureType {
     public ICTMTexture<TextureTypeCTMV> makeTexture(TextureInfo info) {
         return new TextureCTMV(this, info);
     }
-    
+
     @Override
     public TextureContextCTMV getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
         return new TextureContextCTMV(world, pos);
     }
-    
+
     @Override
     public int requiredTextures() {
         return 2;
     }
 
     @Override
-    public ITextureContext getContextFromData(long data){
+    public ITextureContext getContextFromData(long data) {
         return new TextureContextCTMV(data);
     }
 }

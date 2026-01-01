@@ -1,14 +1,12 @@
 package team.chisel.ctm.api.util;
 
-import java.util.Optional;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.gson.JsonObject;
-
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
 import team.chisel.ctm.api.texture.ICTMTexture;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 
 /**
  * Bean to hold information that the IBlockRenderType should use to make an {@link ICTMTexture}
@@ -22,7 +20,7 @@ public class TextureInfo {
 
     private BlockRenderLayer renderLayer;
 
-    public TextureInfo(TextureAtlasSprite[] sprites, Optional<JsonObject> info, BlockRenderLayer layer){
+    public TextureInfo(TextureAtlasSprite[] sprites, Optional<JsonObject> info, BlockRenderLayer layer) {
         this.sprites = sprites;
         this.info = info;
         this.renderLayer = layer;
@@ -39,15 +37,14 @@ public class TextureInfo {
      * Gets a JsonObject that had the key "info" for extra texture information
      * This JsonObject might not exist
      */
-    public Optional<JsonObject> getInfo()
-    {
+    public Optional<JsonObject> getInfo() {
         return this.info;
     }
 
     /**
      * Returns the render layer for this texture
      */
-    public BlockRenderLayer getRenderLayer(){
+    public BlockRenderLayer getRenderLayer() {
         return this.renderLayer;
     }
 

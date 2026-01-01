@@ -1,22 +1,7 @@
 package team.chisel.ctm.client.texture;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Function;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.common.collect.ObjectArrays;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-
+import com.google.gson.*;
 import lombok.Getter;
 import lombok.ToString;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -31,23 +16,33 @@ import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.type.TextureTypeRegistry;
 import team.chisel.ctm.client.util.ResourceUtil;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Function;
+
 @ParametersAreNonnullByDefault
 public interface IMetadataSectionCTM extends IMetadataSection {
-    
+
     public static final String SECTION_NAME = "ctm";
-    
+
     int getVersion();
-    
+
     ITextureType getType();
-    
+
     BlockRenderLayer getLayer();
-    
+
     ResourceLocation[] getAdditionalTextures();
-    
-    @Nullable String getProxy();
+
+    @Nullable
+    String getProxy();
 
     JsonObject getExtraData();
-    
+
     default ICTMTexture<?> makeTexture(TextureAtlasSprite sprite, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         IMetadataSectionCTM meta = this;
         if (getProxy() != null) {
@@ -59,21 +54,21 @@ public interface IMetadataSectionCTM extends IMetadataSection {
                 }
                 sprite = proxySprite;
             } catch (IOException e) {
-                CTM.logger.error("Could not parse metadata of proxy, ignoring proxy and using base texture." + getProxy(), e);
+                CTM.LOGGER.error("Could not parse metadata of proxy, ignoring proxy and using base texture." + getProxy(), e);
                 meta = this;
             }
         }
         return meta.getType().makeTexture(new TextureInfo(
-                Arrays.stream(ObjectArrays.concat(new ResourceLocation(sprite.getIconName()), meta.getAdditionalTextures())).map(bakedTextureGetter::apply).toArray(TextureAtlasSprite[]::new), 
-                Optional.of(meta.getExtraData()), 
+                Arrays.stream(ObjectArrays.concat(new ResourceLocation(sprite.getIconName()), meta.getAdditionalTextures())).map(bakedTextureGetter::apply).toArray(TextureAtlasSprite[]::new),
+                Optional.of(meta.getExtraData()),
                 meta.getLayer()
         ));
     }
-    
+
     @ToString
     @Getter
     public static class V1 implements IMetadataSectionCTM {
-        
+
         private ITextureType type = TextureTypeRegistry.getType("NORMAL");
         private BlockRenderLayer layer = null;
         private String proxy;
@@ -87,13 +82,13 @@ public interface IMetadataSectionCTM extends IMetadataSection {
 
         public static IMetadataSectionCTM fromJson(JsonObject obj) throws JsonParseException {
             V1 ret = new V1();
-            
+
             if (obj.has("proxy")) {
                 JsonElement proxyEle = obj.get("proxy");
                 if (proxyEle.isJsonPrimitive() && proxyEle.getAsJsonPrimitive().isString()) {
                     ret.proxy = proxyEle.getAsString();
                 }
-                
+
                 if (obj.entrySet().stream().filter(e -> e.getKey().equals("ctm_version")).count() > 1) {
                     throw new JsonParseException("Cannot define other fields when using proxy");
                 }
@@ -135,14 +130,14 @@ public interface IMetadataSectionCTM extends IMetadataSection {
                     }
                 }
             }
-            
+
             if (obj.has("extra") && obj.get("extra").isJsonObject()) {
                 ret.extraData = obj.getAsJsonObject("extra");
             }
             return ret;
         }
     }
-    
+
     public static class Serializer implements IMetadataSectionSerializer<IMetadataSectionCTM> {
 
         @Override
@@ -153,8 +148,8 @@ public interface IMetadataSectionCTM extends IMetadataSection {
                     JsonElement version = obj.get("ctm_version");
                     if (version.isJsonPrimitive() && version.getAsJsonPrimitive().isNumber()) {
                         switch (version.getAsInt()) {
-                        case 1:
-                            return V1.fromJson(obj);
+                            case 1:
+                                return V1.fromJson(obj);
                         }
                     }
                 } else {

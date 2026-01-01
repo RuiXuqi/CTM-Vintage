@@ -20,9 +20,9 @@ public class CTMTransformer implements IClassTransformer {
     private static final String WRAPPER_CLASS_NAME = "team/chisel/ctm/client/state/CTMExtendedState";
     private static final String WRAPPER_CLASS_CONSTRUCTOR_NAME = "<init>";
     private static final String WRAPPER_CLASS_CONSTRUCTOR_DESC = "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)V";
-    
+
     private static final String CHISEL_METHODS_CLASS_NAME = "team/chisel/ctm/client/asm/CTMCoreMethods";
-    
+
     private static final String CHISEL_METHODS_LAYER_NAME = "canRenderInLayer";
     private static final String CHISEL_METHODS_LAYER_DESC = "(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/BlockRenderLayer;)Ljava/lang/Boolean;";
     private static final String CHISEL_METHODS_DAMAGE_PRE_NAME = "preDamageModel";
@@ -32,10 +32,10 @@ public class CTMTransformer implements IClassTransformer {
 
     private static final String FORGE_HOOKS_CLIENT_CLASS = "net.minecraftforge.client.ForgeHooksClient";
     private static final String DAMAGE_MODEL_METHOD_NAME = "getDamageModel";
-    
+
     private static final String VANILLA_MODEL_WRAPPER_CLASS = "net.minecraftforge.client.model.ModelLoader$VanillaModelWrapper";
     private static final String GET_TEXTURES_METHOD_NAME = "getTextures";
-    
+
     private static final String TEXTURE_ATLAS_SPRITE_CLASS = "net.minecraft.client.renderer.texture.TextureAtlasSprite";
     private static final String UPDATE_ANIMATION_INTERPOLATED_METHOD_NAME = "updateAnimationInterpolated";
     private static final String INTERPOLATE_COLOR_CLASS = TEXTURE_ATLAS_SPRITE_CLASS.replace('.', '/');
@@ -61,14 +61,14 @@ public class CTMTransformer implements IClassTransformer {
                     for (int i = 0; i < m.instructions.size(); i++) {
                         AbstractInsnNode next = m.instructions.get(i);
                         // Find return statement
-                        if (next instanceof InsnNode && ((InsnNode)next).getOpcode() == ARETURN) {
+                        if (next instanceof InsnNode && ((InsnNode) next).getOpcode() == ARETURN) {
                             InsnList toAdd = new InsnList();
-                            
+
                             // FIXME find a better way to do this, might not always be an ALOAD
                             // Grab lvt ID of the current object on the stack
                             AbstractInsnNode load = m.instructions.get(i - 1);
-                            int var = ((VarInsnNode)load).var;
-                            
+                            int var = ((VarInsnNode) load).var;
+
                             // Wrap the object that was about to be returned in our own object
                             // This allows multiple hooks here to exist. If someone else adds a wrapper, we will wrap that wrapper :D
                             toAdd.add(new InsnNode(POP));
@@ -112,7 +112,7 @@ public class CTMTransformer implements IClassTransformer {
                 if (m.name.equals(DAMAGE_MODEL_METHOD_NAME)) {
                     for (int i = 0; i < m.instructions.size(); i++) {
                         AbstractInsnNode next = m.instructions.get(i);
-                        
+
                         String methodName = null;
                         if (next.getOpcode() == NEW) {
                             methodName = CHISEL_METHODS_DAMAGE_PRE_NAME;
@@ -126,7 +126,7 @@ public class CTMTransformer implements IClassTransformer {
                     }
                 }
             }
-            
+
             return finishTransform(transformedName, classNode, ClassWriter.COMPUTE_MAXS);
 
         } else if (transformedName.equals(TEXTURE_MAP_CLASS_NAME)) {
@@ -159,31 +159,31 @@ public class CTMTransformer implements IClassTransformer {
 
         } else if (transformedName.equals(VANILLA_MODEL_WRAPPER_CLASS)) {
 
-        	ClassNode classNode = preTransform(transformedName, GET_TEXTURES_METHOD_NAME, basicClass);
-        	Iterator<MethodNode> methods = classNode.methods.iterator();
+            ClassNode classNode = preTransform(transformedName, GET_TEXTURES_METHOD_NAME, basicClass);
+            Iterator<MethodNode> methods = classNode.methods.iterator();
 
-        	while (methods.hasNext()) {
-        		MethodNode m = methods.next();
-        		if (m.name.equals(GET_TEXTURES_METHOD_NAME) && m.localVariables.stream().filter(lv -> lv.index == 1).anyMatch(lv -> lv.desc.contains("IModel"))) {
-        		    System.out.println("Correct local variable found - this must be forge <2772");
-        			for (int i = 0; i < m.instructions.size(); i++) {
-        				AbstractInsnNode next = m.instructions.get(i);
+            while (methods.hasNext()) {
+                MethodNode m = methods.next();
+                if (m.name.equals(GET_TEXTURES_METHOD_NAME) && m.localVariables.stream().filter(lv -> lv.index == 1).anyMatch(lv -> lv.desc.contains("IModel"))) {
+                    System.out.println("Correct local variable found - this must be forge <2772");
+                    for (int i = 0; i < m.instructions.size(); i++) {
+                        AbstractInsnNode next = m.instructions.get(i);
 
-        				if (next.getOpcode() == ASTORE && ((VarInsnNode)next).var == 1) {
-        					InsnList toInsert = new InsnList();
-        					toInsert.add(new VarInsnNode(ALOAD, 1));
-        					toInsert.add(new MethodInsnNode(INVOKESTATIC, CHISEL_METHODS_CLASS_NAME, CHISEL_METHODS_TRANFORM_PARENT_NAME, CHISEL_METHODS_TRANFORM_PARENT_DESC, false));
-        					toInsert.add(new VarInsnNode(ASTORE, 1));
-        					m.instructions.insert(next, toInsert);
-        					break;
-        				}
-        			}
-        		}
-        	}
-        	return finishTransform(transformedName, classNode, ClassWriter.COMPUTE_MAXS);
-        	
+                        if (next.getOpcode() == ASTORE && ((VarInsnNode) next).var == 1) {
+                            InsnList toInsert = new InsnList();
+                            toInsert.add(new VarInsnNode(ALOAD, 1));
+                            toInsert.add(new MethodInsnNode(INVOKESTATIC, CHISEL_METHODS_CLASS_NAME, CHISEL_METHODS_TRANFORM_PARENT_NAME, CHISEL_METHODS_TRANFORM_PARENT_DESC, false));
+                            toInsert.add(new VarInsnNode(ASTORE, 1));
+                            m.instructions.insert(next, toInsert);
+                            break;
+                        }
+                    }
+                }
+            }
+            return finishTransform(transformedName, classNode, ClassWriter.COMPUTE_MAXS);
+
         } else if (transformedName.equals(TEXTURE_ATLAS_SPRITE_CLASS)) {
-            
+
             ClassNode classNode = preTransform(transformedName, UPDATE_ANIMATION_INTERPOLATED_METHOD_NAME, basicClass);
             Iterator<MethodNode> methods = classNode.methods.iterator();
 
@@ -192,15 +192,15 @@ public class CTMTransformer implements IClassTransformer {
                 if (m.name.equals(UPDATE_ANIMATION_INTERPOLATED_METHOD_NAME)) {
                     for (int i = 0; i < m.instructions.size(); i++) {
                         AbstractInsnNode next = m.instructions.get(i);
-                        
-                        if (next.getOpcode() == LDC && ((LdcInsnNode)next).cst.equals(-16777216)) {
+
+                        if (next.getOpcode() == LDC && ((LdcInsnNode) next).cst.equals(-16777216)) {
                             // Remove j1 & -16777216
                             m.instructions.remove(next.getPrevious());  // remove ILOAD 10
                             m.instructions.remove(next.getNext());      // remove IAND
                             next = next.getNext();                      // next is now ILOAD 12
                             m.instructions.remove(next.getPrevious());  // remove LDC -16777216
                             next = next.getPrevious();                  // next is now ILOAD 9
-                            
+
                             InsnList toInsert = new InsnList();
                             toInsert.add(new VarInsnNode(ALOAD, 0));    // load this
                             toInsert.add(new VarInsnNode(DLOAD, 1));    // load d0
@@ -218,11 +218,11 @@ public class CTMTransformer implements IClassTransformer {
                         }
                     }
                 }
-            }            
+            }
             return finishTransform(transformedName, classNode, ClassWriter.COMPUTE_MAXS);
 
         }
-        
+
         return basicClass;
     }
 

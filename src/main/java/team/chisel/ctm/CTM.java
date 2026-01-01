@@ -1,12 +1,5 @@
 package team.chisel.ctm;
 
-import static team.chisel.ctm.CTM.MOD_ID;
-import static team.chisel.ctm.CTM.MOD_NAME;
-import static team.chisel.ctm.CTM.VERSION;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -14,34 +7,37 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import team.chisel.ctm.client.model.parsing.ModelLoaderCTM;
 import team.chisel.ctm.client.texture.IMetadataSectionCTM;
 import team.chisel.ctm.client.texture.type.TextureTypeRegistry;
 import team.chisel.ctm.client.util.CTMPackReloadListener;
 import team.chisel.ctm.client.util.TextureMetadataHandler;
 
-@Mod(name = MOD_NAME, modid = MOD_ID, version = VERSION, dependencies = "before:chisel;after:forge@[14.23.5.2807,)", clientSideOnly = true)
+@Mod(
+        name = Tags.MOD_NAME,
+        modid = Tags.MOD_ID,
+        version = Tags.VERSION,
+        dependencies = "before:chisel;after:forge@[14.23.5.2807,)",
+        clientSideOnly = true,
+        acceptableRemoteVersions = "*"
+)
 public class CTM {
-    
-    public static final String MOD_ID = "ctm";
-    public static final String MOD_NAME = "CTM";
-    public static final String DOMAIN = MOD_ID;
-    public static final String VERSION = "@VERSION@";
+    public static final Logger LOGGER = LogManager.getLogger("CTM");
 
-    public static final Logger logger = LogManager.getLogger("CTM");
-    
-    @Mod.Instance(MOD_ID)
+    @Mod.Instance(Tags.MOD_ID)
     public static CTM instance;
-    
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         TextureTypeRegistry.preInit(event);
 
         ModelLoaderRegistry.registerLoader(ModelLoaderCTM.INSTANCE);
         MinecraftForge.EVENT_BUS.register(ModelLoaderCTM.INSTANCE);
-        Minecraft.getMinecraft().metadataSerializer_.registerMetadataSectionType(new IMetadataSectionCTM.Serializer(), IMetadataSectionCTM.class);
-        
+        Minecraft.getMinecraft().metadataSerializer.registerMetadataSectionType(new IMetadataSectionCTM.Serializer(), IMetadataSectionCTM.class);
+
         MinecraftForge.EVENT_BUS.register(TextureMetadataHandler.INSTANCE);
-        ((SimpleReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CTMPackReloadListener.INSTANCE);
+        ((SimpleReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CTMPackReloadListener.INSTANCE);
     }
 }

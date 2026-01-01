@@ -1,21 +1,7 @@
 package team.chisel.ctm.client.util;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2BooleanLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
@@ -43,13 +29,20 @@ import team.chisel.ctm.client.model.ModelCTM;
 import team.chisel.ctm.client.model.parsing.ModelLoaderCTM;
 import team.chisel.ctm.client.texture.IMetadataSectionCTM;
 
+import javax.annotation.Nonnull;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public enum TextureMetadataHandler {
 
     INSTANCE;
-	
-	private final Set<ResourceLocation> registeredTextures = new HashSet<>();
-	private final Object2BooleanMap<ResourceLocation> wrappedModels = new Object2BooleanLinkedOpenHashMap<>();
-    
+
+    private final Set<ResourceLocation> registeredTextures = new HashSet<>();
+    private final Object2BooleanMap<ResourceLocation> wrappedModels = new Object2BooleanLinkedOpenHashMap<>();
+
     /*
      * Handle stitching metadata additional textures
      */
@@ -59,7 +52,7 @@ public enum TextureMetadataHandler {
             TextureAtlasSprite sprite = event.getSprite();
             try {
                 ResourceLocation rel = new ResourceLocation(sprite.getIconName());
-                rel = new ResourceLocation(rel.getResourceDomain(), "textures/" + rel.getResourcePath() + ".png");
+                rel = new ResourceLocation(rel.getNamespace(), "textures/" + rel.getPath() + ".png");
                 IMetadataSectionCTM metadata = ResourceUtil.getMetadata(rel);
                 if (metadata != null) {
                     // Load proxy data
@@ -71,9 +64,9 @@ public enum TextureMetadataHandler {
                         if (proxymeta != null) {
                             // Load proxy's additional textures
                             for (ResourceLocation r : proxymeta.getAdditionalTextures()) {
-                            	if (registeredTextures.add(r)) {
-                            		event.getMap().registerSprite(r);
-                            	}
+                                if (registeredTextures.add(r)) {
+                                    event.getMap().registerSprite(r);
+                                }
                             }
                         }
                     }
@@ -84,22 +77,23 @@ public enum TextureMetadataHandler {
                         }
                     }
                 }
-            }
-            catch (FileNotFoundException e) {} // Ignore these, they are reported by vanilla
+            } catch (FileNotFoundException e) {
+            } // Ignore these, they are reported by vanilla
             catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     /*
-     * Handle wrapping models that use CTM textures 
+     * Handle wrapping models that use CTM textures
      */
 
     private static final Class<?> multipartModelClass;
     private static final Class<?> vanillaModelWrapperClass;
     private static final Field multipartPartModels;
     private static final Field modelWrapperModel;
+
     static {
         try {
             multipartModelClass = Class.forName("net.minecraftforge.client.model.ModelLoader$MultipartModel");
@@ -131,7 +125,7 @@ public enum TextureMetadataHandler {
                     ResourceLocation dep = dependencies.pop();
                     IModel model;
                     try {
-                         model = dep == mrl ? rootModel : ModelLoaderRegistry.getModel(dep);
+                        model = dep == mrl ? rootModel : ModelLoaderRegistry.getModel(dep);
                     } catch (Exception e) {
                         continue;
                     }
@@ -145,7 +139,7 @@ public enum TextureMetadataHandler {
                             parent = parent.parent;
                         }
                     }
-                    
+
                     Set<ResourceLocation> newDependencies = Sets.newHashSet(model.getDependencies());
 
                     // FORGE WHYYYYY
@@ -154,18 +148,19 @@ public enum TextureMetadataHandler {
                         textures = partModels.values().stream().map(m -> m.getTextures()).flatMap(Collection::stream).collect(Collectors.toSet());
                         newDependencies.addAll(partModels.values().stream().flatMap(m -> m.getDependencies().stream()).collect(Collectors.toList()));
                     }
-                    
+
                     for (ResourceLocation tex : textures) {
                         IMetadataSectionCTM meta = null;
                         try {
                             meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(tex));
-                        } catch (IOException e) {} // Fallthrough
+                        } catch (IOException e) {
+                        } // Fallthrough
                         if (meta != null) {
                             shouldWrap = true;
                             break;
                         }
                     }
-                    
+
                     for (ResourceLocation rl : newDependencies) {
                         if (seenModels.add(rl)) {
                             dependencies.push(rl);
@@ -178,7 +173,7 @@ public enum TextureMetadataHandler {
                         event.getModelRegistry().putObject(mrl, wrap(rootModel, event.getModelRegistry().getObject(mrl)));
                         dependencies.clear();
                     } catch (IOException e) {
-                        CTM.logger.error("Could not wrap model " + mrl + ". Aborting...", e);
+                        CTM.LOGGER.error("Could not wrap model " + mrl + ". Aborting...", e);
                     }
                 }
             }

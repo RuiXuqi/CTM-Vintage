@@ -17,7 +17,7 @@ public class TextureTypeCTM implements ITextureType {
 
     @Override
     public ICTMTexture<? extends TextureTypeCTM> makeTexture(TextureInfo info) {
-      return new TextureCTM<TextureTypeCTM>(this, info);
+        return new TextureCTM<TextureTypeCTM>(this, info);
     }
 
     @Override
@@ -35,8 +35,8 @@ public class TextureTypeCTM implements ITextureType {
         return 2;
     }
 
-	@Override
-	public ITextureContext getContextFromData(long data) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public ITextureContext getContextFromData(long data) {
+        throw new UnsupportedOperationException();
+    }
 }

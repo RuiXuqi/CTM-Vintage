@@ -1,12 +1,6 @@
 package team.chisel.ctm.client.texture.render;
 
-import java.util.EnumSet;
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
-import static net.minecraft.util.EnumFacing.*;
-
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
@@ -19,6 +13,9 @@ import team.chisel.ctm.client.texture.ctx.TextureContextCTMV.Connections;
 import team.chisel.ctm.client.texture.type.TextureTypeCTMV;
 import team.chisel.ctm.client.util.Quad;
 import team.chisel.ctm.client.util.Submap;
+
+import java.util.EnumSet;
+import java.util.List;
 
 public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
 
@@ -39,9 +36,9 @@ public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
 
     private BakedQuad getQuad(BakedQuad in, ITextureContext context) {
         Quad q = makeQuad(in, context);
-        ConnectionData data = ((TextureContextCTMV)context).getData();
+        ConnectionData data = ((TextureContextCTMV) context).getData();
         Connections cons = data.getConnections();
-        
+
         // This is the order of operations for connections
         EnumSet<EnumFacing> realConnections = EnumSet.copyOf(data.getConnections().getConnections());
         if (cons.connectedOr(UP, DOWN)) {
@@ -96,7 +93,7 @@ public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
         if (cons.getConnections().isEmpty() && in.getFace().getAxis().isHorizontal()) {
             connected = true;
         }
-        
+
         q = q.rotate(rotation);
         if (connected) {
             return q.transformUVs(sprites[1], uvs).rebake();

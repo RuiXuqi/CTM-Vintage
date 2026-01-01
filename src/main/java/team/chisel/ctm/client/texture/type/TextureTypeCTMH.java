@@ -13,14 +13,14 @@ public class TextureTypeCTMH extends TextureTypeCTM {
     public ICTMTexture<TextureTypeCTMH> makeTexture(TextureInfo info) {
         return new TextureCTMH(this, info);
     }
-    
+
     @Override
     public int getQuadsPerSide() {
         return 1;
     }
-    
+
     @Override
     public int requiredTextures() {
-    	return 1;
+        return 1;
     }
 }

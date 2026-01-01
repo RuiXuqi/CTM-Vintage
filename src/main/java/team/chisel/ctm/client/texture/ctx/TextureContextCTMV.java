@@ -1,15 +1,6 @@
 package team.chisel.ctm.client.texture.ctx;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import com.google.common.collect.ObjectArrays;
-
-import static team.chisel.ctm.client.util.ConnectionLocations.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -17,15 +8,21 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import org.apache.commons.lang3.ArrayUtils;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.client.util.ConnectionLocations;
-import team.chisel.ctm.client.util.RegionCache;
+
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+
+import static team.chisel.ctm.client.util.ConnectionLocations.*;
 
 public class TextureContextCTMV implements ITextureContext {
 
-    private static final ConnectionLocations[] MAIN_VALUES = { UP, DOWN, NORTH, SOUTH, EAST, WEST };
+    private static final ConnectionLocations[] MAIN_VALUES = {UP, DOWN, NORTH, SOUTH, EAST, WEST};
     private static final ConnectionLocations[] OFFSET_VALUES = ArrayUtils.removeElements(ConnectionLocations.VALUES, ObjectArrays.concat(
-            new ConnectionLocations[] { NORTH_EAST_UP, NORTH_EAST_DOWN, NORTH_WEST_UP, NORTH_WEST_DOWN, SOUTH_WEST_UP, SOUTH_WEST_DOWN, SOUTH_EAST_UP, SOUTH_EAST_DOWN, },
+            new ConnectionLocations[]{NORTH_EAST_UP, NORTH_EAST_DOWN, NORTH_WEST_UP, NORTH_WEST_DOWN, SOUTH_WEST_UP, SOUTH_WEST_DOWN, SOUTH_EAST_UP, SOUTH_EAST_DOWN,},
             MAIN_VALUES,
             ConnectionLocations.class
     ));
@@ -35,13 +32,13 @@ public class TextureContextCTMV implements ITextureContext {
     @Getter
     @ToString
     public static class Connections {
-        
-        private EnumSet<EnumFacing> connections;        
-        
+
+        private EnumSet<EnumFacing> connections;
+
         public boolean connected(EnumFacing facing) {
             return connections.contains(facing);
         }
-        
+
         public boolean connectedAnd(EnumFacing... facings) {
             for (EnumFacing f : facings) {
                 if (!connected(f)) {
@@ -50,7 +47,7 @@ public class TextureContextCTMV implements ITextureContext {
             }
             return true;
         }
-        
+
         public boolean connectedOr(EnumFacing... facings) {
             for (EnumFacing f : facings) {
                 if (connected(f)) {
@@ -59,7 +56,7 @@ public class TextureContextCTMV implements ITextureContext {
             }
             return false;
         }
-        
+
         public static Connections forPos(IBlockAccess world, BlockPos pos) {
             IBlockState state = world.getBlockState(pos);
             return forPos(world, state, pos);
@@ -115,9 +112,9 @@ public class TextureContextCTMV implements ITextureContext {
             }
         }
 
-        public ConnectionData(long data){
+        public ConnectionData(long data) {
             connections = Connections.forData(data, null);
-            for (EnumFacing f : EnumFacing.VALUES){
+            for (EnumFacing f : EnumFacing.VALUES) {
                 connectionConnections.put(f, Connections.forData(data, f));
             }
         }
@@ -131,24 +128,24 @@ public class TextureContextCTMV implements ITextureContext {
     private ConnectionData data;
 
     private long compressedData;
-    
+
     public TextureContextCTMV(IBlockAccess world, BlockPos pos) {
         data = new ConnectionData(world, pos);
 
         IBlockState state = world.getBlockState(pos);
         for (ConnectionLocations loc : ALL_VALUES) {
-            if (state == world.getBlockState(loc.transform(pos))){
+            if (state == world.getBlockState(loc.transform(pos))) {
                 compressedData = compressedData | loc.getMask();
             }
         }
     }
 
-    public TextureContextCTMV(long data){
+    public TextureContextCTMV(long data) {
         this.data = new ConnectionData(data);
     }
 
     @Override
-    public long getCompressedData(){
+    public long getCompressedData() {
         return this.compressedData;
     }
 }
