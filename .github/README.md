@@ -1,3 +1,7 @@
+# This branch is deprecated!
+
+The code in this branch is NOT guaranteed and full of bugs caused by mistakes I made as a noob. A tested and guaranteed branch will be developed with current features.
+
 # CTM Vintage [![Curseforge](http://cf.way2muchnoise.eu/full_1350228_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/ctm-vintage) [![Curseforge](http://cf.way2muchnoise.eu/versions/For%20MC_1350228_all.svg)](https://www.curseforge.com/minecraft/mc-mods/ctm-vintage)
 
 A fork of [Chisel Team's ConnectedTexturesMod](https://www.curseforge.com/minecraft/mc-mods/ctm) with backported features.
