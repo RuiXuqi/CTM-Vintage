@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.vector.Vector2f;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
@@ -11,7 +12,6 @@ import team.chisel.ctm.client.texture.ctx.TextureContextPosition;
 import team.chisel.ctm.client.texture.type.TextureTypeEldritch;
 import team.chisel.ctm.client.util.Quad;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.List;
@@ -54,8 +54,7 @@ public class TextureEldritch extends AbstractTexture<TextureTypeEldritch> {
                     float yinterp = Quad.normalize(min.y, max.y, uv.y);
                     xinterp += offx;
                     yinterp += offy;
-                    uv.x = Quad.lerp(min.x, max.x, xinterp);
-                    uv.y = Quad.lerp(min.y, max.y, yinterp);
+                    uv = new Vector2f(Quad.lerp(min.x, max.x, xinterp), Quad.lerp(min.y, max.y, yinterp));
                     subdiv[i] = quadrant.withUv(j, uv);
                 }
             }

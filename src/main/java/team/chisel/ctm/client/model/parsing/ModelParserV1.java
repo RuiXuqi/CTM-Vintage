@@ -12,16 +12,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.model.IModelParser;
 import team.chisel.ctm.client.model.ModelCTM;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
-@SuppressWarnings("unchecked")
 public class ModelParserV1 implements IModelParser {
 
     private static final Gson GSON = new Gson();
@@ -39,7 +38,7 @@ public class ModelParserV1 implements IModelParser {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     @SneakyThrows
     public IModelCTM fromJson(ResourceLocation res, JsonObject json) {
         ModelBlock modelinfo = ModelBlock.deserialize(json.toString());
@@ -55,7 +54,7 @@ public class ModelParserV1 implements IModelParser {
             try {
                 int index = Integer.parseInt(e.getKey());
                 replacements.put(index, e.getValue());
-            } catch (NumberFormatException ex) {
+            } catch (NumberFormatException ignored) {
             }
         }
         return new ModelCTM(modelinfo, vanillamodel, replacements);

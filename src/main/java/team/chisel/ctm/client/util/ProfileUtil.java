@@ -2,8 +2,7 @@ package team.chisel.ctm.client.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class ProfileUtil {
 
@@ -12,7 +11,7 @@ public class ProfileUtil {
      */
     private static final Profiler dummyProfiler = new Profiler();
 
-    private static ThreadLocal<Profiler> profiler = ThreadLocal.withInitial(() -> {
+    private static final ThreadLocal<Profiler> profiler = ThreadLocal.withInitial(() -> {
         if (Thread.currentThread().getId() == 1) {
             return Minecraft.getMinecraft().profiler;
         } else {
@@ -20,7 +19,7 @@ public class ProfileUtil {
         }
     });
 
-    public static void start(@Nonnull String section) {
+    public static void start(@NotNull String section) {
         profiler.get().startSection(section);
     }
 
@@ -28,7 +27,7 @@ public class ProfileUtil {
         profiler.get().endSection();
     }
 
-    public static void endAndStart(@Nonnull String section) {
+    public static void endAndStart(@NotNull String section) {
         profiler.get().endStartSection(section);
     }
 }

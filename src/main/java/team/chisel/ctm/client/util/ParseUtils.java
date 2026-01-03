@@ -2,9 +2,11 @@ package team.chisel.ctm.client.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.experimental.UtilityClass;
 
 import java.util.Optional;
 
+@UtilityClass
 public class ParseUtils {
 
     public static Optional<Boolean> getBoolean(JsonElement element) {

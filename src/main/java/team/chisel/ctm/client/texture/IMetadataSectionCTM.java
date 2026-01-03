@@ -9,6 +9,8 @@ import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.IMetadataSectionSerializer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.CTM;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.ITextureType;
@@ -16,8 +18,6 @@ import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.texture.type.TextureTypeRegistry;
 import team.chisel.ctm.client.util.ResourceUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -28,7 +28,7 @@ import java.util.function.Function;
 @ParametersAreNonnullByDefault
 public interface IMetadataSectionCTM extends IMetadataSection {
 
-    public static final String SECTION_NAME = "ctm";
+    String SECTION_NAME = "ctm";
 
     int getVersion();
 
@@ -38,36 +38,37 @@ public interface IMetadataSectionCTM extends IMetadataSection {
 
     ResourceLocation[] getAdditionalTextures();
 
-    @Nullable
-    String getProxy();
+    @Nullable String getProxy();
 
     JsonObject getExtraData();
 
     default ICTMTexture<?> makeTexture(TextureAtlasSprite sprite, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         IMetadataSectionCTM meta = this;
-        if (getProxy() != null) {
+        boolean hasProxy = getProxy() != null;
+        if (hasProxy) {
             TextureAtlasSprite proxySprite = bakedTextureGetter.apply(new ResourceLocation(getProxy()));
             try {
-                meta = ResourceUtil.getMetadata(proxySprite);
-                if (meta == null) {
-                    meta = new V1();
-                }
+                meta = ResourceUtil.getMetadata(proxySprite).orElse(new V1());
                 sprite = proxySprite;
             } catch (IOException e) {
-                CTM.LOGGER.error("Could not parse metadata of proxy, ignoring proxy and using base texture." + getProxy(), e);
+                CTM.logger.error("Could not parse metadata of proxy, ignoring proxy and using base texture. {}", getProxy(), e);
                 meta = this;
+                hasProxy = false;
             }
         }
         return meta.getType().makeTexture(new TextureInfo(
-                Arrays.stream(ObjectArrays.concat(new ResourceLocation(sprite.getIconName()), meta.getAdditionalTextures())).map(bakedTextureGetter::apply).toArray(TextureAtlasSprite[]::new),
+                Arrays.stream(ObjectArrays.concat(new ResourceLocation(sprite.getIconName()), meta.getAdditionalTextures()))
+                        .map(bakedTextureGetter::apply)
+                        .toArray(TextureAtlasSprite[]::new),
                 Optional.of(meta.getExtraData()),
-                meta.getLayer()
+                meta.getLayer(),
+                hasProxy
         ));
     }
 
     @ToString
     @Getter
-    public static class V1 implements IMetadataSectionCTM {
+    class V1 implements IMetadataSectionCTM {
 
         private ITextureType type = TextureTypeRegistry.getType("NORMAL");
         private BlockRenderLayer layer = null;
@@ -138,7 +139,7 @@ public interface IMetadataSectionCTM extends IMetadataSection {
         }
     }
 
-    public static class Serializer implements IMetadataSectionSerializer<IMetadataSectionCTM> {
+    class Serializer implements IMetadataSectionSerializer<IMetadataSectionCTM> {
 
         @Override
         public @Nullable IMetadataSectionCTM deserialize(@Nullable JsonElement json, @Nullable Type typeOfT, @Nullable JsonDeserializationContext context) throws JsonParseException {
@@ -160,7 +161,7 @@ public interface IMetadataSectionCTM extends IMetadataSection {
         }
 
         @Override
-        public @Nonnull String getSectionName() {
+        public @NotNull String getSectionName() {
             return SECTION_NAME;
         }
     }

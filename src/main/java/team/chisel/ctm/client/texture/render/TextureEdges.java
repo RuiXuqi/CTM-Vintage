@@ -1,6 +1,7 @@
 package team.chisel.ctm.client.texture.render;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.Configurations;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
@@ -22,7 +23,7 @@ public class TextureEdges extends TextureCTM<TextureTypeEdges> {
     }
 
     @Override
-    public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
+    public List<BakedQuad> transformQuad(@NotNull BakedQuad bq, @NotNull ITextureContext context, int quadGoal) {
         Quad quad = makeQuad(bq, context);
         if (context == null || Configurations.disableCTM) {
             return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());
@@ -30,7 +31,7 @@ public class TextureEdges extends TextureCTM<TextureTypeEdges> {
 
         CTMLogicEdges logic = (CTMLogicEdges) ((TextureContextCTM) context).getCTM(bq.getFace());
         if (logic.isObscured()) {
-            return Arrays.stream(quad.transformUVs(sprites[2]).subdivide(4)).filter(Objects::nonNull).map(q -> q.rebake()).collect(Collectors.toList());
+            return Arrays.stream(quad.transformUVs(sprites[2]).subdivide(4)).filter(Objects::nonNull).map(Quad::rebake).collect(Collectors.toList());
         }
 
         return super.transformQuad(bq, context, quadGoal);

@@ -12,9 +12,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ItemModelMesherForge;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.registries.IRegistryDelegate;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.CTM;
 
-import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
@@ -58,7 +58,7 @@ public class ModelUtil {
         } else if (locations instanceof Int2ObjectMap) {
             modelResourceLocation = ((Int2ObjectMap<ModelResourceLocation>) locations).get(meta);
         } else {
-            CTM.LOGGER.error("Could not determine type of mesher locations.");
+            CTM.logger.error("Could not determine type of mesher locations.");
             modelResourceLocation = null;
         }
 

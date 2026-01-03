@@ -10,18 +10,17 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.common.MinecraftForge;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.CTM;
 import team.chisel.ctm.api.event.TextureCollectedEvent;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 import team.chisel.ctm.client.util.ProfileUtil;
 
-import javax.annotation.Nonnull;
-
 public class CTMCoreMethods {
 
     @SneakyThrows
-    public static Boolean canRenderInLayer(@Nonnull IBlockState state, @Nonnull BlockRenderLayer layer) {
+    public static Boolean canRenderInLayer(@NotNull IBlockState state, @NotNull BlockRenderLayer layer) {
         ProfileUtil.start("ctm_render_in_layer");
         IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
         if (model instanceof WeightedBakedModel) {
@@ -57,7 +56,7 @@ public class CTMCoreMethods {
             try {
                 return ((IModelCTM) model).getVanillaParent();
             } catch (Throwable t) {
-                CTM.LOGGER.error("Please update Chisel!");
+                CTM.logger.error("Please update Chisel!");
             }
         }
         return model;

@@ -1,5 +1,9 @@
 package team.chisel.ctm.api;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+@SuppressWarnings("unused")
 public class CTMAPIProps {
 
     public static final String VERSION = "0.1.0";

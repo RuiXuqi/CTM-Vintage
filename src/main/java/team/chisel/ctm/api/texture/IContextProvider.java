@@ -3,7 +3,6 @@ package team.chisel.ctm.api.texture;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.property.IExtendedBlockState;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -14,7 +13,7 @@ public interface IContextProvider {
      * Called to create a context for an upcoming render. This context will then be passed to
      * {@link ICTMTexture#transformQuad(net.minecraft.client.renderer.block.model.BakedQuad, ITextureContext, int)}.
      *
-     * @param state The state of the block being rendered. Will <i>not</i> be an {@link IExtendedBlockState}.
+     * @param state The state of the block being rendered. Will <i>not</i> be an {@link net.minecraftforge.common.property.IExtendedBlockState}.
      * @param world The current rendering world.
      * @param pos   The position of the block being rendered.
      * @param tex   The current {@link ICTMTexture} being rendered.

@@ -1,8 +1,11 @@
 package team.chisel.ctm.api.texture;
 
 import team.chisel.ctm.api.util.TextureInfo;
+import team.chisel.ctm.client.util.Submap;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Root interface representing a type of CTM texture. To register, use {@link TextureType}.
@@ -26,8 +29,13 @@ public interface ITextureType extends IContextProvider {
      *
      * @return The Amount of quads per side
      */
+    @Deprecated
     default int getQuadsPerSide() {
-        return 1;
+        return getOutputFaces().size();
+    }
+
+    default List<ISubmap> getOutputFaces() {
+        return Collections.singletonList(Submap.X1);
     }
 
     /**

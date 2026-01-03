@@ -1,18 +1,19 @@
 package team.chisel.ctm.client.model;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.ToString;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
@@ -22,9 +23,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.model.TRSRTransformation;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.IChiselFace;
@@ -33,24 +36,21 @@ import team.chisel.ctm.client.asm.CTMCoreMethods;
 import team.chisel.ctm.client.state.CTMExtendedState;
 import team.chisel.ctm.client.util.ProfileUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
-public abstract class AbstractCTMBakedModel implements IBakedModel {
+public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedModel> {
 
-    private static Cache<ModelResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.SECONDS).<ModelResourceLocation, AbstractCTMBakedModel>build();
-    private static Cache<State, AbstractCTMBakedModel> modelcache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).maximumSize(5000).<State, AbstractCTMBakedModel>build();
+    private static final Cache<ModelResourceLocation, AbstractCTMBakedModel> itemcache = CacheBuilder.newBuilder()
+            .expireAfterAccess(10, TimeUnit.SECONDS)
+            .build();
+    private static final Cache<State, AbstractCTMBakedModel> modelcache = CacheBuilder.newBuilder()
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .maximumSize(5000)
+            .build();
 
     public static void invalidateCaches() {
         itemcache.invalidateAll();
@@ -72,58 +72,40 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
                 block = ((ItemBlock) stack.getItem()).getBlock();
             }
             final IBlockState state = block == null ? null : block.getDefaultState();
+
             if (!stack.isEmpty() && stack.getItem().hasCustomProperties()) { // Handle parent model's overrides
                 @SuppressWarnings("deprecation") // Duplicate super logic, but called on the parent model overrides
-                ResourceLocation location = parent.getOverrides().applyOverride(stack, world, entity);
+                ResourceLocation location = getParent().getOverrides().applyOverride(stack, world, entity);
                 if (location != null) {
                     // Use the override's location as cache key
                     ModelResourceLocation overrideLoc = ModelLoader.getInventoryVariant(location.toString());
                     IBakedModel newParent = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager().getModel(overrideLoc);
-                    return itemcache.get(overrideLoc, () -> withNewParent(newParent).createModel(state, model, null, 0));
+                    return itemcache.get(overrideLoc, () -> withNewParent(newParent).createModel(state, model, newParent, null, 0, null));
                 }
             }
+
             ModelResourceLocation mrl = ModelUtil.getMesh(stack);
             if (mrl == null) {
                 // this must be a missing/invalid model
                 return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
             }
-            return itemcache.get(mrl, () -> createModel(state, model, null, 0));
+            return itemcache.get(mrl, () -> createModel(state, model, getParent(0), null, 0, null));
         }
     }
 
-    @Getter
-    @RequiredArgsConstructor
-    @ToString
-    private static class State {
-        private final @Nonnull IBlockState cleanState;
-        private final @Nullable Object2LongMap<ICTMTexture<?>> serializedContext;
-        private final @Nonnull IBakedModel parent;
+    @Desugar
+    private record State(@NotNull IBlockState cleanState, @Nullable Object2LongMap<ICTMTexture<?>> serializedContext,
+                         @NotNull IBakedModel parent, @Nullable BlockRenderLayer layer) {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            } else if (obj == null || getClass() != obj.getClass()) {
                 return false;
-            if (getClass() != obj.getClass())
-                return false;
+            }
             State other = (State) obj;
-
-            if (cleanState != other.cleanState) {
-                return false;
-            }
-            if (parent != other.parent) {
-                return false;
-            }
-
-            if (serializedContext == null) {
-                if (other.serializedContext != null) {
-                    return false;
-                }
-            } else if (!serializedContext.equals(other.serializedContext)) {
-                return false;
-            }
-            return true;
+            return cleanState == other.cleanState && parent == other.parent && layer == other.layer && Objects.equals(serializedContext, other.serializedContext);
         }
 
         @Override
@@ -134,163 +116,134 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
             result = prime * result + System.identityHashCode(cleanState);
             result = prime * result + (parent == null ? 0 : parent.hashCode());
             result = prime * result + (serializedContext == null ? 0 : serializedContext.hashCode());
+            result = prime * result + (layer == null ? 0 : layer.hashCode());
             return result;
         }
     }
 
     @Getter
-    private final @Nonnull IModelCTM model;
-    @Getter
-    private final @Nonnull IBakedModel parent;
-    private final @Nonnull Overrides overrides = new Overrides();
+    private final @NotNull IModelCTM model;
+    private final @NotNull Overrides overrides = new Overrides();
 
-    protected final ListMultimap<BlockRenderLayer, BakedQuad> genQuads = MultimapBuilder.enumKeys(BlockRenderLayer.class).arrayListValues().build();
-    protected final Table<BlockRenderLayer, EnumFacing, List<BakedQuad>> faceQuads = Tables.newCustomTable(Maps.newEnumMap(BlockRenderLayer.class), () -> Maps.newEnumMap(EnumFacing.class));
+    private final @Nullable BlockRenderLayer layer;
+    protected final List<BakedQuad> genQuads = new ArrayList<>();
+    protected final ListMultimap<EnumFacing, BakedQuad> faceQuads = ArrayListMultimap.create();
 
-    private final EnumMap<EnumFacing, ImmutableList<BakedQuad>> noLayerCache = new EnumMap<>(EnumFacing.class);
-    private ImmutableList<BakedQuad> noSideNoLayerCache;
+    public AbstractCTMBakedModel(@NotNull IModelCTM model, IBakedModel parent, @Nullable BlockRenderLayer layer) {
+        super(parent);
+        this.model = model;
+        this.layer = layer;
+    }
 
     @Override
     @SneakyThrows
-    public @Nonnull List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+    public @NotNull List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (CTMCoreMethods.renderingDamageModel.get()) {
-            return parent.getQuads(state, side, rand);
+            return getParent().getQuads(state, side, rand);
         }
-
-        IBakedModel parent = getParent(rand);
-
         ProfileUtil.start("ctm_models");
 
+        IBakedModel parent = getParent(rand);
         AbstractCTMBakedModel baked = this;
         BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
 
-        if (Minecraft.getMinecraft().world != null && state instanceof CTMExtendedState) {
+        if (Minecraft.getMinecraft().world != null && state instanceof CTMExtendedState ext) {
             ProfileUtil.start("state_creation");
-            CTMExtendedState ext = (CTMExtendedState) state;
-            RenderContextList ctxList = ext.getContextList(ext.getClean(), baked);
+            RenderContextList ctmCtx = ext.getContextList(ext.getClean(), baked);
 
-            Object2LongMap<ICTMTexture<?>> serialized = ctxList.serialized();
+            Object2LongMap<ICTMTexture<?>> serialized = ctmCtx.serialized();
             ProfileUtil.endAndStart("model_creation");
-            baked = modelcache.get(new State(ext.getClean(), serialized, parent), () -> createModel(state, model, ctxList, rand));
-            ProfileUtil.end();
+
+            // Get cached model specific to this state + layer
+            baked = modelcache.get(
+                    new State(ext.getClean(), serialized, parent, layer),
+                    () -> createModel(state, model, parent, ctmCtx, rand, layer)
+            );
+            ProfileUtil.end(); // model_creation
         } else if (state != null) {
             ProfileUtil.start("model_creation");
-            baked = modelcache.get(new State(state, null, getParent(rand)), () -> createModel(state, model, null, rand));
-            ProfileUtil.end();
+            // Simple state, but still layer aware
+            baked = modelcache.get(
+                    new State(state, null, parent, layer),
+                    () -> createModel(state, model, parent, null, rand, layer)
+            );
+            ProfileUtil.end(); // model_creation
         }
 
+        var quads = baked.quadLookup(side, layer);
+        //CTM.logger.info("{}/{}/{}/{}: {}", state, side, layer == null ? "null" : layer.toString().substring(11, 17), baked.layer == null ? "null" : baked.layer.toString().substring(11, 17), quads.size());
+        return quads;
+    }
+
+    protected final List<BakedQuad> quadLookup(@Nullable EnumFacing side, @Nullable BlockRenderLayer layer) {
         ProfileUtil.start("quad_lookup");
-        List<BakedQuad> ret;
-        if (side != null && layer != null) {
-            ret = baked.faceQuads.get(layer, side);
-        } else if (side != null) {
-            final AbstractCTMBakedModel _baked = baked;
-            ret = baked.noLayerCache.computeIfAbsent(side, f -> ImmutableList.copyOf(_baked.faceQuads.column(f).values()
-                    .stream()
-                    .flatMap(List::stream)
-                    .distinct()
-                    .collect(Collectors.toList())));
-        } else if (layer != null) {
-            ret = baked.genQuads.get(layer);
-        } else {
-            ret = baked.noSideNoLayerCache;
-            if (ret == null) {
-                ret = baked.noSideNoLayerCache = ImmutableList.copyOf(baked.genQuads.values()
-                        .stream()
-                        .distinct()
-                        .collect(Collectors.toList()));
+        List<BakedQuad> ret = Collections.emptyList();
+        if (layer == this.layer) {
+            if (side != null) {
+                ret = this.faceQuads.get(side);
+            } else {
+                ret = this.genQuads;
             }
         }
-        ProfileUtil.end();
+        ProfileUtil.end(); // quad_lookup
+        ProfileUtil.end(); // ctm_models
 
-        ProfileUtil.end();
+        if (ret == null) {
+            throw new IllegalStateException("getQuads called on a model that was not properly initialized - by using getOverrides and/or getModelData");
+        }
         return ret;
     }
 
     /**
      * Random sensitive parent, will proxy to {@link WeightedBakedModel} if possible.
      */
-    @Nonnull
+    @NotNull
     public IBakedModel getParent(long rand) {
-        if (getParent() instanceof WeightedBakedModel) {
-            return ((WeightedBakedModel) parent).getRandomModel(rand);
+        if (getParent() instanceof WeightedBakedModel weightedBakedModel) {
+            return weightedBakedModel.getRandomModel(rand);
         }
         return getParent();
     }
 
-    @Override
-    public @Nonnull ItemOverrideList getOverrides() {
-        return overrides;
+    @NotNull
+    public IBakedModel getParent() {
+        return this.originalModel;
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
-        return parent.isAmbientOcclusion();
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return parent.isGui3d();
-    }
-
-    @Override
-    public boolean isBuiltInRenderer() {
-        return false;
+    public ItemOverrideList getOverrides() {
+        return this.overrides;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public @Nonnull TextureAtlasSprite getParticleTexture() {
+    public @NotNull TextureAtlasSprite getParticleTexture() {
         IChiselFace face = this.model.getDefaultFace();
-        return face != null ? face.getParticle() : this.parent.getParticleTexture();
+        return face != null ? face.getParticle() : super.getParticleTexture();
     }
 
     @Override
-    public @Nonnull ItemCameraTransforms getItemCameraTransforms() {
-        return ItemCameraTransforms.DEFAULT;
+    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@NotNull ItemCameraTransforms.TransformType cameraTransformType) {
+        return Pair.of(this, super.handlePerspective(cameraTransformType).getRight());
     }
 
-    private static @Nonnull TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s) {
-        return new TRSRTransformation(
-                new Vector3f(tx / 16, ty / 16, tz / 16),
-                TRSRTransformation.quatFromXYZDegrees(new Vector3f(ax, ay, az)),
-                new Vector3f(s, s, s),
-                null);
+    protected abstract AbstractCTMBakedModel createModel(@Nullable IBlockState state, @NotNull IModelCTM model, IBakedModel parent, @Nullable RenderContextList ctx, long rand, @Nullable BlockRenderLayer layer);
+
+    protected /* abstract */ AbstractCTMBakedModel withNewParent(@NotNull IBakedModel parent) {
+        // Pass null for layer as default for items
+        return new ModelBakedCTM(getModel(), parent, null);
     }
 
-    public static final Map<TransformType, TRSRTransformation> TRANSFORMS = ImmutableMap.<TransformType, TRSRTransformation>builder()
-            .put(TransformType.GUI, get(0, 0, 0, 30, 45, 0, 0.625f))
-            .put(TransformType.THIRD_PERSON_RIGHT_HAND, get(0, 2.5f, 0, 75, 45, 0, 0.375f))
-            .put(TransformType.THIRD_PERSON_LEFT_HAND, get(0, 2.5f, 0, 75, 45, 0, 0.375f))
-            .put(TransformType.FIRST_PERSON_RIGHT_HAND, get(0, 0, 0, 0, 45, 0, 0.4f))
-            .put(TransformType.FIRST_PERSON_LEFT_HAND, get(0, 0, 0, 0, 225, 0, 0.4f))
-            .put(TransformType.GROUND, get(0, 2, 0, 0, 0, 0, 0.25f))
-            .put(TransformType.FIXED, get(0, 0, 0, 0, 0, 0, 0.5f))
-            .build();
-
-    public static final TRSRTransformation DEFAULT_TRANSFORM = get(0, 0, 0, 0, 0, 0, 1);
-
-    @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-        return Pair.of(this, TRANSFORMS.getOrDefault(cameraTransformType, DEFAULT_TRANSFORM).getMatrix());
-    }
-
-    protected static final BlockRenderLayer[] LAYERS = BlockRenderLayer.values();
-
-    protected abstract AbstractCTMBakedModel createModel(IBlockState state, @Nonnull IModelCTM model, RenderContextList ctx, long rand);
-
-    protected /* abstract */ AbstractCTMBakedModel withNewParent(@Nonnull IBakedModel parent) {
-        return new ModelBakedCTM(getModel(), parent);
-    }
-
+    @Nullable
     private <T> T applyToParent(long rand, Function<AbstractCTMBakedModel, T> func) {
         IBakedModel parent = getParent(rand);
-        if (parent instanceof AbstractCTMBakedModel) {
-            return func.apply((AbstractCTMBakedModel) parent);
+        if (parent instanceof AbstractCTMBakedModel ctmBakedModel) {
+            return func.apply(ctmBakedModel);
         }
         return null;
     }
 
+    @Nullable
     protected ICTMTexture<?> getOverrideTexture(long rand, int tintIndex, String iconName) {
         ICTMTexture<?> ret = getModel().getOverrideTexture(tintIndex, iconName);
         if (ret == null) {
@@ -299,6 +252,7 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
         return ret;
     }
 
+    @Nullable
     protected ICTMTexture<?> getTexture(long rand, String iconName) {
         ICTMTexture<?> ret = getModel().getTexture(iconName);
         if (ret == null) {
@@ -307,6 +261,7 @@ public abstract class AbstractCTMBakedModel implements IBakedModel {
         return ret;
     }
 
+    @Nullable
     protected TextureAtlasSprite getOverrideSprite(long rand, int tintIndex) {
         TextureAtlasSprite ret = getModel().getOverrideSprite(tintIndex);
         if (ret == null) {

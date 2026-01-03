@@ -18,10 +18,10 @@ import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.model.IModelParser;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,10 +39,10 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
     private Map<ResourceLocation, IModelCTM> loadedModels = Maps.newHashMap();
 
     private LoadingCache<ResourceLocation, JsonElement> jsonCache = CacheBuilder.newBuilder().maximumSize(128).build(
-            new CacheLoader<ResourceLocation, JsonElement>() {
+            new CacheLoader<>() {
                 @Override
                 @SuppressWarnings("null")
-                public JsonElement load(ResourceLocation modelLocation) throws Exception {
+                public JsonElement load(@NotNull ResourceLocation modelLocation) {
                     String path = modelLocation.getPath() + ".json";
                     if (!path.startsWith("models/")) {
                         path = "models/" + path;
@@ -56,7 +56,7 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
                         if (ele != null) {
                             return ele;
                         }
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
                     }
 
                     return JsonNull.INSTANCE;
@@ -70,14 +70,14 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
     }
 
     @Override
-    public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
+    public void onResourceManagerReload(@NotNull IResourceManager resourceManager) {
         this.manager = resourceManager;
         jsonCache.invalidateAll();
         loadedModels.clear();
     }
 
     @Override
-    public boolean accepts(ResourceLocation modelLocation) {
+    public boolean accepts(@NotNull ResourceLocation modelLocation) {
         if (modelLocation instanceof ModelResourceLocation) {
             modelLocation = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath());
         }
@@ -87,7 +87,7 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
     }
 
     @Override
-    public IModel loadModel(ResourceLocation modelLocation) throws IOException {
+    public IModel loadModel(@NotNull ResourceLocation modelLocation) throws IOException {
         loadedModels.computeIfAbsent(modelLocation, res -> loadFromFile(res, true));
         IModelCTM model = loadedModels.get(modelLocation);
         if (model != null) {

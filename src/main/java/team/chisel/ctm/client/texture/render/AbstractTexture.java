@@ -8,14 +8,14 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.texture.ITextureType;
-import team.chisel.ctm.api.util.NonnullType;
 import team.chisel.ctm.api.util.TextureInfo;
 import team.chisel.ctm.client.util.Quad;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +35,8 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     protected BlockRenderLayer layer;
 
     @SuppressWarnings("null")
-    protected @NonnullType TextureAtlasSprite @NonnullType [] sprites;
+    protected @NotNull TextureAtlasSprite @NotNull [] sprites;
+    protected boolean isProxy;
 
     @Deprecated
     protected boolean fullbright;
@@ -55,6 +56,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
         this.type = type;
         this.layer = info.getRenderLayer();
         this.sprites = info.getSprites();
+        this.isProxy = info.isProxy();
         this.fullbright = info.getFullbright();
         if (info.getInfo().isPresent()) {
             JsonElement light = info.getInfo().get().get("light");
@@ -72,7 +74,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
         }
     }
 
-    private final int parseLightValue(@Nullable JsonElement data) {
+    private int parseLightValue(@Nullable JsonElement data) {
         if (data != null && data.isJsonPrimitive() && data.getAsJsonPrimitive().isNumber()) {
             return MathHelper.clamp(data.getAsInt(), 0, 15);
         }
@@ -86,7 +88,7 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
 
     @Override
     public Collection<ResourceLocation> getTextures() {
-        return Arrays.stream(sprites).map(s -> new ResourceLocation(s.getIconName())).collect(Collectors.toList());
+        return Arrays.stream(sprites).map(TextureAtlasSprite::getIconName).map(ResourceLocation::new).collect(Collectors.toList());
     }
 
     protected Quad makeQuad(BakedQuad bq, @Nullable ITextureContext context) {

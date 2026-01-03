@@ -1,7 +1,7 @@
 package team.chisel.ctm.client.texture.ctx;
 
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.IBlockAccess;
 import team.chisel.ctm.api.IOffsetProvider;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -13,13 +13,13 @@ public enum OffsetProviderRegistry {
 
     INSTANCE;
 
-    private List<IOffsetProvider> providers = new ArrayList<>();
+    private final List<IOffsetProvider> providers = new ArrayList<>();
 
     public void registerProvider(IOffsetProvider provider) {
         this.providers.add(provider);
     }
 
-    public BlockPos getOffset(World world, BlockPos pos) {
+    public BlockPos getOffset(IBlockAccess world, BlockPos pos) {
         BlockPos ret = BlockPos.ORIGIN;
         for (IOffsetProvider p : providers) {
             ret = ret.add(p.getOffset(world, pos));

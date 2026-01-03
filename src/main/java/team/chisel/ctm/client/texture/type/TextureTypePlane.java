@@ -1,0 +1,37 @@
+package team.chisel.ctm.client.texture.type;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.minecraft.util.EnumFacing;
+import org.jetbrains.annotations.NotNull;
+import team.chisel.ctm.api.texture.ICTMTexture;
+import team.chisel.ctm.api.texture.TextureType;
+import team.chisel.ctm.api.util.TextureInfo;
+import team.chisel.ctm.client.texture.render.TexturePlane;
+
+@RequiredArgsConstructor
+public class TextureTypePlane extends TextureTypeCTM {
+    @TextureType("ctmh")
+    @TextureType("ctm_horizontal")
+    public static final TextureTypePlane H = new TextureTypePlane(EnumFacing.Plane.HORIZONTAL);
+    @TextureType("ctm_vertical")
+    public static final TextureTypePlane V = new TextureTypePlane(EnumFacing.Plane.VERTICAL);
+
+    @Getter
+    private final EnumFacing.Plane plane;
+
+    @Override
+    public ICTMTexture<TextureTypePlane> makeTexture(@NotNull TextureInfo info) {
+        return new TexturePlane(this, info);
+    }
+
+    @Override
+    public int getQuadsPerSide() {
+        return 1;
+    }
+
+    @Override
+    public int requiredTextures() {
+        return 1;
+    }
+}

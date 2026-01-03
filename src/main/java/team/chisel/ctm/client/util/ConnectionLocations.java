@@ -2,8 +2,9 @@ package team.chisel.ctm.client.util;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
+import team.chisel.ctm.client.newctm.LocalDirection;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,34 +64,30 @@ public enum ConnectionLocations {
      * The enum facing directions needed to get to this connection location
      */
     private final EnumFacing normal;
-    private final @Nullable Dir dir;
-    private boolean offset;
+    private final @Nullable LocalDirection dir;
+    private final boolean offset;
 
-    private ConnectionLocations(@Nullable Dir dir) {
+    ConnectionLocations(@Nullable LocalDirection dir) {
         this(EnumFacing.SOUTH, dir);
     }
 
-    private ConnectionLocations(@Nullable Dir dir, boolean offset) {
-        this(EnumFacing.SOUTH, dir, offset);
-    }
-
-    private ConnectionLocations(EnumFacing normal, @Nullable Dir dir) {
+    ConnectionLocations(EnumFacing normal, @Nullable LocalDirection dir) {
         this(normal, dir, false);
     }
 
-    private ConnectionLocations(EnumFacing normal, @Nullable Dir dir, boolean offset) {
+    ConnectionLocations(EnumFacing normal, @Nullable LocalDirection dir, boolean offset) {
         this.normal = normal;
         this.dir = dir;
         this.offset = offset;
     }
 
-    public @Nullable Dir getDirForSide(EnumFacing facing) {
+    public @Nullable LocalDirection getDirForSide(EnumFacing facing) {
         return dir == null ? null : dir.relativize(facing);
     }
 
     public @Nullable EnumFacing clipOrDestroy(EnumFacing direction) {
         throw new UnsupportedOperationException();
-//        EnumFacing[] dirs = dir == null ? new EnumFacing[] {normal, normal} : dir.getNormalizedDirs(direction);
+//        Direction[] dirs = dir == null ? new Direction[] {normal, normal} : dir.getNormalizedDirs(direction);
 //        if (dirs[0] == direction) {
 //            return dirs.length > 1 ? dirs[1] : null;
 //        } else if (dirs.length > 1 && dirs[1] == direction) {
@@ -115,41 +112,26 @@ public enum ConnectionLocations {
     }
 
     public static ConnectionLocations fromFacing(EnumFacing facing) {
-        switch (facing) {
-            case NORTH:
-                return NORTH;
-            case SOUTH:
-                return SOUTH;
-            case EAST:
-                return EAST;
-            case WEST:
-                return WEST;
-            case UP:
-                return UP;
-            case DOWN:
-                return DOWN;
-            default:
-                return NORTH;
-        }
+        return switch (facing) {
+            case NORTH -> NORTH;
+            case SOUTH -> SOUTH;
+            case EAST -> EAST;
+            case WEST -> WEST;
+            case UP -> UP;
+            case DOWN -> DOWN;
+        };
     }
 
     public static EnumFacing toFacing(ConnectionLocations loc) {
-        switch (loc) {
-            case NORTH:
-                return EnumFacing.NORTH;
-            case SOUTH:
-                return EnumFacing.SOUTH;
-            case EAST:
-                return EnumFacing.EAST;
-            case WEST:
-                return EnumFacing.WEST;
-            case UP:
-                return EnumFacing.UP;
-            case DOWN:
-                return EnumFacing.DOWN;
-            default:
-                return EnumFacing.NORTH;
-        }
+        return switch (loc) {
+            case NORTH -> EnumFacing.NORTH;
+            case SOUTH -> EnumFacing.SOUTH;
+            case EAST -> EnumFacing.EAST;
+            case WEST -> EnumFacing.WEST;
+            case UP -> EnumFacing.UP;
+            case DOWN -> EnumFacing.DOWN;
+            default -> EnumFacing.NORTH;
+        };
     }
 
     public static List<ConnectionLocations> decode(long data) {
@@ -163,6 +145,6 @@ public enum ConnectionLocations {
     }
 
     public long getMask() {
-        return 1 << ordinal();
+        return 1L << ordinal();
     }
 }

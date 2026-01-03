@@ -1,5 +1,6 @@
 package team.chisel.ctm.client.texture.type;
 
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.TextureType;
 import team.chisel.ctm.api.util.TextureInfo;
@@ -9,7 +10,7 @@ import team.chisel.ctm.client.texture.render.TextureEdgesFull;
 public class TextureTypeEdgesFull extends TextureTypeEdges {
 
     @Override
-    public ICTMTexture<? extends TextureTypeCTM> makeTexture(TextureInfo info) {
+    public ICTMTexture<? extends TextureTypeCTM> makeTexture(@NotNull TextureInfo info) {
         return new TextureEdgesFull(this, info);
     }
 

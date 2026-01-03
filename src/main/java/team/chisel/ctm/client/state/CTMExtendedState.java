@@ -10,11 +10,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.util.RenderContextList;
 import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 import team.chisel.ctm.client.util.ProfileUtil;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,11 +24,11 @@ import java.util.Optional;
 public class CTMExtendedState extends BlockStateBase implements IExtendedBlockState {
 
     interface Exclusions {
-        public <T extends Comparable<T>> T getValue(IProperty<T> property);
+        <T extends Comparable<T>> T getValue(IProperty<T> property);
 
-        public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value);
+        <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value);
 
-        public <T extends Comparable<T>> IBlockState cycleProperty(IProperty<T> property);
+        <T extends Comparable<T>> IBlockState cycleProperty(IProperty<T> property);
     }
 
     @Delegate(excludes = Exclusions.class)

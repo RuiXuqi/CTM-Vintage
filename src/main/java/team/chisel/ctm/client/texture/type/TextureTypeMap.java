@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.texture.ITextureType;
@@ -13,8 +14,6 @@ import team.chisel.ctm.client.texture.ctx.TextureContextPosition;
 import team.chisel.ctm.client.texture.render.TextureMap;
 import team.chisel.ctm.client.texture.render.TextureMap.MapType;
 
-import javax.annotation.Nonnull;
-
 
 @RequiredArgsConstructor
 public class TextureTypeMap implements ITextureType {
@@ -22,13 +21,13 @@ public class TextureTypeMap implements ITextureType {
     private final MapType type;
 
     @Override
-    public TextureMap makeTexture(TextureInfo info) {
+    public TextureMap makeTexture(@NotNull TextureInfo info) {
         return new TextureMap(this, info, type);
     }
 
     @Override
-    public ITextureContext getBlockRenderContext(IBlockState state, IBlockAccess world, @Nonnull BlockPos pos, ICTMTexture<?> tex) {
-        return type.getContext(pos, (TextureMap) tex);
+    public ITextureContext getBlockRenderContext(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos, @NotNull ICTMTexture<?> tex) {
+        return type.getContext(world, pos, (TextureMap) tex);
     }
 
     @Override

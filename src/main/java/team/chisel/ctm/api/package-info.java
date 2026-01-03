@@ -1,4 +1,2 @@
-@API(apiVersion = CTMAPIProps.VERSION, owner = "ctm", provides = "ctm-api")
+@mcp.MethodsReturnNonnullByDefault
 package team.chisel.ctm.api;
-
-import net.minecraftforge.fml.common.API;

@@ -1,17 +1,20 @@
 package team.chisel.ctm.client.util;
 
+import com.google.gson.Gson;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumFacing.AxisDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import team.chisel.ctm.api.util.NonnullType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import team.chisel.ctm.client.newctm.ConnectionCheck;
+import team.chisel.ctm.client.newctm.LocalDirection;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
+import java.util.List;
+
+import static net.minecraft.util.EnumFacing.*;
 
 /**
  * Think of this class as a "Two dimensional ForgeDirection, with diagonals".
@@ -22,7 +25,7 @@ import java.util.Arrays;
  * for inner corner rendering.
  */
 @ParametersAreNonnullByDefault
-public enum Dir {
+public enum Dir implements LocalDirection {
     // @formatter:off
     TOP(UP), 
     TOP_RIGHT(UP, EAST),
@@ -47,18 +50,18 @@ public enum Dir {
         }
     }
 
-    private @NonnullType EnumFacing[] dirs;
+    private final @NotNull EnumFacing[] dirs;
 
-    private @NonnullType BlockPos[] offsets = new BlockPos[6];
+    private final @NotNull BlockPos[] offsets = new BlockPos[6];
 
-    private Dir(EnumFacing... dirs) {
+    Dir(EnumFacing... dirs) {
         this.dirs = dirs;
     }
 
     private void buildCaches() {
         // Fill normalized dirs
         for (EnumFacing normal : EnumFacing.VALUES) {
-            @NonnullType EnumFacing[] normalized;
+            @NotNull EnumFacing[] normalized;
             if (normal == NORMAL) {
                 normalized = dirs;
             } else if (normal == NORMAL.getOpposite()) {
@@ -103,38 +106,43 @@ public enum Dir {
      * @param ctm   The CTM instance to use for logic.
      * @param world The world the block is in.
      * @param pos   The position of your block.
+     * @param state The state of your block.
      * @param side  The side of the current face.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
-    public boolean isConnected(CTMLogic ctm, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return ctm.isConnected(world, pos, applyConnection(pos, side), side);
+    @Override
+    public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
+        return ctm.isConnected(world, pos, state, applyConnection(pos, side), side);
     }
 
     /**
      * Finds if this block is connected for the given side in this Dir.
      *
-     * @param ctm   The CTM instance to use for logic.
-     * @param world The world the block is in.
-     * @param pos   The position of your block.
-     * @param side  The side of the current face.
-     * @param state The state to check for connection with.
+     * @param ctm             The CTM instance to use for logic.
+     * @param world           The world the block is in.
+     * @param pos             The position of your block.
+     * @param state           The state of your block.
+     * @param side            The side of the current face.
+     * @param connectionState The state to check for connection with.
      * @return True if the block is connected in the given Dir, false otherwise.
      */
-    public boolean isConnected(CTMLogic ctm, IBlockAccess world, BlockPos pos, EnumFacing side, IBlockState state) {
-        return ctm.isConnected(world, pos, applyConnection(pos, side), side, state);
+    @Override
+    public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side, IBlockState connectionState) {
+        return ctm.isConnected(world, pos, state, applyConnection(pos, side), side, connectionState);
     }
 
     /**
-     * Apply this Dir to the given BlockPos for the given EnumFacing normal direction.
+     * Apply this Dir to the given BlockPos for the given Direction normal direction.
      *
      * @return The offset BlockPos
      */
     @SuppressWarnings("null")
-    @Nonnull
+    @NotNull
     public BlockPos applyConnection(BlockPos pos, EnumFacing side) {
         return pos.add(getOffset(side));
     }
 
+    @Override
     public Dir relativize(EnumFacing normal) {
         /*
         if (normal == NORMAL) {
@@ -154,12 +162,13 @@ public enum Dir {
         throw new UnsupportedOperationException("Yell at tterrag to finish deserialization");
     }
 
-    @Nonnull
+    @Override
+    @NotNull
     public BlockPos getOffset(EnumFacing normal) {
         return offsets[normal.ordinal()];
     }
 
-    public @Nullable Dir getDirFor(EnumFacing[] dirs) {
+    public @Nullable LocalDirection getDirFor(EnumFacing[] dirs) {
         if (dirs == this.dirs) { // Short circuit for identical return from getNormalizedDirs
             return this;
         }
@@ -173,7 +182,7 @@ public enum Dir {
     }
 
     private EnumFacing rotate(EnumFacing facing, EnumFacing axisFacing) {
-        Axis axis = axisFacing.getAxis();
+        EnumFacing.Axis axis = axisFacing.getAxis();
         AxisDirection axisDir = axisFacing.getAxisDirection();
 
         if (axisDir == AxisDirection.POSITIVE) {
@@ -181,40 +190,45 @@ public enum Dir {
         }
 
         if (facing.getAxis() != axis) {
-            switch (axis) {
-                case X:
-                    // Inverted results from EnumFacing#rotateX
-                    switch (facing) {
-                        case NORTH:
-                            return UP;
-                        case DOWN:
-                            return NORTH;
-                        case SOUTH:
-                            return DOWN;
-                        case UP:
-                            return SOUTH;
-                        default:
-                            return facing; // Invalid but ignored
-                    }
-                case Y:
-                    return facing.rotateYCCW();
-                case Z:
-                    // Inverted results from EnumFacing#rotateZ
-                    switch (facing) {
-                        case EAST:
-                            return EAST;
-                        case WEST:
-                            return WEST;
-                        case UP:
-                            return DOWN;
-                        case DOWN:
-                            return UP;
-                        default:
-                            return facing; // invalid but ignored
-                    }
-            }
+            return switch (axis) {
+                // Inverted results from Direction#rotateX
+                case X -> switch (facing) {
+                    case NORTH -> UP;
+                    case DOWN -> NORTH;
+                    case SOUTH -> DOWN;
+                    case UP -> SOUTH;
+                    default -> facing; // Invalid but ignored
+                };
+                case Y -> facing.rotateYCCW();
+                // Inverted results from Direction#rotateZ
+                case Z -> switch (facing) {
+                    case EAST -> EAST;
+                    case WEST -> WEST;
+                    case UP -> DOWN;
+                    case DOWN -> UP;
+                    default -> facing; // invalid but ignored
+                };
+            };
         }
 
         return facing;
+    }
+
+    @Override
+    public String asJson() {
+        return "{\"id\": \"" + name() + "\", \"directions\": " + new Gson().toJson(dirs) + "}";
+    }
+
+    public static LocalDirection fromDirections(List<EnumFacing> directions) {
+        return fromDirections(directions.toArray(new EnumFacing[0]));
+    }
+
+    public static LocalDirection fromDirections(EnumFacing... directions) {
+        for (var dir : values()) {
+            if (Arrays.equals(dir.dirs, directions)) {
+                return dir;
+            }
+        }
+        throw new UnsupportedOperationException("Currently invalid local direction");
     }
 }

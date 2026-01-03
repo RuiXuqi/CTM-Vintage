@@ -3,6 +3,7 @@ package team.chisel.ctm.client.texture.render;
 import com.google.common.collect.Lists;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
@@ -25,7 +26,7 @@ public class TextureEdgesFull extends TextureEdges {
     }
 
     @Override
-    public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
+    public List<BakedQuad> transformQuad(@NotNull BakedQuad bq, @NotNull ITextureContext context, int quadGoal) {
         Quad quad = makeQuad(bq, context);
         if (context == null) {
             return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());

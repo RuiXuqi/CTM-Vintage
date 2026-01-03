@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import team.chisel.ctm.client.model.parsing.ModelLoaderCTM;
+import team.chisel.ctm.client.newctm.json.CTMDefinitionManager;
 import team.chisel.ctm.client.texture.IMetadataSectionCTM;
 import team.chisel.ctm.client.texture.type.TextureTypeRegistry;
 import team.chisel.ctm.client.util.CTMPackReloadListener;
@@ -24,7 +25,7 @@ import team.chisel.ctm.client.util.TextureMetadataHandler;
         acceptableRemoteVersions = "*"
 )
 public class CTM {
-    public static final Logger LOGGER = LogManager.getLogger("CTM");
+    public static final Logger logger = LogManager.getLogger("CTM");
 
     @Mod.Instance(Tags.MOD_ID)
     public static CTM instance;
@@ -38,6 +39,8 @@ public class CTM {
         Minecraft.getMinecraft().metadataSerializer.registerMetadataSectionType(new IMetadataSectionCTM.Serializer(), IMetadataSectionCTM.class);
 
         MinecraftForge.EVENT_BUS.register(TextureMetadataHandler.INSTANCE);
-        ((SimpleReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CTMPackReloadListener.INSTANCE);
+        final SimpleReloadableResourceManager rm = (SimpleReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
+        rm.registerReloadListener(CTMPackReloadListener.INSTANCE);
+        rm.registerReloadListener(CTMDefinitionManager.INSTANCE);
     }
 }

@@ -5,10 +5,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.IModel;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.IChiselFace;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 public interface IModelCTM extends IModel {
@@ -26,11 +26,13 @@ public interface IModelCTM extends IModel {
 
     ICTMTexture<?> getTexture(String iconName);
 
+    @Nullable
     @Deprecated
     default IChiselFace getFace(EnumFacing facing) {
         return null;
     }
 
+    @Nullable
     @Deprecated
     default IChiselFace getDefaultFace() {
         return null;

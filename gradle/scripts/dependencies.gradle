@@ -57,4 +57,5 @@ dependencies {
     // implementation ('com.google.code.gson:gson:2.8.6') {
     //     transitive = false
     // }
+    compileOnly 'org.jetbrains:annotations:26.0.2-1'
 }

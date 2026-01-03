@@ -3,6 +3,7 @@ package team.chisel.ctm.client.texture.type;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.Configurations;
 import team.chisel.ctm.api.texture.ICTMTexture;
 import team.chisel.ctm.api.texture.ITextureContext;
@@ -16,12 +17,12 @@ import team.chisel.ctm.client.texture.render.TextureCTM;
 public class TextureTypeCTM implements ITextureType {
 
     @Override
-    public ICTMTexture<? extends TextureTypeCTM> makeTexture(TextureInfo info) {
-        return new TextureCTM<TextureTypeCTM>(this, info);
+    public ICTMTexture<? extends TextureTypeCTM> makeTexture(@NotNull TextureInfo info) {
+        return new TextureCTM<>(this, info);
     }
 
     @Override
-    public TextureContextCTM getBlockRenderContext(IBlockState state, IBlockAccess world, BlockPos pos, ICTMTexture<?> tex) {
+    public TextureContextCTM getBlockRenderContext(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos, @NotNull ICTMTexture<?> tex) {
         return new TextureContextCTM(state, world, pos, (TextureCTM<?>) tex);
     }
 

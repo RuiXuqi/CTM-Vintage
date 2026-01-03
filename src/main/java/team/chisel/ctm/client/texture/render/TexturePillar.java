@@ -3,30 +3,32 @@ package team.chisel.ctm.client.texture.render;
 import com.google.common.collect.Lists;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
+import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
-import team.chisel.ctm.client.texture.ctx.TextureContextCTMV;
-import team.chisel.ctm.client.texture.ctx.TextureContextCTMV.ConnectionData;
-import team.chisel.ctm.client.texture.ctx.TextureContextCTMV.Connections;
-import team.chisel.ctm.client.texture.type.TextureTypeCTMV;
+import team.chisel.ctm.client.texture.ctx.TextureContextPillar;
+import team.chisel.ctm.client.texture.ctx.TextureContextPillar.ConnectionData;
+import team.chisel.ctm.client.texture.ctx.TextureContextPillar.Connections;
+import team.chisel.ctm.client.texture.type.TextureTypePillar;
 import team.chisel.ctm.client.util.Quad;
 import team.chisel.ctm.client.util.Submap;
 
 import java.util.EnumSet;
 import java.util.List;
 
-public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
+import static net.minecraft.util.EnumFacing.*;
 
-    public TextureCTMV(TextureTypeCTMV type, TextureInfo info) {
+public class TexturePillar extends AbstractTexture<TextureTypePillar> {
+
+    public TexturePillar(TextureTypePillar type, TextureInfo info) {
         super(type, info);
     }
 
     @Override
-    public List<BakedQuad> transformQuad(BakedQuad quad, ITextureContext context, int quadGoal) {
+    public List<BakedQuad> transformQuad(@NotNull BakedQuad quad, ITextureContext context, int quadGoal) {
         if (context == null) {
-            if (quad.getFace() != null && quad.getFace().getAxis().isVertical()) {
+            if (quad.getFace().getAxis().isVertical()) {
                 return Lists.newArrayList(makeQuad(quad, context).transformUVs(sprites[0]).rebake());
             }
             return Lists.newArrayList(makeQuad(quad, context).transformUVs(sprites[1], Submap.X2[0][0]).rebake());
@@ -34,9 +36,14 @@ public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
         return Lists.newArrayList(getQuad(quad, context));
     }
 
+    @Override
+    protected Quad makeQuad(@NotNull BakedQuad bq, ITextureContext context) {
+        return super.makeQuad(bq, context).derotate();
+    }
+
     private BakedQuad getQuad(BakedQuad in, ITextureContext context) {
         Quad q = makeQuad(in, context);
-        ConnectionData data = ((TextureContextCTMV) context).getData();
+        ConnectionData data = ((TextureContextPillar) context).getData();
         Connections cons = data.getConnections();
 
         // This is the order of operations for connections
@@ -116,14 +123,14 @@ public class TextureCTMV extends AbstractTexture<TextureTypeCTMV> {
     }
 
     private boolean blockConnectionY(EnumFacing dir, ConnectionData data) {
-        return blockConnection(dir, Axis.Y, data) || blockConnection(dir, dir.rotateAround(Axis.Y).getAxis(), data);
+        return blockConnection(dir, Axis.Y, data) || blockConnection(dir, dir.rotateY().getAxis(), data);
     }
 
     private boolean blockConnectionZ(EnumFacing dir, ConnectionData data) {
         return blockConnection(dir, Axis.Z, data);
     }
 
-    private boolean blockConnection(EnumFacing dir, Axis axis, ConnectionData data) {
+    private boolean blockConnection(EnumFacing dir, EnumFacing.Axis axis, ConnectionData data) {
         EnumFacing rot = dir.rotateAround(axis);
         return data.getConnections(dir).connectedOr(rot, rot.getOpposite());
     }

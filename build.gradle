@@ -242,6 +242,17 @@ jar {
     from(provider{ configurations.embed.collect {it.isDirectory() ? it : zipTree(it)} })
 }
 
+// Create API jar with sources and compiled files
+tasks.register('apiJar', Jar) {
+    duplicatesStrategy(DuplicatesStrategy.FAIL)
+    archiveClassifier.set('api')
+    from(sourceSets.main.allSource)
+    from(sourceSets.main.output)
+    include('team/chisel/ctm/api/**/*')
+}
+
+tasks.build.dependsOn('apiJar')
+
 idea {
     module {
         inheritOutputDirs = true

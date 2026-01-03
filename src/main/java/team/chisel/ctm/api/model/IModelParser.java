@@ -2,11 +2,10 @@ package team.chisel.ctm.api.model;
 
 import com.google.gson.JsonObject;
 import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface IModelParser {
 
-    @Nonnull
+    @NotNull
     IModelCTM fromJson(ResourceLocation res, JsonObject json);
 }
