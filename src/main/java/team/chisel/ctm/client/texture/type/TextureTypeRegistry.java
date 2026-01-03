@@ -8,6 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.texture.ITextureType;
 import team.chisel.ctm.api.texture.TextureType;
 import team.chisel.ctm.api.texture.TextureTypeList;
@@ -103,14 +105,15 @@ public class TextureTypeRegistry {
         }
     }
 
-    public static void register(String name, ITextureType type) {
+    public static void register(@NotNull String name, @NotNull ITextureType type) {
         try {
             lock.writeLock().lock();
             String key = name.toLowerCase(Locale.ROOT);
-            if (map.containsKey(key) && map.get(key) != type) {
-                throw new IllegalArgumentException("Render Type with name " + key + " has already been registered!");
-            } else if (map.get(key) != type) {
+            ITextureType target = map.get(key);
+            if (target == null || (type != target && target.priority() < type.priority())) {
                 map.put(key, type);
+            } else {
+                throw new IllegalArgumentException("Render Type with name " + key + " has already been registered!");
             }
         } finally {
             lock.writeLock().unlock();

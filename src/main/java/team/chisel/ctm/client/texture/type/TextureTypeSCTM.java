@@ -47,4 +47,9 @@ public class TextureTypeSCTM extends TextureTypeCTM {
     public int requiredTextures() {
         return 1;
     }
+
+    @Override
+    public int priority() {
+        return 1;
+    }
 }
