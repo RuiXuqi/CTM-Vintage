@@ -88,7 +88,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
     }
 
     @Override
-    public List<BakedQuad> transformQuad(BakedQuad bq, ITextureContext context, int quadGoal) {
+    public List<BakedQuad> transformQuad(BakedQuad bq, @Nullable ITextureContext context, int quadGoal) {
         Quad quad = makeQuad(bq, context);
         if (context == null || Configurations.disableCTM) {
             return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());
@@ -112,7 +112,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
     }
 
     @Override
-    protected Quad makeQuad(BakedQuad bq, ITextureContext context) {
+    protected Quad makeQuad(BakedQuad bq, @Nullable ITextureContext context) {
         return super.makeQuad(bq, context).derotate();
     }
 }

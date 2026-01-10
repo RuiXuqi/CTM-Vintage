@@ -9,6 +9,7 @@ import net.minecraft.world.IBlockAccess;
 import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.client.newctm.CTMLogicBakery.OutputFace;
+import team.chisel.ctm.client.util.Submap;
 
 import java.util.*;
 
@@ -128,5 +129,9 @@ public class CustomCTMLogic implements ICTMLogic {
             textureCountCache = seen.cardinality();
         }
         return textureCountCache;
+    }
+
+    public OutputFace getFallbackFace() {
+        return tiles.length > 0 ? tiles[0] : new OutputFace(0, ICTMLogic.super.getFallbackUvs(), Submap.X1);
     }
 }

@@ -14,9 +14,9 @@ import java.util.List;
 
 public class TextureTypeCustom implements ITextureType {
 
-    private final ICTMLogic logic;
+    private final CustomCTMLogic logic;
 
-    public TextureTypeCustom(ICTMLogic customLogic) {
+    public TextureTypeCustom(CustomCTMLogic customLogic) {
         this.logic = customLogic;
     }
 
@@ -48,5 +48,9 @@ public class TextureTypeCustom implements ITextureType {
 
     public ISubmap getFallbackUvs() {
         return logic.getFallbackUvs();
+    }
+
+    public CTMLogicBakery.OutputFace getFallbackFace() {
+        return logic.getFallbackFace();
     }
 }
