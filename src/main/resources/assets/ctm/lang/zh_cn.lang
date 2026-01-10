@@ -1,0 +1,5 @@
+ctm.configuration.title=CTM 配置
+configuration.ctm.disable=禁用 CTM
+configuration.ctm.disable.tooltip=完全禁用连接纹理
+configuration.ctm.connect_inside=CTM 内角连接
+configuration.ctm.connect_inside.tooltip=选择 CTM 方块的内角是否断开连接 - https://imgur.com/eUywLZ4

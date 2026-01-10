@@ -1,0 +1,16 @@
+{
+	"package": "team.chisel.ctm.client.mixin",
+	"required": true,
+	"refmap": "mixins.ctm.refmap.json",
+	"target": "@env(DEFAULT)",
+	"minVersion": "0.8.5",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [],
+	"server": [],
+	"client": [
+		"BlockMixin",
+		"ForgeHooksClientMixin",
+		"TextureAtlasSpriteMixin",
+		"TextureMapMixin"
+	]
+}

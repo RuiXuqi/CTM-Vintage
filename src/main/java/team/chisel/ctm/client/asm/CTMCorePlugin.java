@@ -1,23 +1,33 @@
 package team.chisel.ctm.client.asm;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import org.jetbrains.annotations.Nullable;
+import zone.rong.mixinbooter.IEarlyMixinLoader;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
-// Should work with anything 1.8+, so no @MCVersion
-@IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE)
-public class CTMCorePlugin implements IFMLLoadingPlugin {
-
+@IFMLLoadingPlugin.MCVersion("1.12.2")
+public class CTMCorePlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
-    public String[] getASMTransformerClass() {
-        return new String[]{"team.chisel.ctm.client.asm.CTMTransformer"};
+    public List<String> getMixinConfigs() {
+        return Collections.singletonList("mixins.ctm.json");
     }
 
+    @Nullable
+    @Override
+    public String[] getASMTransformerClass() {
+        return null;
+    }
+
+    @Nullable
     @Override
     public String getModContainerClass() {
         return null;
     }
 
+    @Nullable
     @Override
     public String getSetupClass() {
         return null;
@@ -27,9 +37,9 @@ public class CTMCorePlugin implements IFMLLoadingPlugin {
     public void injectData(Map<String, Object> data) {
     }
 
+    @Nullable
     @Override
     public String getAccessTransformerClass() {
         return null;
     }
-
 }

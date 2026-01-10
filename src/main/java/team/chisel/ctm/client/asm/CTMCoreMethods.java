@@ -33,7 +33,7 @@ public class CTMCoreMethods {
         } else {
             ret = null;
         }
-        ProfileUtil.end();
+        ProfileUtil.end(); // ctm_render_in_layer
         return ret;
     }
 
@@ -51,6 +51,7 @@ public class CTMCoreMethods {
         MinecraftForge.EVENT_BUS.post(new TextureCollectedEvent(map, sprite));
     }
 
+    @Deprecated
     public static IModel transformParent(IModel model) {
         if (model instanceof IModelCTM) {
             try {

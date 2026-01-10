@@ -20,7 +20,7 @@ import team.chisel.ctm.client.util.TextureMetadataHandler;
         name = Tags.MOD_NAME,
         modid = Tags.MOD_ID,
         version = Tags.VERSION,
-        dependencies = "before:chisel;after:forge@[14.23.5.2807,)",
+        dependencies = "required-after:mixinbooter@[8.0,);before:chisel;after:forge@[14.23.5.2807,)",
         clientSideOnly = true,
         acceptableRemoteVersions = "*"
 )
