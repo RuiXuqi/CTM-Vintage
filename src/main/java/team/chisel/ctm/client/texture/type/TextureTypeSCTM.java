@@ -14,7 +14,7 @@ import team.chisel.ctm.client.util.CTMLogic;
 
 import java.util.Optional;
 
-@TextureType("sctm")
+@TextureType(value = "sctm", priority = 1)
 @TextureType("ctm_simple")
 public class TextureTypeSCTM extends TextureTypeCTM {
 
@@ -45,11 +45,6 @@ public class TextureTypeSCTM extends TextureTypeCTM {
 
     @Override
     public int requiredTextures() {
-        return 1;
-    }
-
-    @Override
-    public int priority() {
         return 1;
     }
 }

@@ -46,13 +46,4 @@ public interface ITextureType extends IContextProvider {
     default int requiredTextures() {
         return 1;
     }
-
-    /**
-     * Priority when registering. High priority ones will replace low ones.
-     *
-     * @return Int of priority.
-     */
-    default int priority() {
-        return 0;
-    }
 }

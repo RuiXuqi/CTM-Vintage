@@ -1,6 +1,7 @@
 {
     "logics": [
         "ctm",
-        "optifine_full"
+        "optifine_full",
+        "optifine_full_3tile"
     ]
 }

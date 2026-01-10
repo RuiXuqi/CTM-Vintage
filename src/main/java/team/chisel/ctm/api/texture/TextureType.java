@@ -25,4 +25,11 @@ public @interface TextureType {
      * @return The name of the texture type.
      */
     String value() default "";
+
+    /**
+     * Priority when registering. High priority ones will replace low ones.
+     *
+     * @return Int of priority.
+     */
+    int priority() default 0;
 }

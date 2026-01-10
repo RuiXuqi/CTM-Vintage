@@ -1,0 +1,10 @@
+{
+    "ctm": {
+        "ctm_version": 1,
+        "type": "ctm:optifine_full_3tile",
+        "textures":[
+            "blocks/concrete_black_full_1",
+            "blocks/concrete_black_full_2"
+        ]
+    }    
+}

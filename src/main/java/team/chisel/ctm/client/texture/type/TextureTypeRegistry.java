@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.texture.ITextureType;
@@ -21,7 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 /**
  * Registry for all the different texture types
@@ -39,21 +39,22 @@ public class TextureTypeRegistry {
 
             // Collect needed ASM data
             final ASMDataTable table = event.getAsmData();
-            Multimap<ASMDataTable.ASMData, String> annots = HashMultimap.create();
+            Multimap<ASMDataTable.ASMData, Pair<String, Integer>> annots = HashMultimap.create();
             for (ASMDataTable.ASMData list : table.getAll(TextureTypeList.class.getName())) {
                 //noinspection unchecked
-                for (String value : ((List<Map<String, String>>) list.getAnnotationInfo().get("value")).stream().map(m -> m.get("value")).collect(Collectors.toList())) {
-                    annots.put(list, value);
+                for (Map<String, Object> single : (List<Map<String, Object>>) list.getAnnotationInfo().get("value")) {
+                    annots.put(list, Pair.of((String) single.get("value"), (int) single.getOrDefault("priority", 0)));
                 }
             }
             for (ASMDataTable.ASMData single : table.getAll(TextureType.class.getName())) {
                 if (single.getObjectName() != null) {
-                    annots.put(single, (String) single.getAnnotationInfo().get("value"));
+                    annots.put(single, Pair.of((String) single.getAnnotationInfo().get("value"), single.getAnnotationInfo().containsKey("priority") ? (int) single.getAnnotationInfo().get("priority") : 0));
                 }
             }
-            log.debug("Found {} unique texture types", annots.size());
+            log.debug("Found {} texture types", annots.size());
 
-            for (Entry<ASMDataTable.ASMData, Collection<String>> data : annots.asMap().entrySet()) {
+            Map<String, Pair<ITextureType, Integer>> bestMatches = Maps.newHashMap();
+            for (Entry<ASMDataTable.ASMData, Collection<Pair<String, Integer>>> data : annots.asMap().entrySet()) {
                 ITextureType type;
                 final ASMDataTable.ASMData asmData = data.getKey();
 
@@ -90,15 +91,30 @@ public class TextureTypeRegistry {
                     }
                 }
 
-                // Register
-                for (String name : data.getValue()) {
+                for (Pair<String, Integer> p : data.getValue()) {
+                    // Fix name
+                    String name = p.getLeft();
                     if (StringUtils.isNullOrEmpty(name)) {
-                        name = data.getKey().getObjectName();
-                        name = name.substring(name.lastIndexOf('.') + 1);
+                        name = objectName.substring(objectName.lastIndexOf('.') + 1);
                     }
-                    log.debug("Registering scanned texture type: {}", name);
-                    register(name, type);
+                    String key = name.toLowerCase(Locale.ROOT);
+
+                    // Handle priority
+                    Pair<ITextureType, Integer> existing = bestMatches.get(key);
+                    int priority = p.getRight();
+                    if (existing == null || priority > existing.getRight()) {
+                        bestMatches.put(key, Pair.of(type, priority));
+                    } else if (priority == existing.getRight() && existing.getLeft() != type) {
+                        log.warn("Conflict detected for texture type '{}' with same priority {}. Keeping '{}'.", key, priority, existing.getLeft());
+                    }
                 }
+            }
+
+            // Register
+            for (Entry<String, Pair<ITextureType, Integer>> entry : bestMatches.entrySet()) {
+                String name = entry.getKey();
+                log.debug("Registering scanned texture type: {}", name);
+                register(name, entry.getValue().getLeft());
             }
         } finally {
             lock.writeLock().unlock();
@@ -109,10 +125,9 @@ public class TextureTypeRegistry {
         try {
             lock.writeLock().lock();
             String key = name.toLowerCase(Locale.ROOT);
-            ITextureType target = map.get(key);
-            if (target == null || (type != target && target.priority() < type.priority())) {
+            if (!map.containsKey(key)) {
                 map.put(key, type);
-            } else {
+            } else if (map.get(key) != type) {
                 throw new IllegalArgumentException("Render Type with name " + key + " has already been registered!");
             }
         } finally {
@@ -130,6 +145,7 @@ public class TextureTypeRegistry {
         }
     }
 
+    @Nullable
     public static ITextureType getType(String name) {
         try {
             lock.readLock().lock();

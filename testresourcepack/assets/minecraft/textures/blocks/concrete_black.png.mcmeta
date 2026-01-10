@@ -1,0 +1,11 @@
+{
+    "ctm": {
+        "ctm_version": 1,
+        "proxy": "minecraft:blocks/concrete_black_full_0",
+        "type": "CTM",
+        "layer": "SOLID",
+        "textures": [
+            "minecraft:blocks/bookshelf"
+        ]
+    }
+}

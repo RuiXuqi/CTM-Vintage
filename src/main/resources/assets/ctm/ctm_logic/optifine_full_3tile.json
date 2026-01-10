@@ -1,0 +1,80 @@
+{
+  "positions": [
+    {"id": "TOP", "directions": ["up"]},
+    {"id": "TOP_RIGHT", "directions": ["up","east"]},
+    {"id": "RIGHT", "directions": ["east"]},
+    {"id": "BOTTOM_RIGHT", "directions": ["down","east"]},
+    {"id": "BOTTOM", "directions": ["down"]},
+    {"id": "BOTTOM_LEFT", "directions": ["down","west"]},
+    {"id": "LEFT", "directions": ["west"]},
+    {"id": "TOP_LEFT", "directions": ["up","west"]}
+  ],
+  "submaps": {
+    "a": {
+      "type": "grid",
+      "width": 4,
+      "height": 4
+    },
+    "b": {
+      "type": "grid",
+      "width": 4,
+      "height": 4
+    },
+    "c": {
+      "type": "grid",
+      "width": 4,
+      "height": 4
+    }
+  },
+  "rules": [
+    {"output":"a0,0","from":0,"connected":[],"unconnected":["LEFT","BOTTOM","RIGHT","TOP"]},
+    {"output":"a1,0","from":0,"connected":["RIGHT"],"unconnected":["LEFT","BOTTOM","TOP"]},
+    {"output":"a2,0","from":0,"connected":["LEFT","RIGHT"],"unconnected":["BOTTOM","TOP"]},
+    {"output":"a3,0","from":0,"connected":["LEFT"],"unconnected":["BOTTOM","RIGHT","TOP"]},
+    {"output":"a0,1","from":0,"connected":["BOTTOM"],"unconnected":["LEFT","RIGHT","TOP"]},
+    {"output":"a1,1","from":0,"connected":["BOTTOM","BOTTOM_RIGHT","RIGHT"],"unconnected":["LEFT","TOP"]},
+    {"output":"a2,1","from":0,"connected":["LEFT","BOTTOM_LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT"],"unconnected":["TOP"]},
+    {"output":"a3,1","from":0,"connected":["LEFT","BOTTOM_LEFT","BOTTOM"],"unconnected":["RIGHT","TOP"]},
+    {"output":"a0,2","from":0,"connected":["BOTTOM","TOP"],"unconnected":["LEFT","RIGHT"]},
+    {"output":"a1,2","from":0,"connected":["BOTTOM","BOTTOM_RIGHT","RIGHT","TOP_RIGHT","TOP"],"unconnected":["LEFT"]},
+    {"output":"a2,2","from":0,"connected":["TOP_LEFT","LEFT","BOTTOM_LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT","TOP_RIGHT","TOP"],"unconnected":[]},
+    {"output":"a3,2","from":0,"connected":["TOP_LEFT","LEFT","BOTTOM_LEFT","BOTTOM","TOP"],"unconnected":["RIGHT"]},
+    {"output":"a0,3","from":0,"connected":["TOP"],"unconnected":["LEFT","BOTTOM","RIGHT"]},
+    {"output":"a1,3","from":0,"connected":["RIGHT","TOP_RIGHT","TOP"],"unconnected":["LEFT","BOTTOM"]},
+    {"output":"a2,3","from":0,"connected":["TOP_LEFT","LEFT","RIGHT","TOP_RIGHT","TOP"],"unconnected":["BOTTOM"]},
+    {"output":"a3,3","from":0,"connected":["TOP_LEFT","LEFT","TOP"],"unconnected":["BOTTOM","RIGHT"]},
+
+    {"output":"b0,0","from":1,"connected":["BOTTOM","RIGHT"],"unconnected":["LEFT","BOTTOM_RIGHT","TOP"]},
+    {"output":"b1,0","from":1,"connected":["LEFT","BOTTOM"],"unconnected":["BOTTOM_LEFT","RIGHT","TOP"]},
+    {"output":"b2,0","from":1,"connected":["BOTTOM","RIGHT","TOP"],"unconnected":["LEFT","BOTTOM_RIGHT","TOP_RIGHT"]},
+    {"output":"b3,0","from":1,"connected":["LEFT","BOTTOM","RIGHT"],"unconnected":["BOTTOM_LEFT","BOTTOM_RIGHT","TOP"]},
+    {"output":"b0,1","from":1,"connected":["RIGHT","TOP"],"unconnected":["LEFT","BOTTOM","TOP_RIGHT"]},
+    {"output":"b1,1","from":1,"connected":["LEFT","TOP"],"unconnected":["TOP_LEFT","BOTTOM","RIGHT"]},
+    {"output":"b2,1","from":1,"connected":["LEFT","RIGHT","TOP"],"unconnected":["TOP_LEFT","BOTTOM","TOP_RIGHT"]},
+    {"output":"b3,1","from":1,"connected":["LEFT","BOTTOM","TOP"],"unconnected":["TOP_LEFT","BOTTOM_LEFT","RIGHT"]},
+    {"output":"b0,2","from":1,"connected":["BOTTOM","BOTTOM_RIGHT","RIGHT","TOP"],"unconnected":["LEFT","TOP_RIGHT"]},
+    {"output":"b1,2","from":1,"connected":["LEFT","BOTTOM_LEFT","BOTTOM","RIGHT"],"unconnected":["BOTTOM_RIGHT","TOP"]},
+    {"output":"b2,2","from":1,"connected":["BOTTOM","RIGHT","TOP_RIGHT","TOP"],"unconnected":["LEFT","BOTTOM_RIGHT"]},
+    {"output":"b3,2","from":1,"connected":["LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT"],"unconnected":["BOTTOM_LEFT","TOP"]},
+    {"output":"b0,3","from":1,"connected":["LEFT","RIGHT","TOP_RIGHT","TOP"],"unconnected":["TOP_LEFT","BOTTOM"]},
+    {"output":"b1,3","from":1,"connected":["TOP_LEFT","LEFT","BOTTOM","TOP"],"unconnected":["BOTTOM_LEFT","RIGHT"]},
+    {"output":"b2,3","from":1,"connected":["TOP_LEFT","LEFT","RIGHT","TOP"],"unconnected":["BOTTOM","TOP_RIGHT"]},
+    {"output":"b3,3","from":1,"connected":["LEFT","BOTTOM_LEFT","BOTTOM","TOP"],"unconnected":["TOP_LEFT","RIGHT"]},
+
+    {"output":"c0,0","from":2,"connected":["LEFT","BOTTOM","RIGHT","TOP_RIGHT","TOP"],"unconnected":["TOP_LEFT","BOTTOM_LEFT","BOTTOM_RIGHT"]},
+    {"output":"c1,0","from":2,"connected":["LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT","TOP"],"unconnected":["TOP_LEFT","BOTTOM_LEFT","TOP_RIGHT"]},
+    {"output":"c2,0","from":2,"connected":["TOP_LEFT","LEFT","BOTTOM_LEFT","BOTTOM","RIGHT","TOP"],"unconnected":["BOTTOM_RIGHT","TOP_RIGHT"]},
+    {"output":"c3,0","from":2,"connected":["TOP_LEFT","LEFT","BOTTOM","RIGHT","TOP_RIGHT","TOP"],"unconnected":["BOTTOM_LEFT","BOTTOM_RIGHT"]},
+    {"output":"c0,1","from":2,"connected":["TOP_LEFT","LEFT","BOTTOM","RIGHT","TOP"],"unconnected":["BOTTOM_LEFT","BOTTOM_RIGHT","TOP_RIGHT"]},
+    {"output":"c1,1","from":2,"connected":["LEFT","BOTTOM_LEFT","BOTTOM","RIGHT","TOP"],"unconnected":["TOP_LEFT","BOTTOM_RIGHT","TOP_RIGHT"]},
+    {"output":"c2,1","from":2,"connected":["LEFT","BOTTOM_LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT","TOP"],"unconnected":["TOP_LEFT","TOP_RIGHT"]},
+    {"output":"c3,1","from":2,"connected":["LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT","TOP_RIGHT","TOP"],"unconnected":["TOP_LEFT","BOTTOM_LEFT"]},
+    {"output":"c0,2","from":2,"connected":["TOP_LEFT","LEFT","BOTTOM_LEFT","BOTTOM","RIGHT","TOP_RIGHT","TOP"],"unconnected":["BOTTOM_RIGHT"]},
+    {"output":"c1,2","from":2,"connected":["TOP_LEFT","LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT","TOP_RIGHT","TOP"],"unconnected":["BOTTOM_LEFT"]},
+    {"output":"c2,2","from":2,"connected":["LEFT","BOTTOM_LEFT","BOTTOM","RIGHT","TOP_RIGHT","TOP"],"unconnected":["TOP_LEFT","BOTTOM_RIGHT"]},
+    {"output":"c3,2","from":2,"connected":["TOP_LEFT","LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT","TOP"],"unconnected":["BOTTOM_LEFT","TOP_RIGHT"]},
+    {"output":"c0,3","from":2,"connected":["TOP_LEFT","LEFT","BOTTOM_LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT","TOP"],"unconnected":["TOP_RIGHT"]},
+    {"output":"c1,3","from":2,"connected":["LEFT","BOTTOM_LEFT","BOTTOM","BOTTOM_RIGHT","RIGHT","TOP_RIGHT","TOP"],"unconnected":["TOP_LEFT"]},
+    {"output":"c2,3","from":2,"connected":["LEFT","BOTTOM","RIGHT","TOP"],"unconnected":["TOP_LEFT","BOTTOM_LEFT","BOTTOM_RIGHT","TOP_RIGHT"]}
+  ]
+}
