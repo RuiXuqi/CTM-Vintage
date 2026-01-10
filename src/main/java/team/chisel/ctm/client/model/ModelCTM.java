@@ -83,7 +83,7 @@ public class ModelCTM implements IModelCTM {
             IMetadataSectionCTM meta = null;
             if (e.getValue().isJsonPrimitive() && e.getValue().getAsJsonPrimitive().isString()) {
                 ResourceLocation rl = new ResourceLocation(e.getValue().getAsString());
-                meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(rl)).orElse(null);
+                meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(rl));
                 textureDependencies.add(rl);
             } else if (e.getValue().isJsonObject()) {
                 JsonObject obj = e.getValue().getAsJsonObject();
@@ -108,10 +108,8 @@ public class ModelCTM implements IModelCTM {
 
         // Validate all texture metadata
         for (ResourceLocation res : getTextures()) {
-            Optional<IMetadataSectionCTM> optional = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(res))
-                    .filter(metadataSection -> metadataSection.getType().requiredTextures() != metadataSection.getAdditionalTextures().length + 1);
-            if (optional.isPresent()) {
-                final IMetadataSectionCTM meta = optional.get();
+            IMetadataSectionCTM meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(res));
+            if (meta != null && meta.getType().requiredTextures() != meta.getAdditionalTextures().length + 1) {
                 throw new IOException(String.format("Texture type %s requires exactly %d textures. %d were provided.", meta.getType(), meta.getType().requiredTextures(), meta.getAdditionalTextures().length + 1));
             }
         }
@@ -162,18 +160,18 @@ public class ModelCTM implements IModelCTM {
 
     public TextureAtlasSprite initializeTexture(ResourceLocation rl, Function<ResourceLocation, TextureAtlasSprite> spriteGetter) {
         TextureAtlasSprite sprite = spriteGetter.apply(rl);
-        Optional<IMetadataSectionCTM> chiselmeta = Optional.empty();
+        IMetadataSectionCTM chiselmeta = null;
         try {
             chiselmeta = ResourceUtil.getMetadata(sprite);
         } catch (IOException ignored) {
         }
-        final Optional<IMetadataSectionCTM> meta = chiselmeta;
+        final IMetadataSectionCTM meta = chiselmeta;
         textures.computeIfAbsent(sprite.getIconName(), s -> {
             ICTMTexture<?> tex;
-            if (!meta.isPresent()) {
+            if (meta == null) {
                 tex = new TextureNormal(TextureTypeNormal.INSTANCE, new TextureInfo(new TextureAtlasSprite[]{sprite}, Optional.empty(), null, false));
             } else {
-                tex = meta.get().makeTexture(sprite, spriteGetter);
+                tex = meta.makeTexture(sprite, spriteGetter);
             }
             BlockRenderLayer renderLayer = tex.getLayer();
             if (renderLayer != null) {

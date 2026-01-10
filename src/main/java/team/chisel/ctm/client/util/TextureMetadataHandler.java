@@ -52,31 +52,32 @@ public enum TextureMetadataHandler {
         try {
             ResourceLocation rel = new ResourceLocation(sprite.getIconName());
             rel = new ResourceLocation(rel.getNamespace(), "textures/" + rel.getPath() + ".png");
-            Optional<IMetadataSectionCTM> metadata = ResourceUtil.getMetadata(rel);
-            var proxy = metadata.map(IMetadataSectionCTM::getProxy);
-            if (proxy.isPresent()) {
-                ResourceLocation proxysprite = new ResourceLocation(proxy.get());
-                Optional<IMetadataSectionCTM> proxymeta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(proxysprite));
-                // Load proxy's base sprite
-                event.getMap().registerSprite(proxysprite);
-                proxymeta.ifPresent(m -> {
-                    // Load proxy's additional textures
-                    for (ResourceLocation r : m.getAdditionalTextures()) {
-                        if (registeredTextures.add(r)) {
-                            event.getMap().registerSprite(r);
-                        }
-                    }
-                });
-            }
-            metadata.map(IMetadataSectionCTM::getAdditionalTextures)
-                    .ifPresent(textures -> {
-                        // Load additional textures
-                        for (ResourceLocation r : textures) {
+            IMetadataSectionCTM metadata = ResourceUtil.getMetadata(rel);
+            if (metadata != null) {
+                // Load proxy data
+                final String proxy = metadata.getProxy();
+                if (proxy != null) {
+                    ResourceLocation proxysprite = new ResourceLocation(proxy);
+                    IMetadataSectionCTM proxymeta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(proxysprite));
+                    // Load proxy's base sprite
+                    event.getMap().registerSprite(proxysprite);
+                    if (proxymeta != null) {
+                        // Load proxy's additional textures
+                        for (ResourceLocation r : proxymeta.getAdditionalTextures()) {
                             if (registeredTextures.add(r)) {
                                 event.getMap().registerSprite(r);
                             }
                         }
-                    });
+                    }
+                }
+
+                // Load additional textures
+                for (ResourceLocation r : metadata.getAdditionalTextures()) {
+                    if (registeredTextures.add(r)) {
+                        event.getMap().registerSprite(r);
+                    }
+                }
+            }
         } catch (FileNotFoundException ignored) { // Ignore these, they are reported by vanilla
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -148,12 +149,12 @@ public enum TextureMetadataHandler {
                     }
 
                     for (ResourceLocation tex : textures) {
-                        Optional<IMetadataSectionCTM> meta = Optional.empty();
+                        IMetadataSectionCTM meta = null;
                         try {
                             meta = ResourceUtil.getMetadata(ResourceUtil.spriteToAbsolute(tex));
                         } catch (IOException ignored) {
                         } // Fallthrough
-                        if (meta.isPresent()) {
+                        if (meta != null) {
                             shouldWrap = true;
                             break;
                         }

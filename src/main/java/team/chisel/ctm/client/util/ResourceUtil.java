@@ -6,13 +6,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.client.texture.IMetadataSectionCTM;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @UtilityClass
 public class ResourceUtil {
@@ -49,29 +49,29 @@ public class ResourceUtil {
 
     private static final Map<ResourceLocation, IMetadataSectionCTM> metadataCache = new HashMap<>();
 
-    public static Optional<IMetadataSectionCTM> getMetadata(ResourceLocation res) throws IOException {
+    public static @Nullable IMetadataSectionCTM getMetadata(ResourceLocation res) throws IOException {
         // Note, semantically different from computeIfAbsent, as we DO care about keys mapped to null values
         if (metadataCache.containsKey(res)) {
-            return Optional.ofNullable(metadataCache.get(res));
+            return metadataCache.get(res);
         }
-        Optional<IMetadataSectionCTM> ret;
+        IMetadataSectionCTM ret;
         try {
             IResource resource = getResource(res);
-            ret = Optional.ofNullable(resource.getMetadata(IMetadataSectionCTM.SECTION_NAME));
+            ret = resource.getMetadata(IMetadataSectionCTM.SECTION_NAME);
         } catch (FileNotFoundException e) {
-            ret = Optional.empty();
+            ret = null;
         } catch (JsonParseException e) {
             throw new IOException("Error loading metadata for location " + res, e);
         }
-        metadataCache.put(res, ret.orElse(null));
+        metadataCache.put(res, ret);
         return ret;
     }
 
-    public static Optional<IMetadataSectionCTM> getMetadata(TextureAtlasSprite sprite) throws IOException {
+    public static @Nullable IMetadataSectionCTM getMetadata(TextureAtlasSprite sprite) throws IOException {
         return getMetadata(spriteToAbsolute(toResourceLocation(sprite)));
     }
 
-    public static Optional<IMetadataSectionCTM> getMetadataUnsafe(TextureAtlasSprite sprite) {
+    public static @Nullable IMetadataSectionCTM getMetadataUnsafe(TextureAtlasSprite sprite) {
         try {
             return getMetadata(sprite);
         } catch (IOException e) {
