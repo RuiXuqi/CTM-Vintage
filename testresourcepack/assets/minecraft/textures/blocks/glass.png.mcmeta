@@ -5,7 +5,7 @@
         "type":"ctm",
         "layer":"CUTOUT",
         "textures":[
-            "blocks/glass-ctm"
+            "minecraft:blocks/glass-ctm"
         ]
     }
 }

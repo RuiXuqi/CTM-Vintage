@@ -1,5 +1,5 @@
 {
-    "parent": "block/util_block_no_ao",
+    "parent": "minecraft:block/util_block_no_ao",
     "ambientocclusion": false,
     "elements": [
         {   "from": [ 0, 0, 0 ],
