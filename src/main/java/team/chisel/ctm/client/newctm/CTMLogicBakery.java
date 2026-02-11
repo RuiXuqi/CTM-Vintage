@@ -27,73 +27,71 @@ public class CTMLogicBakery {
     private enum Trinary {
         FALSE(false, 0),
         TRUE(true, 1),
-        DONT_CARE(false, 0),
-        ;
+        DONT_CARE(false, 0);
 
         public final boolean val;
         public final int bit;
     }
 
+    @Desugar
     private record DesiredState(Trinary[] input, int output) {
-
-            private DesiredState(int input, int output) {
-                this.input = new Trinary[input];
-                Arrays.fill(this.input, Trinary.DONT_CARE);
-                this.output = output;
-            }
-
-            public DesiredState with(int bit, Trinary in) {
-                this.input[bit] = in;
-                return this;
-            }
-
-            public boolean test(int state) {
-                for (int i = 0; i < this.input.length; i++) {
-                    Trinary req = this.input[i];
-                    boolean bit = ((state >> i) & 1) == 1;
-                    if (req != Trinary.DONT_CARE && bit != req.val) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            @SneakyThrows
-            public String asJson(LocalDirection[] values) {
-                var buf = new StringWriter();
-                JsonWriter writer = new JsonWriter(buf);
-                writer.beginObject();
-                {
-                    writer.name("output").value(this.output);
-                    List<LocalDirection> connected = new ArrayList<>();
-                    List<LocalDirection> unconnected = new ArrayList<>();
-                    for (int i = 0; i < this.input.length; i++) {
-                        if (this.input[i] == Trinary.TRUE) {
-                            connected.add(values[this.input.length - 1 - i]);
-                        } else if (this.input[i] == Trinary.FALSE) {
-                            unconnected.add(values[this.input.length - 1 - i]);
-                        }
-                    }
-                    writer.name("connected");
-                    writer.beginArray();
-                    for (var d : connected) {
-                        writer.value(d.name());
-                    }
-                    writer.endArray();
-
-                    writer.name("unconnected");
-                    writer.beginArray();
-                    for (var d : unconnected) {
-                        writer.value(d.name());
-                    }
-                    writer.endArray();
-                }
-                writer.endObject();
-                writer.flush();
-                writer.close();
-                return buf.toString();
-            }
+        private DesiredState(int input, int output) {
+            this(new Trinary[input], output);
+            Arrays.fill(this.input, Trinary.DONT_CARE);
         }
+
+        public DesiredState with(int bit, Trinary in) {
+            this.input[bit] = in;
+            return this;
+        }
+
+        public boolean test(int state) {
+            for (int i = 0; i < this.input.length; i++) {
+                Trinary req = this.input[i];
+                boolean bit = ((state >> i) & 1) == 1;
+                if (req != Trinary.DONT_CARE && bit != req.val) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @SneakyThrows
+        public String asJson(LocalDirection[] values) {
+            var buf = new StringWriter();
+            JsonWriter writer = new JsonWriter(buf);
+            writer.beginObject();
+            {
+                writer.name("output").value(this.output);
+                List<LocalDirection> connected = new ArrayList<>();
+                List<LocalDirection> unconnected = new ArrayList<>();
+                for (int i = 0; i < this.input.length; i++) {
+                    if (this.input[i] == Trinary.TRUE) {
+                        connected.add(values[this.input.length - 1 - i]);
+                    } else if (this.input[i] == Trinary.FALSE) {
+                        unconnected.add(values[this.input.length - 1 - i]);
+                    }
+                }
+                writer.name("connected");
+                writer.beginArray();
+                for (var d : connected) {
+                    writer.value(d.name());
+                }
+                writer.endArray();
+
+                writer.name("unconnected");
+                writer.beginArray();
+                for (var d : unconnected) {
+                    writer.value(d.name());
+                }
+                writer.endArray();
+            }
+            writer.endObject();
+            writer.flush();
+            writer.close();
+            return buf.toString();
+        }
+    }
 
     @Desugar
     public record OutputFace(int tex, ISubmap uvs, ISubmap face) {
