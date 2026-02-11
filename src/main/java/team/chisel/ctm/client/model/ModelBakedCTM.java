@@ -98,11 +98,11 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
 
     @Override
     public @NotNull TextureAtlasSprite getParticleTexture() {
-        return wrapParticleIcon(super.getParticleTexture());
+        return this.wrapParticleIcon(super.getParticleTexture());
     }
 
     private @NotNull TextureAtlasSprite wrapParticleIcon(@NotNull TextureAtlasSprite particleIcon) {
-        return Optional.ofNullable(getModel().getTexture(particleIcon.getIconName()))
+        return Optional.ofNullable(this.getModel().getTexture(particleIcon.getIconName()))
                 .map(ICTMTexture::getParticle)
                 .orElse(particleIcon);
     }

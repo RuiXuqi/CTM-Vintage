@@ -20,7 +20,7 @@ public interface IOffsetProvider {
     @NotNull
     default BlockPos getOffset(@NotNull IBlockAccess world, @NotNull BlockPos pos) {
         if (world instanceof World realWorld) {
-            return getOffset(realWorld, pos);
+            return this.getOffset(realWorld, pos);
         }
         return BlockPos.ORIGIN;
     }

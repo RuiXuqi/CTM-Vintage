@@ -36,9 +36,9 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
     private static final Map<Integer, IModelParser> parserVersions = ImmutableMap.of(1, new ModelParserV1());
 
     private IResourceManager manager;
-    private Map<ResourceLocation, IModelCTM> loadedModels = Maps.newHashMap();
+    private final Map<ResourceLocation, IModelCTM> loadedModels = Maps.newHashMap();
 
-    private LoadingCache<ResourceLocation, JsonElement> jsonCache = CacheBuilder.newBuilder().maximumSize(128).build(
+    private final LoadingCache<ResourceLocation, JsonElement> jsonCache = CacheBuilder.newBuilder().maximumSize(128).build(
             new CacheLoader<>() {
                 @Override
                 @SuppressWarnings("null")
@@ -49,7 +49,7 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
                     }
                     ResourceLocation absolute = new ResourceLocation(modelLocation.getNamespace(), path);
 
-                    try (IResource resource = manager.getResource(absolute);
+                    try (IResource resource = ModelLoaderCTM.this.manager.getResource(absolute);
                          InputStream resourceInputStream = resource.getInputStream();
                          InputStreamReader resourceInputStreamReader = new InputStreamReader(resourceInputStream)) {
                         JsonElement ele = new JsonParser().parse(resourceInputStreamReader);
@@ -66,14 +66,14 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void afterModelBaking(ModelBakeEvent event) {
-        jsonCache.invalidateAll();
+        this.jsonCache.invalidateAll();
     }
 
     @Override
     public void onResourceManagerReload(@NotNull IResourceManager resourceManager) {
         this.manager = resourceManager;
-        jsonCache.invalidateAll();
-        loadedModels.clear();
+        this.jsonCache.invalidateAll();
+        this.loadedModels.clear();
     }
 
     @Override
@@ -82,14 +82,14 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
             modelLocation = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath());
         }
 
-        JsonElement json = jsonCache.getUnchecked(modelLocation);
+        JsonElement json = this.jsonCache.getUnchecked(modelLocation);
         return json.isJsonObject() && json.getAsJsonObject().has("ctm_version");
     }
 
     @Override
     public IModel loadModel(@NotNull ResourceLocation modelLocation) throws IOException {
-        loadedModels.computeIfAbsent(modelLocation, res -> loadFromFile(res, true));
-        IModelCTM model = loadedModels.get(modelLocation);
+        this.loadedModels.computeIfAbsent(modelLocation, res -> this.loadFromFile(res, true));
+        IModelCTM model = this.loadedModels.get(modelLocation);
         if (model != null) {
             model.load();
         }
@@ -103,7 +103,7 @@ public enum ModelLoaderCTM implements ICustomModelLoader {
             parsedLocations.add(new ResourceLocation(res.getNamespace(), res.getPath().replace("models/", "")));
         }
 
-        JsonObject json = jsonCache.getUnchecked(res).getAsJsonObject();
+        JsonObject json = this.jsonCache.getUnchecked(res).getAsJsonObject();
 
         IModelParser parser = parserVersions.get(json.get("ctm_version").getAsInt());
         if (parser == null) {

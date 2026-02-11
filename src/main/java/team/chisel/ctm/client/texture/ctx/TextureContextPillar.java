@@ -36,12 +36,12 @@ public class TextureContextPillar implements ITextureContext {
         private EnumSet<EnumFacing> connections;
 
         public boolean connected(EnumFacing facing) {
-            return connections.contains(facing);
+            return this.connections.contains(facing);
         }
 
         public boolean connectedAnd(EnumFacing... facings) {
             for (EnumFacing f : facings) {
-                if (!connected(f)) {
+                if (!this.connected(f)) {
                     return false;
                 }
             }
@@ -50,7 +50,7 @@ public class TextureContextPillar implements ITextureContext {
 
         public boolean connectedOr(EnumFacing... facings) {
             for (EnumFacing f : facings) {
-                if (connected(f)) {
+                if (this.connected(f)) {
                     return true;
                 }
             }
@@ -101,41 +101,41 @@ public class TextureContextPillar implements ITextureContext {
     public static class ConnectionData {
 
         @Getter
-        private Connections connections;
-        private Map<EnumFacing, Connections> connectionConnections = new EnumMap<>(EnumFacing.class);
+        private final Connections connections;
+        private final Map<EnumFacing, Connections> connectionConnections = new EnumMap<>(EnumFacing.class);
 
         public ConnectionData(IBlockAccess world, BlockPos pos) {
-            connections = Connections.forPos(world, pos);
+            this.connections = Connections.forPos(world, pos);
             IBlockState state = world.getBlockState(pos);
             for (EnumFacing f : EnumFacing.VALUES) {
-                connectionConnections.put(f, Connections.forPos(world, state, pos.offset(f)));
+                this.connectionConnections.put(f, Connections.forPos(world, state, pos.offset(f)));
             }
         }
 
         public ConnectionData(long data) {
-            connections = Connections.forData(data, null);
+            this.connections = Connections.forData(data, null);
             for (EnumFacing f : EnumFacing.VALUES) {
-                connectionConnections.put(f, Connections.forData(data, f));
+                this.connectionConnections.put(f, Connections.forData(data, f));
             }
         }
 
         public Connections getConnections(EnumFacing facing) {
-            return connectionConnections.get(facing);
+            return this.connectionConnections.get(facing);
         }
     }
 
     @Getter
-    private ConnectionData data;
+    private final ConnectionData data;
 
     private long compressedData;
 
     public TextureContextPillar(IBlockAccess world, BlockPos pos) {
-        data = new ConnectionData(world, pos);
+        this.data = new ConnectionData(world, pos);
 
         IBlockState state = world.getBlockState(pos);
         for (ConnectionLocations loc : ALL_VALUES) {
             if (state == world.getBlockState(loc.transform(pos))) {
-                compressedData = compressedData | loc.getMask();
+                this.compressedData = this.compressedData | loc.getMask();
             }
         }
     }

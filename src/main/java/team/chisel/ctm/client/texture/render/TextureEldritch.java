@@ -31,7 +31,7 @@ public class TextureEldritch extends AbstractTexture<TextureTypeEldritch> {
     @Override
     public List<BakedQuad> transformQuad(BakedQuad quad, @Nullable ITextureContext context, int quadGoal) {
 
-        Quad q = makeQuad(quad, context);
+        Quad q = this.makeQuad(quad, context);
 
         Quad.UVs uvs = q.getUvs();
         Vector2f min = new Vector2f(uvs.getMinU(), uvs.getMinV());
@@ -42,7 +42,7 @@ public class TextureEldritch extends AbstractTexture<TextureTypeEldritch> {
         BlockPos pos = context == null ? BlockPos.ORIGIN : ((TextureContextPosition) context).getPosition();
         rand.setSeed(MathHelper.getPositionRandom(pos) + facing.ordinal());
 
-        float offx = offsetRand(), offy = offsetRand();
+        float offx = this.offsetRand(), offy = this.offsetRand();
 
         Quad[] subdiv = q.subdivide(4);
         for (int i = 0; i < subdiv.length; i++) {

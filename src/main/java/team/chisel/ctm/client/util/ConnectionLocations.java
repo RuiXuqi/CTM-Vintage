@@ -82,7 +82,7 @@ public enum ConnectionLocations {
     }
 
     public @Nullable LocalDirection getDirForSide(EnumFacing facing) {
-        return dir == null ? null : dir.relativize(facing);
+        return this.dir == null ? null : this.dir.relativize(facing);
     }
 
     public @Nullable EnumFacing clipOrDestroy(EnumFacing direction) {
@@ -99,14 +99,14 @@ public enum ConnectionLocations {
 
     @SuppressWarnings("null")
     public BlockPos transform(BlockPos pos) {
-        if (dir != null) {
-            pos = pos.add(dir.getOffset(normal));
+        if (this.dir != null) {
+            pos = pos.add(this.dir.getOffset(this.normal));
         } else {
-            pos = pos.offset(normal);
+            pos = pos.offset(this.normal);
         }
 
-        if (offset) {
-            pos = pos.offset(normal);
+        if (this.offset) {
+            pos = pos.offset(this.normal);
         }
         return pos;
     }
@@ -145,6 +145,6 @@ public enum ConnectionLocations {
     }
 
     public long getMask() {
-        return 1L << ordinal();
+        return 1L << this.ordinal();
     }
 }

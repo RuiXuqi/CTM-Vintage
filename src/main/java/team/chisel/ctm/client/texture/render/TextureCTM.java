@@ -51,8 +51,8 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + dir.hashCode();
-            result = prime * result + System.identityHashCode(from);
+            result = prime * result + this.dir.hashCode();
+            result = prime * result + System.identityHashCode(this.from);
             return result;
         }
 
@@ -60,11 +60,11 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
         public boolean equals(@Nullable Object obj) {
             if (this == obj) {
                 return true;
-            } else if (obj == null || getClass() != obj.getClass()) {
+            } else if (obj == null || this.getClass() != obj.getClass()) {
                 return false;
             }
             CacheKey other = (CacheKey) obj;
-            return dir == other.dir && from == other.from;
+            return this.dir == other.dir && this.from == other.from;
         }
     }
 
@@ -81,7 +81,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
     @Override
     public boolean connectTo(ConnectionCheck ctm, IBlockState from, IBlockState to, EnumFacing dir) {
         try {
-            return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to) && connectionChecks.test(dir, from)) ? 1 : 0) == 1;
+            return ((this.connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : this.connectionChecks.test(dir, to) && this.connectionChecks.test(dir, from)) ? 1 : 0) == 1;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -89,9 +89,9 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
 
     @Override
     public List<BakedQuad> transformQuad(BakedQuad bq, @Nullable ITextureContext context, int quadGoal) {
-        Quad quad = makeQuad(bq, context);
+        Quad quad = this.makeQuad(bq, context);
         if (context == null || Configurations.disableCTM) {
-            return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());
+            return Collections.singletonList(quad.transformUVs(this.sprites[0]).rebake());
         }
 
         Quad[] quads = quad.subdivide(4);
@@ -105,7 +105,7 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
                 int ctmid = q.getUvs().normalize().getQuadrant();
 //              quads[i] = q.grow().transformUVs(sprites[1], CTMLogic.uvs[16]);
 
-                quads[i] = q.grow().transformUVs(sprites[ctm[ctmid] > 15 ? 0 : 1], CTMLogic.uvs[ctm[ctmid]].unitScale());
+                quads[i] = q.grow().transformUVs(this.sprites[ctm[ctmid] > 15 ? 0 : 1], CTMLogic.uvs[ctm[ctmid]].unitScale());
             }
         }
         return Arrays.stream(quads).filter(Objects::nonNull).map(Quad::rebake).collect(Collectors.toList());

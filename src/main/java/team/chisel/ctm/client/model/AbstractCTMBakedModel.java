@@ -75,12 +75,12 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
 
             if (!stack.isEmpty() && stack.getItem().hasCustomProperties()) { // Handle parent model's overrides
                 @SuppressWarnings("deprecation") // Duplicate super logic, but called on the parent model overrides
-                ResourceLocation location = getParent().getOverrides().applyOverride(stack, world, entity);
+                ResourceLocation location = AbstractCTMBakedModel.this.getParent().getOverrides().applyOverride(stack, world, entity);
                 if (location != null) {
                     // Use the override's location as cache key
                     ModelResourceLocation overrideLoc = ModelLoader.getInventoryVariant(location.toString());
                     IBakedModel newParent = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager().getModel(overrideLoc);
-                    return itemcache.get(overrideLoc, () -> withNewParent(newParent).createModel(state, model, newParent, null, 0, null));
+                    return itemcache.get(overrideLoc, () -> AbstractCTMBakedModel.this.withNewParent(newParent).createModel(state, AbstractCTMBakedModel.this.model, newParent, null, 0, null));
                 }
             }
 
@@ -89,7 +89,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
                 // this must be a missing/invalid model
                 return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getMissingModel();
             }
-            return itemcache.get(mrl, () -> createModel(state, model, getParent(0), null, 0, null));
+            return itemcache.get(mrl, () -> AbstractCTMBakedModel.this.createModel(state, AbstractCTMBakedModel.this.model, AbstractCTMBakedModel.this.getParent(0), null, 0, null));
         }
     }
 
@@ -101,11 +101,11 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
-            } else if (obj == null || getClass() != obj.getClass()) {
+            } else if (obj == null || this.getClass() != obj.getClass()) {
                 return false;
             }
             State other = (State) obj;
-            return cleanState == other.cleanState && parent == other.parent && layer == other.layer && Objects.equals(serializedContext, other.serializedContext);
+            return this.cleanState == other.cleanState && this.parent == other.parent && this.layer == other.layer && Objects.equals(this.serializedContext, other.serializedContext);
         }
 
         @Override
@@ -113,10 +113,10 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
             final int prime = 31;
             int result = 1;
             // for some reason blockstates hash their properties, we only care about the identity hash
-            result = prime * result + System.identityHashCode(cleanState);
-            result = prime * result + (parent == null ? 0 : parent.hashCode());
-            result = prime * result + (serializedContext == null ? 0 : serializedContext.hashCode());
-            result = prime * result + (layer == null ? 0 : layer.hashCode());
+            result = prime * result + System.identityHashCode(this.cleanState);
+            result = prime * result + (this.parent == null ? 0 : this.parent.hashCode());
+            result = prime * result + (this.serializedContext == null ? 0 : this.serializedContext.hashCode());
+            result = prime * result + (this.layer == null ? 0 : this.layer.hashCode());
             return result;
         }
     }
@@ -139,11 +139,11 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
     @SneakyThrows
     public @NotNull List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (CTMCoreMethods.renderingDamageModel.get()) {
-            return getParent().getQuads(state, side, rand);
+            return this.getParent().getQuads(state, side, rand);
         }
         ProfileUtil.start("ctm_models");
 
-        IBakedModel parent = getParent(rand);
+        IBakedModel parent = this.getParent(rand);
         AbstractCTMBakedModel baked = this;
         BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
 
@@ -157,7 +157,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
             // Get cached model specific to this state + layer
             baked = modelcache.get(
                     new State(ext.getClean(), serialized, parent, layer),
-                    () -> createModel(state, model, parent, ctmCtx, rand, layer)
+                    () -> this.createModel(state, this.model, parent, ctmCtx, rand, layer)
             );
             ProfileUtil.end(); // model_creation
         } else if (state != null) {
@@ -165,7 +165,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
             // Simple state, but still layer aware
             baked = modelcache.get(
                     new State(state, null, parent, layer),
-                    () -> createModel(state, model, parent, null, rand, layer)
+                    () -> this.createModel(state, this.model, parent, null, rand, layer)
             );
             ProfileUtil.end(); // model_creation
         }
@@ -199,10 +199,10 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
      */
     @NotNull
     public IBakedModel getParent(long rand) {
-        if (getParent() instanceof WeightedBakedModel weightedBakedModel) {
+        if (this.getParent() instanceof WeightedBakedModel weightedBakedModel) {
             return weightedBakedModel.getRandomModel(rand);
         }
-        return getParent();
+        return this.getParent();
     }
 
     @NotNull
@@ -231,12 +231,12 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
 
     protected /* abstract */ AbstractCTMBakedModel withNewParent(@NotNull IBakedModel parent) {
         // Pass null for layer as default for items
-        return new ModelBakedCTM(getModel(), parent, null);
+        return new ModelBakedCTM(this.getModel(), parent, null);
     }
 
     @Nullable
     private <T> T applyToParent(long rand, Function<AbstractCTMBakedModel, T> func) {
-        IBakedModel parent = getParent(rand);
+        IBakedModel parent = this.getParent(rand);
         if (parent instanceof AbstractCTMBakedModel ctmBakedModel) {
             return func.apply(ctmBakedModel);
         }
@@ -245,36 +245,36 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
 
     @Nullable
     protected ICTMTexture<?> getOverrideTexture(long rand, int tintIndex, String iconName) {
-        ICTMTexture<?> ret = getModel().getOverrideTexture(tintIndex, iconName);
+        ICTMTexture<?> ret = this.getModel().getOverrideTexture(tintIndex, iconName);
         if (ret == null) {
-            ret = applyToParent(rand, parent -> parent.getOverrideTexture(rand, tintIndex, iconName));
+            ret = this.applyToParent(rand, parent -> parent.getOverrideTexture(rand, tintIndex, iconName));
         }
         return ret;
     }
 
     @Nullable
     protected ICTMTexture<?> getTexture(long rand, String iconName) {
-        ICTMTexture<?> ret = getModel().getTexture(iconName);
+        ICTMTexture<?> ret = this.getModel().getTexture(iconName);
         if (ret == null) {
-            ret = applyToParent(rand, parent -> parent.getTexture(rand, iconName));
+            ret = this.applyToParent(rand, parent -> parent.getTexture(rand, iconName));
         }
         return ret;
     }
 
     @Nullable
     protected TextureAtlasSprite getOverrideSprite(long rand, int tintIndex) {
-        TextureAtlasSprite ret = getModel().getOverrideSprite(tintIndex);
+        TextureAtlasSprite ret = this.getModel().getOverrideSprite(tintIndex);
         if (ret == null) {
-            ret = applyToParent(rand, parent -> parent.getOverrideSprite(rand, tintIndex));
+            ret = this.applyToParent(rand, parent -> parent.getOverrideSprite(rand, tintIndex));
         }
         return ret;
     }
 
     public Collection<ICTMTexture<?>> getCTMTextures() {
         ImmutableList.Builder<ICTMTexture<?>> builder = ImmutableList.builder();
-        builder.addAll(getModel().getCTMTextures());
-        if (getParent() instanceof AbstractCTMBakedModel) {
-            builder.addAll(((AbstractCTMBakedModel) getParent()).getCTMTextures());
+        builder.addAll(this.getModel().getCTMTextures());
+        if (this.getParent() instanceof AbstractCTMBakedModel) {
+            builder.addAll(((AbstractCTMBakedModel) this.getParent()).getCTMTextures());
         }
         return builder.build();
     }

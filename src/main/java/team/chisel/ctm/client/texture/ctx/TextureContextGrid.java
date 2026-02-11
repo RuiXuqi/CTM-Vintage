@@ -99,15 +99,15 @@ public abstract class TextureContextGrid extends TextureContextPosition {
         Preconditions.checkArgument(tex.getXSize() * tex.getYSize() < 1024, "V* Texture size too large for texture %s", tex.getParticle());
 
         if (applyOffset) {
-            applyOffset(world);
+            this.applyOffset(world);
         }
 
         long serialized = 0;
         for (@NotNull EnumFacing side : EnumFacing.VALUES) {
-            BlockPos modifiedPosition = position.add(FaceOffset.getBlockPosOffsetFromFaceOffset(side, tex.getXOffset(), tex.getYOffset()));
+            BlockPos modifiedPosition = this.position.add(FaceOffset.getBlockPosOffsetFromFaceOffset(side, tex.getXOffset(), tex.getYOffset()));
 
-            Point2i coords = calculateTextureCoord(modifiedPosition, tex.getXSize(), tex.getYSize(), side);
-            textureCoords.put(side, coords);
+            Point2i coords = this.calculateTextureCoord(modifiedPosition, tex.getXSize(), tex.getYSize(), side);
+            this.textureCoords.put(side, coords);
 
             // Calculate a unique index for a submap (x + (y * x-size)), then shift it left by the max bit storage (10 bits = 1024 unique indices)
             serialized |= (coords.x + ((long) coords.y * tex.getXSize())) << (10 * side.ordinal());
@@ -120,11 +120,11 @@ public abstract class TextureContextGrid extends TextureContextPosition {
 
     @SuppressWarnings("null")
     public Point2i getTextureCoords(EnumFacing side) {
-        return textureCoords.get(side);
+        return this.textureCoords.get(side);
     }
 
     @Override
     public long getCompressedData() {
-        return serialized;
+        return this.serialized;
     }
 }

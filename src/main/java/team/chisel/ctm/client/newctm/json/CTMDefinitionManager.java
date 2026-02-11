@@ -43,8 +43,8 @@ public enum CTMDefinitionManager implements ISelectiveResourceReloadListener {
 
         TextureTypeRegistry.lock.writeLock().lock(); // Manually acquire to prevent registry being used in invalid state
         try {
-            logicDefinitions.keySet().forEach(TextureTypeRegistry::remove);
-            logicDefinitions.clear();
+            this.logicDefinitions.keySet().forEach(TextureTypeRegistry::remove);
+            this.logicDefinitions.clear();
 
             for (String domain : resourceManager.getResourceDomains()) {
                 // Load all ctm.json like sounds.json
@@ -52,7 +52,7 @@ public enum CTMDefinitionManager implements ISelectiveResourceReloadListener {
                 try {
                     for (IResource ctmFile : resourceManager.getAllResources(new net.minecraft.util.ResourceLocation(domain, "ctm.json"))) {
                         try (BufferedReader reader = new BufferedReader(new InputStreamReader(ctmFile.getInputStream()))) {
-                            JsonObject json = gson.fromJson(reader, JsonObject.class);
+                            JsonObject json = this.gson.fromJson(reader, JsonObject.class);
                             CTMFileDefinition def = CTMFileDefinition.fromJson(json);
                             logics.addAll(def.logics());
                         } catch (Exception e) {
@@ -67,7 +67,7 @@ public enum CTMDefinitionManager implements ISelectiveResourceReloadListener {
                 for (String logic : logics) {
                     try {
                         IResource resource = resourceManager.getResource(new ResourceLocation(domain, "ctm_logic/" + logic + ".json"));
-                        loadCTMLogicDefinition(resource);
+                        this.loadCTMLogicDefinition(resource);
                     } catch (Exception e) {
                         log.warn("Failed to read CTM definition: {}", logic, e);
                     }
@@ -81,12 +81,12 @@ public enum CTMDefinitionManager implements ISelectiveResourceReloadListener {
     private void loadCTMLogicDefinition(IResource resource) {
         ResourceLocation rl = resource.getResourceLocation();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
-            JsonObject json = gson.fromJson(reader, JsonObject.class);
+            JsonObject json = this.gson.fromJson(reader, JsonObject.class);
             CTMLogicDefinition def = CTMLogicDefinition.fromJson(json);
             var bakery = createBakery(def);
             var logic = bakery.bake();
             String id = rl.getNamespace() + ":" + rl.getPath().substring("ctm_logic/".length(), rl.getPath().length() - ".json".length());
-            logicDefinitions.put(id, logic);
+            this.logicDefinitions.put(id, logic);
             TextureTypeRegistry.register(id, new TextureTypeCustom(logic));
         } catch (Exception e) {
             CTM.logger.error("Failed to load CTM definition: {}", rl.toString(), e);

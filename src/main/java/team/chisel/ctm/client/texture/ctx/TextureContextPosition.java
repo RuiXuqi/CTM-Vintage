@@ -19,12 +19,12 @@ public class TextureContextPosition implements ITextureContext {
     }
 
     public TextureContextPosition applyOffset(IBlockAccess world) {
-        this.position = position.add(OffsetProviderRegistry.INSTANCE.getOffset(world, position));
+        this.position = this.position.add(OffsetProviderRegistry.INSTANCE.getOffset(world, this.position));
         return this;
     }
 
     public @NotNull BlockPos getPosition() {
-        return position;
+        return this.position;
     }
 
     @Override

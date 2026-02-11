@@ -34,7 +34,7 @@ public interface IFacade {
      */
     @NotNull
     default IBlockState getFacade(@NotNull IBlockAccess world, @NotNull BlockPos pos, @Nullable EnumFacing side, @NotNull BlockPos connection) {
-        return getFacade(world, pos, side);
+        return this.getFacade(world, pos, side);
     }
 
     /**
@@ -51,7 +51,7 @@ public interface IFacade {
      */
     @NotNull
     default IBlockState getFacade(@NotNull IBlockAccess world, @NotNull BlockPos pos, @Nullable EnumFacing side, @NotNull IBlockState connectionState, @NotNull BlockPos connection) {
-        return getFacade(world, pos, side, connection);
+        return this.getFacade(world, pos, side, connection);
     }
 
 }

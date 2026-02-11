@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.Value;
 import org.apache.commons.lang3.ArrayUtils;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.client.util.Submap;
@@ -35,70 +34,66 @@ public class CTMLogicBakery {
         public final int bit;
     }
 
-    @Value
-    private static class DesiredState {
+    private record DesiredState(Trinary[] input, int output) {
 
-        Trinary[] input;
-        int output;
-
-        public DesiredState(int size, int output) {
-            this.input = new Trinary[size];
-            Arrays.fill(this.input, Trinary.DONT_CARE);
-            this.output = output;
-        }
-
-        public DesiredState with(int bit, Trinary in) {
-            this.input[bit] = in;
-            return this;
-        }
-
-        public boolean test(int state) {
-            for (int i = 0; i < input.length; i++) {
-                Trinary req = input[i];
-                boolean bit = ((state >> i) & 1) == 1;
-                if (req != Trinary.DONT_CARE && bit != req.val) {
-                    return false;
-                }
+            private DesiredState(int input, int output) {
+                this.input = new Trinary[input];
+                Arrays.fill(this.input, Trinary.DONT_CARE);
+                this.output = output;
             }
-            return true;
-        }
 
-        @SneakyThrows
-        public String asJson(LocalDirection[] values) {
-            var buf = new StringWriter();
-            JsonWriter writer = new JsonWriter(buf);
-            writer.beginObject();
-            {
-                writer.name("output").value(output);
-                List<LocalDirection> connected = new ArrayList<>();
-                List<LocalDirection> unconnected = new ArrayList<>();
-                for (int i = 0; i < input.length; i++) {
-                    if (input[i] == Trinary.TRUE) {
-                        connected.add(values[input.length - 1 - i]);
-                    } else if (input[i] == Trinary.FALSE) {
-                        unconnected.add(values[input.length - 1 - i]);
+            public DesiredState with(int bit, Trinary in) {
+                this.input[bit] = in;
+                return this;
+            }
+
+            public boolean test(int state) {
+                for (int i = 0; i < this.input.length; i++) {
+                    Trinary req = this.input[i];
+                    boolean bit = ((state >> i) & 1) == 1;
+                    if (req != Trinary.DONT_CARE && bit != req.val) {
+                        return false;
                     }
                 }
-                writer.name("connected");
-                writer.beginArray();
-                for (var d : connected) {
-                    writer.value(d.name());
-                }
-                writer.endArray();
-
-                writer.name("unconnected");
-                writer.beginArray();
-                for (var d : unconnected) {
-                    writer.value(d.name());
-                }
-                writer.endArray();
+                return true;
             }
-            writer.endObject();
-            writer.flush();
-            writer.close();
-            return buf.toString();
+
+            @SneakyThrows
+            public String asJson(LocalDirection[] values) {
+                var buf = new StringWriter();
+                JsonWriter writer = new JsonWriter(buf);
+                writer.beginObject();
+                {
+                    writer.name("output").value(this.output);
+                    List<LocalDirection> connected = new ArrayList<>();
+                    List<LocalDirection> unconnected = new ArrayList<>();
+                    for (int i = 0; i < this.input.length; i++) {
+                        if (this.input[i] == Trinary.TRUE) {
+                            connected.add(values[this.input.length - 1 - i]);
+                        } else if (this.input[i] == Trinary.FALSE) {
+                            unconnected.add(values[this.input.length - 1 - i]);
+                        }
+                    }
+                    writer.name("connected");
+                    writer.beginArray();
+                    for (var d : connected) {
+                        writer.value(d.name());
+                    }
+                    writer.endArray();
+
+                    writer.name("unconnected");
+                    writer.beginArray();
+                    for (var d : unconnected) {
+                        writer.value(d.name());
+                    }
+                    writer.endArray();
+                }
+                writer.endObject();
+                writer.flush();
+                writer.close();
+                return buf.toString();
+            }
         }
-    }
 
     @Desugar
     public record OutputFace(int tex, ISubmap uvs, ISubmap face) {
@@ -110,9 +105,9 @@ public class CTMLogicBakery {
     private final Int2ObjectMap<DesiredState> rules = new Int2ObjectOpenHashMap<>();
 
     public CTMLogicBakery input(int bit, LocalDirection dir) {
-        bitmap.put(bit, dir);
-        if (bit >= size) {
-            size = bit + 1;
+        this.bitmap.put(bit, dir);
+        if (bit >= this.size) {
+            this.size = bit + 1;
         }
         return this;
     }
@@ -120,15 +115,15 @@ public class CTMLogicBakery {
     private int curRule = -1;
 
     public CTMLogicBakery output(int submap, ISubmap texture) {
-        return output(submap, texture, Submap.X1);
+        return this.output(submap, texture, Submap.X1);
     }
 
     public CTMLogicBakery output(int submap, int textureId, ISubmap texture) {
-        return output(submap, textureId, texture, Submap.X1);
+        return this.output(submap, textureId, texture, Submap.X1);
     }
 
     public CTMLogicBakery output(int submap, ISubmap texture, ISubmap at) {
-        return output(submap, 0, texture, at);
+        return this.output(submap, 0, texture, at);
     }
 
     public CTMLogicBakery output(int submap, int textureId, ISubmap texture, ISubmap at) {
@@ -142,37 +137,37 @@ public class CTMLogicBakery {
         if (existing == null) {
             throw new IllegalArgumentException("Unknown submap ID " + submap);
         }
-        return output(submap, existing.uvs, at);
+        return this.output(submap, existing.uvs, at);
     }
 
     public CTMLogicBakery when(int rule, int bit, boolean is) {
         this.curRule = rule;
-        return when(bit, is);
+        return this.when(bit, is);
     }
 
     public CTMLogicBakery when(int bit, boolean is) {
-        Preconditions.checkArgument(bit < size, "bit out of range");
-        rules.putIfAbsent(curRule, new DesiredState(size, curRule));
-        rules.compute(curRule, (i, s) -> s.with(bit, is ? Trinary.TRUE : Trinary.FALSE));
+        Preconditions.checkArgument(bit < this.size, "bit out of range");
+        this.rules.putIfAbsent(this.curRule, new DesiredState(this.size, this.curRule));
+        this.rules.compute(this.curRule, (i, s) -> s.with(bit, is ? Trinary.TRUE : Trinary.FALSE));
         return this;
     }
 
     public CTMLogicBakery when(String pattern) {
-        Preconditions.checkArgument(pattern.length() == size, "pattern length");
+        Preconditions.checkArgument(pattern.length() == this.size, "pattern length");
         for (int i = pattern.length() - 1; i >= 0; i--) {
             char bit = pattern.charAt(i);
             if (bit == '0' || bit == '1') {
-                when(pattern.length() - 1 - i, bit == '1');
+                this.when(pattern.length() - 1 - i, bit == '1');
             }
         }
         return this;
     }
 
     public CustomCTMLogic bake() {
-        int max = 1 << size;
+        int max = 1 << this.size;
         int[][] lookups = new int[max][];
         for (int state = 0; state < max; state++) {
-            for (var e : rules.int2ObjectEntrySet()) {
+            for (var e : this.rules.int2ObjectEntrySet()) {
                 if (e.getValue().test(state)) {
                     if (lookups[state] == null) {
                         lookups[state] = new int[]{e.getIntKey()};
@@ -182,7 +177,7 @@ public class CTMLogicBakery {
                 }
             }
         }
-        return new CustomCTMLogic(lookups, asSortedArray(outputs, OutputFace[]::new), asSortedArray(bitmap, LocalDirection[]::new));
+        return new CustomCTMLogic(lookups, this.asSortedArray(this.outputs, OutputFace[]::new), this.asSortedArray(this.bitmap, LocalDirection[]::new));
     }
 
     private <T> T[] asSortedArray(Int2ObjectMap<T> indexedMap, IntFunction<T[]> ctor) {
@@ -199,7 +194,7 @@ public class CTMLogicBakery {
         writer.setIndent("  ");
         writer.beginObject();
         {
-            LocalDirection[] orderedPositions = asSortedArray(bitmap, LocalDirection[]::new);
+            LocalDirection[] orderedPositions = this.asSortedArray(this.bitmap, LocalDirection[]::new);
             writer.name("positions");
             writer.beginArray();
             {
@@ -219,7 +214,7 @@ public class CTMLogicBakery {
             writer.name("rules");
             writer.beginArray();
             {
-                for (var e : rules.int2ObjectEntrySet().stream().sorted(Comparator.comparingInt(Int2ObjectMap.Entry::getIntKey)).collect(Collectors.toList())) {
+                for (var e : this.rules.int2ObjectEntrySet().stream().sorted(Comparator.comparingInt(Int2ObjectMap.Entry::getIntKey)).collect(Collectors.toList())) {
                     writer.jsonValue(e.getValue().asJson(orderedPositions));
                 }
             }

@@ -64,7 +64,7 @@ public enum TextureMetadataHandler {
                     if (proxymeta != null) {
                         // Load proxy's additional textures
                         for (ResourceLocation r : proxymeta.getAdditionalTextures()) {
-                            if (registeredTextures.add(r)) {
+                            if (this.registeredTextures.add(r)) {
                                 event.getMap().registerSprite(r);
                             }
                         }
@@ -73,7 +73,7 @@ public enum TextureMetadataHandler {
 
                 // Load additional textures
                 for (ResourceLocation r : metadata.getAdditionalTextures()) {
-                    if (registeredTextures.add(r)) {
+                    if (this.registeredTextures.add(r)) {
                         event.getMap().registerSprite(r);
                     }
                 }
@@ -118,7 +118,7 @@ public enum TextureMetadataHandler {
                 Set<ResourceLocation> seenModels = new HashSet<>();
                 dependencies.push(mrl);
                 seenModels.add(mrl);
-                boolean shouldWrap = wrappedModels.getOrDefault(mrl, false);
+                boolean shouldWrap = this.wrappedModels.getOrDefault(mrl, false);
                 // Breadth-first loop through dependencies, exiting as soon as a CTM texture is found, and skipping duplicates/cycles
                 while (!shouldWrap && !dependencies.isEmpty()) {
                     ResourceLocation dep = dependencies.pop();
@@ -166,10 +166,10 @@ public enum TextureMetadataHandler {
                         }
                     }
                 }
-                wrappedModels.put(mrl, shouldWrap);
+                this.wrappedModels.put(mrl, shouldWrap);
                 if (shouldWrap) {
                     try {
-                        event.getModelRegistry().putObject(mrl, wrap(rootModel, event.getModelRegistry().getObject(mrl)));
+                        event.getModelRegistry().putObject(mrl, this.wrap(rootModel, event.getModelRegistry().getObject(mrl)));
                         dependencies.clear();
                     } catch (IOException e) {
                         CTM.logger.error("Could not wrap model " + mrl + ". Aborting...", e);
@@ -186,7 +186,7 @@ public enum TextureMetadataHandler {
     }
 
     public void invalidateCaches() {
-        registeredTextures.clear();
-        wrappedModels.clear();
+        this.registeredTextures.clear();
+        this.wrappedModels.clear();
     }
 }

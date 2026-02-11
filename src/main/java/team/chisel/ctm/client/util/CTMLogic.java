@@ -145,39 +145,39 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
     @Override
     public int[] getSubmapIds(@Nullable IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
         if (world == null) {
-            return submapCache;
+            return this.submapCache;
         }
 
-        buildConnectionMap(world, pos, state, side);
+        this.buildConnectionMap(world, pos, state, side);
 
         // Map connections to submap indeces
         for (int i = 0; i < 4; i++) {
-            fillSubmaps(i);
+            this.fillSubmaps(i);
         }
 
-        return submapCache;
+        return this.submapCache;
     }
 
     public int[] createSubmapIndices(long data, EnumFacing side) {
-        submapCache = new int[]{18, 19, 17, 16};
+        this.submapCache = new int[]{18, 19, 17, 16};
 
-        buildConnectionMap(data, side);
+        this.buildConnectionMap(data, side);
 
         // Map connections to submap indeces
         for (int i = 0; i < 4; i++) {
-            fillSubmaps(i);
+            this.fillSubmaps(i);
         }
 
-        return submapCache;
+        return this.submapCache;
     }
 
     public int[] getSubmapIndices() {
-        return submapCache;
+        return this.submapCache;
     }
 
     @Override
     public long serialized() {
-        return Byte.toUnsignedLong(connectionMap);
+        return Byte.toUnsignedLong(this.connectionMap);
     }
 
     public static boolean isDefaultTexture(int id) {
@@ -185,7 +185,7 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
     }
 
     protected void setConnectedState(LocalDirection dir, boolean connected) {
-        connectionMap = setConnectedState(connectionMap, dir, connected);
+        this.connectionMap = setConnectedState(this.connectionMap, dir, connected);
     }
 
     private static byte setConnectedState(byte map, LocalDirection dir, boolean connected) {
@@ -209,19 +209,19 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
             //Note: We can't cache the state that we are checking about connection for as we want to ensure that
             // we can take into account the side of the block we want to know the "state" of as if the block is
             // a facade of some sort it might return different results based on where it is being queried from
-            setConnectedState(dir, dir.isConnected(connectionCheck, world, pos, state, side));
+            this.setConnectedState(dir, dir.isConnected(this.connectionCheck, world, pos, state, side));
         }
 //        }
     }
 
     public void buildConnectionMap(long data, EnumFacing side) {
-        connectionMap = 0; // Clear all connections
+        this.connectionMap = 0; // Clear all connections
         List<ConnectionLocations> connections = ConnectionLocations.decode(data);
         for (ConnectionLocations loc : connections) {
             if (loc.getDirForSide(side) != null) {
                 LocalDirection dir = loc.getDirForSide(side);
                 if (dir != null) {
-                    setConnectedState(dir, true);
+                    this.setConnectedState(dir, true);
                 }
             }
         }
@@ -230,17 +230,17 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
     @SuppressWarnings("null")
     protected void fillSubmaps(int idx) {
         Dir[] dirs = submapMap[idx];
-        if (connectedOr(dirs[0], dirs[1])) {
-            if (connectedAnd(dirs)) {
+        if (this.connectedOr(dirs[0], dirs[1])) {
+            if (this.connectedAnd(dirs)) {
                 // If all dirs are connected, we use the fully connected face,
                 // the base offset value.
-                submapCache[idx] = submapOffsets[idx];
+                this.submapCache[idx] = submapOffsets[idx];
             } else {
                 // This is a bit magic-y, but basically the array is ordered so
                 // the first dir requires an offset of 2, and the second dir
                 // requires an offset of 8, plus the initial offset for the
                 // corner.
-                submapCache[idx] = submapOffsets[idx] + (connected(dirs[0]) ? 2 : 0) + (connected(dirs[1]) ? 8 : 0);
+                this.submapCache[idx] = submapOffsets[idx] + (this.connected(dirs[0]) ? 2 : 0) + (this.connected(dirs[1]) ? 8 : 0);
             }
         }
     }
@@ -250,7 +250,7 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
      * @return True if the cached connectionMap holds a connection in this {@link Dir direction}.
      */
     public boolean connected(Dir dir) {
-        return ((connectionMap >> dir.ordinal()) & 1) == 1;
+        return ((this.connectionMap >> dir.ordinal()) & 1) == 1;
     }
 
     /**
@@ -260,7 +260,7 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
     @SuppressWarnings("null")
     public boolean connectedAnd(Dir... dirs) {
         for (Dir dir : dirs) {
-            if (!connected(dir)) {
+            if (!this.connected(dir)) {
                 return false;
             }
         }
@@ -274,7 +274,7 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
     @SuppressWarnings("null")
     public boolean connectedOr(Dir... dirs) {
         for (Dir dir : dirs) {
-            if (connected(dir)) {
+            if (this.connected(dir)) {
                 return true;
             }
         }
@@ -283,7 +283,7 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
 
     public boolean connectedNone(Dir... dirs) {
         for (Dir dir : dirs) {
-            if (connected(dir)) {
+            if (this.connected(dir)) {
                 return false;
             }
         }
@@ -299,7 +299,7 @@ public class CTMLogic implements ICTMLogic, ILogicCache {
     }
 
     public int numConnections() {
-        return Integer.bitCount(connectionMap);
+        return Integer.bitCount(this.connectionMap);
     }
 
     @Override

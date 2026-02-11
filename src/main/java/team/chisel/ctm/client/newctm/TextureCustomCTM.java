@@ -52,8 +52,8 @@ public class TextureCustomCTM<T extends TextureTypeCustom> extends AbstractTextu
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + dir.hashCode();
-            result = prime * result + System.identityHashCode(from);
+            result = prime * result + this.dir.hashCode();
+            result = prime * result + System.identityHashCode(this.from);
             return result;
         }
 
@@ -61,11 +61,11 @@ public class TextureCustomCTM<T extends TextureTypeCustom> extends AbstractTextu
         public boolean equals(@Nullable Object obj) {
             if (this == obj) {
                 return true;
-            } else if (obj == null || getClass() != obj.getClass()) {
+            } else if (obj == null || this.getClass() != obj.getClass()) {
                 return false;
             }
             CacheKey other = (CacheKey) obj;
-            return dir == other.dir && from == other.from;
+            return this.dir == other.dir && this.from == other.from;
         }
     }
 
@@ -77,13 +77,13 @@ public class TextureCustomCTM<T extends TextureTypeCustom> extends AbstractTextu
         this.connectionChecks = info.getInfo().map(obj -> predicateParser.parse(obj.get("connect_to"))).orElse(null);
         //Crop the particle sprite so that it only contains the bit it should
         final OutputFace fallback = type.getFallbackFace();
-        this.particleSprite = PartialTextureAtlasSprite.createPartial(sprites[fallback.tex()], fallback.uvs());
+        this.particleSprite = PartialTextureAtlasSprite.createPartial(this.sprites[fallback.tex()], fallback.uvs());
     }
 
     @Override
     public boolean connectTo(ConnectionCheck ctm, IBlockState from, IBlockState to, EnumFacing dir) {
         try {
-            return ((connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : connectionChecks.test(dir, to) && connectionChecks.test(dir, from)) ? 1 : 0) == 1;
+            return ((this.connectionChecks == null ? StateComparisonCallback.DEFAULT.connects(ctm, from, to, dir) : this.connectionChecks.test(dir, to) && this.connectionChecks.test(dir, from)) ? 1 : 0) == 1;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -96,10 +96,10 @@ public class TextureCustomCTM<T extends TextureTypeCustom> extends AbstractTextu
 
     @Override
     public @NotNull List<BakedQuad> transformQuad(BakedQuad bq, @Nullable ITextureContext context, int quadGoal) {
-        Quad quad = makeQuad(bq, context);
+        Quad quad = this.makeQuad(bq, context);
         if (context == null || Configurations.disableCTM) {
-            OutputFace fallback = type.getFallbackFace();
-            return Collections.singletonList(quad.setUVs(sprites[fallback.tex()], fallback.uvs()).rebake());
+            OutputFace fallback = this.type.getFallbackFace();
+            return Collections.singletonList(quad.setUVs(this.sprites[fallback.tex()], fallback.uvs()).rebake());
         }
 
         OutputFace[] ctm = ((TextureContextCustomCTM) context).getCTM(bq.getFace()).getCachedSubmaps();
@@ -107,7 +107,7 @@ public class TextureCustomCTM<T extends TextureTypeCustom> extends AbstractTextu
         for (var face : ctm) {
             //CTM.logger.info("{}\t{}: {}@ {}", bq.getFace(), face.face(), face.tex(), face.uvs());
             Quad sub = quad.subsect(face.face());
-            ret.add(sub.setUVs(sprites[face.tex()], face.uvs()).rebake());
+            ret.add(sub.setUVs(this.sprites[face.tex()], face.uvs()).rebake());
         }
         return ret;
     }

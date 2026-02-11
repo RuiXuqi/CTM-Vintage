@@ -22,12 +22,12 @@ public class TextureTypeMap implements ITextureType {
 
     @Override
     public TextureMap makeTexture(@NotNull TextureInfo info) {
-        return new TextureMap(this, info, type);
+        return new TextureMap(this, info, this.type);
     }
 
     @Override
     public ITextureContext getBlockRenderContext(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos, @NotNull ICTMTexture<?> tex) {
-        return type.getContext(world, pos, (TextureMap) tex);
+        return this.type.getContext(world, pos, (TextureMap) tex);
     }
 
     @Override

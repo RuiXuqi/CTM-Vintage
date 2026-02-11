@@ -27,9 +27,9 @@ public class TextureEdgesFull extends TextureEdges {
 
     @Override
     public List<BakedQuad> transformQuad(@NotNull BakedQuad bq, @NotNull ITextureContext context, int quadGoal) {
-        Quad quad = makeQuad(bq, context);
+        Quad quad = this.makeQuad(bq, context);
         if (context == null) {
-            return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());
+            return Collections.singletonList(quad.transformUVs(this.sprites[0]).rebake());
         }
 
         CTMLogicEdges ctm = (CTMLogicEdges) ((TextureContextCTM) context).getCTM(bq.getFace());
@@ -37,10 +37,10 @@ public class TextureEdgesFull extends TextureEdges {
         ISubmap submap = null;
         // Short circuit zero connections, as this is almost always the most common case
         if (!ctm.isObscured() && ctm.connectedNone(Dir.VALUES)) {
-            sprite = sprites[0];
+            sprite = this.sprites[0];
             submap = Submap.X1;
         } else {
-            sprite = sprites[1];
+            sprite = this.sprites[1];
             boolean top = ctm.connected(Dir.TOP) || ctm.connectedAnd(Dir.TOP_LEFT, Dir.TOP_RIGHT);
             boolean right = ctm.connected(Dir.RIGHT) || ctm.connectedAnd(Dir.TOP_RIGHT, Dir.BOTTOM_RIGHT);
             boolean bottom = ctm.connected(Dir.BOTTOM) || ctm.connectedAnd(Dir.BOTTOM_LEFT, Dir.BOTTOM_RIGHT);

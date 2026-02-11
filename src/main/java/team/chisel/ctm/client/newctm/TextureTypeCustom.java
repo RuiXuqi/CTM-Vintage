@@ -22,7 +22,7 @@ public class TextureTypeCustom implements ITextureType {
 
     @Override
     public @NotNull ITextureContext getBlockRenderContext(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos, @NotNull ICTMTexture<?> tex) {
-        return new TextureContextCustomCTM(state, world, pos, tex, logic);
+        return new TextureContextCustomCTM(state, world, pos, tex, this.logic);
     }
 
     @Override
@@ -33,12 +33,12 @@ public class TextureTypeCustom implements ITextureType {
 
     @Override
     public @NotNull List<ISubmap> getOutputFaces() {
-        return logic.outputSubmaps();
+        return this.logic.outputSubmaps();
     }
 
     @Override
     public int requiredTextures() {
-        return logic.requiredTextures();
+        return this.logic.requiredTextures();
     }
 
     @Override
@@ -47,10 +47,10 @@ public class TextureTypeCustom implements ITextureType {
     }
 
     public ISubmap getFallbackUvs() {
-        return logic.getFallbackUvs();
+        return this.logic.getFallbackUvs();
     }
 
     public CTMLogicBakery.OutputFace getFallbackFace() {
-        return logic.getFallbackFace();
+        return this.logic.getFallbackFace();
     }
 }

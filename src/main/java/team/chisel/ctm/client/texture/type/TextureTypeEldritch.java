@@ -23,17 +23,17 @@ public class TextureTypeEldritch implements ITextureType {
 
         public Context(BlockPos pos) {
             super(pos);
-            wrappedpos = new BlockPos(pos.getX() & 7, pos.getY() & 7, pos.getZ() & 7);
+            this.wrappedpos = new BlockPos(pos.getX() & 7, pos.getY() & 7, pos.getZ() & 7);
         }
 
         @Override
         public BlockPos getPosition() {
-            return wrappedpos;
+            return this.wrappedpos;
         }
 
         @Override
         public long getCompressedData() {
-            return getPosition().toLong();
+            return this.getPosition().toLong();
         }
     }
 

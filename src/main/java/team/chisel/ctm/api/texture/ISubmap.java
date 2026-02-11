@@ -20,15 +20,15 @@ public interface ISubmap {
     float getHeight();
 
     default float getInterpolatedU(TextureAtlasSprite sprite, float u) {
-        return sprite.getInterpolatedU(getXOffset() + u / getWidth());
+        return sprite.getInterpolatedU(this.getXOffset() + u / this.getWidth());
     }
 
     default float getInterpolatedV(TextureAtlasSprite sprite, float v) {
-        return sprite.getInterpolatedV(getYOffset() + v / getHeight());
+        return sprite.getInterpolatedV(this.getYOffset() + v / this.getHeight());
     }
 
     default float[] toArray() {
-        return new float[]{getXOffset(), getYOffset(), getXOffset() + getWidth(), getYOffset() + getHeight()};
+        return new float[]{this.getXOffset(), this.getYOffset(), this.getXOffset() + this.getWidth(), this.getYOffset() + this.getHeight()};
     }
 
     default ISubmap unitScale() {
@@ -58,55 +58,55 @@ public interface ISubmap {
 
         @Override
         public float getXOffset() {
-            return parent.getXOffset() * ratio;
+            return this.parent.getXOffset() * this.ratio;
         }
 
         @Override
         public float getYOffset() {
-            return parent.getYOffset() * ratio;
+            return this.parent.getYOffset() * this.ratio;
         }
 
         @Override
         public float getWidth() {
-            return parent.getWidth() * ratio;
+            return this.parent.getWidth() * this.ratio;
         }
 
         @Override
         public float getHeight() {
-            return parent.getHeight() * ratio;
+            return this.parent.getHeight() * this.ratio;
         }
 
         @Override
         public ISubmap pixelScale() {
-            return isPixelScale ? this : parent;
+            return this.isPixelScale ? this : this.parent;
         }
 
         @Override
         public ISubmap unitScale() {
-            return isPixelScale ? parent : this;
+            return this.isPixelScale ? this.parent : this;
         }
 
         @Override
         public float getInterpolatedU(TextureAtlasSprite sprite, float u) {
-            return parent.getInterpolatedU(sprite, u);
+            return this.parent.getInterpolatedU(sprite, u);
         }
 
         @Override
         public float getInterpolatedV(TextureAtlasSprite sprite, float v) {
-            return parent.getInterpolatedV(sprite, v);
+            return this.parent.getInterpolatedV(sprite, v);
         }
 
         @Override
         public float[] toArray() {
-            return parent.toArray();
+            return this.parent.toArray();
         }
     }
 
     default ISubmap flipX() {
-        return Submap.fromPixelScale(getWidth(), getHeight(), PIXELS_PER_UNIT - getXOffset() - getWidth(), getYOffset());
+        return Submap.fromPixelScale(this.getWidth(), this.getHeight(), PIXELS_PER_UNIT - this.getXOffset() - this.getWidth(), this.getYOffset());
     }
 
     default ISubmap flipY() {
-        return Submap.fromPixelScale(getWidth(), getHeight(), getXOffset(), PIXELS_PER_UNIT - getYOffset() - getHeight());
+        return Submap.fromPixelScale(this.getWidth(), this.getHeight(), this.getXOffset(), PIXELS_PER_UNIT - this.getYOffset() - this.getHeight());
     }
 }

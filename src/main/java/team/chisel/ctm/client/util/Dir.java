@@ -63,14 +63,14 @@ public enum Dir implements LocalDirection {
         for (EnumFacing normal : EnumFacing.VALUES) {
             @NotNull EnumFacing[] normalized;
             if (normal == NORMAL) {
-                normalized = dirs;
+                normalized = this.dirs;
             } else if (normal == NORMAL.getOpposite()) {
                 // If this is the opposite direction of the default normal, we
                 // need to mirror the dirs
                 // A mirror version does not affect y+ and y- so we ignore those
-                EnumFacing[] ret = new EnumFacing[dirs.length];
+                EnumFacing[] ret = new EnumFacing[this.dirs.length];
                 for (int i = 0; i < ret.length; i++) {
-                    ret[i] = dirs[i].getYOffset() != 0 ? dirs[i] : dirs[i].getOpposite();
+                    ret[i] = this.dirs[i].getYOffset() != 0 ? this.dirs[i] : this.dirs[i].getOpposite();
                 }
                 normalized = ret;
             } else {
@@ -85,10 +85,10 @@ public enum Dir implements LocalDirection {
                     // If it is up/down, pick either the up or down rotation.
                     axis = normal == UP ? NORMAL.rotateYCCW() : NORMAL.rotateY();
                 }
-                EnumFacing[] ret = new EnumFacing[dirs.length];
+                EnumFacing[] ret = new EnumFacing[this.dirs.length];
                 // Finally apply all the rotations
                 for (int i = 0; i < ret.length; i++) {
-                    ret[i] = rotate(dirs[i], axis);
+                    ret[i] = this.rotate(this.dirs[i], axis);
                 }
                 normalized = ret;
             }
@@ -96,7 +96,7 @@ public enum Dir implements LocalDirection {
             for (EnumFacing dir : normalized) {
                 ret = ret.offset(dir);
             }
-            offsets[normal.ordinal()] = ret;
+            this.offsets[normal.ordinal()] = ret;
         }
     }
 
@@ -112,7 +112,7 @@ public enum Dir implements LocalDirection {
      */
     @Override
     public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
-        return ctm.isConnected(world, pos, state, applyConnection(pos, side), side);
+        return ctm.isConnected(world, pos, state, this.applyConnection(pos, side), side);
     }
 
     /**
@@ -128,7 +128,7 @@ public enum Dir implements LocalDirection {
      */
     @Override
     public boolean isConnected(ConnectionCheck ctm, IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side, IBlockState connectionState) {
-        return ctm.isConnected(world, pos, state, applyConnection(pos, side), side, connectionState);
+        return ctm.isConnected(world, pos, state, this.applyConnection(pos, side), side, connectionState);
     }
 
     /**
@@ -139,7 +139,7 @@ public enum Dir implements LocalDirection {
     @SuppressWarnings("null")
     @NotNull
     public BlockPos applyConnection(BlockPos pos, EnumFacing side) {
-        return pos.add(getOffset(side));
+        return pos.add(this.getOffset(side));
     }
 
     @Override
@@ -165,7 +165,7 @@ public enum Dir implements LocalDirection {
     @Override
     @NotNull
     public BlockPos getOffset(EnumFacing normal) {
-        return offsets[normal.ordinal()];
+        return this.offsets[normal.ordinal()];
     }
 
     public @Nullable LocalDirection getDirFor(EnumFacing[] dirs) {
@@ -216,7 +216,7 @@ public enum Dir implements LocalDirection {
 
     @Override
     public String asJson() {
-        return "{\"id\": \"" + name() + "\", \"directions\": " + new Gson().toJson(dirs) + "}";
+        return "{\"id\": \"" + this.name() + "\", \"directions\": " + new Gson().toJson(this.dirs) + "}";
     }
 
     public static LocalDirection fromDirections(List<EnumFacing> directions) {

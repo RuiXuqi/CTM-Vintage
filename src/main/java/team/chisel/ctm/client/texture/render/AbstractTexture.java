@@ -63,12 +63,12 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
             if (light != null) {
                 if (light.isJsonPrimitive()) {
                     this.hasLight = true;
-                    this.skylight = this.blocklight = parseLightValue(light);
+                    this.skylight = this.blocklight = this.parseLightValue(light);
                 } else if (light.isJsonObject()) {
                     this.hasLight = true;
                     JsonObject lightObj = light.getAsJsonObject();
-                    this.blocklight = parseLightValue(lightObj.get("block"));
-                    this.skylight = parseLightValue(lightObj.get("sky"));
+                    this.blocklight = this.parseLightValue(lightObj.get("block"));
+                    this.skylight = this.parseLightValue(lightObj.get("sky"));
                 }
             }
         }
@@ -83,20 +83,20 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
 
     @Override
     public TextureAtlasSprite getParticle() {
-        return sprites[0];
+        return this.sprites[0];
     }
 
     @Override
     public Collection<ResourceLocation> getTextures() {
-        return Arrays.stream(sprites).map(TextureAtlasSprite::getIconName).map(ResourceLocation::new).collect(Collectors.toList());
+        return Arrays.stream(this.sprites).map(TextureAtlasSprite::getIconName).map(ResourceLocation::new).collect(Collectors.toList());
     }
 
     protected Quad makeQuad(BakedQuad bq, @Nullable ITextureContext context) {
         Quad q = Quad.from(bq);
-        if (hasLight) {
-            q = q.setLight(blocklight, skylight);
+        if (this.hasLight) {
+            q = q.setLight(this.blocklight, this.skylight);
         } else {
-            q = q.setFullbright(fullbright);
+            q = q.setFullbright(this.fullbright);
         }
         return q;
     }

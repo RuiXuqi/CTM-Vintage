@@ -137,7 +137,7 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
                 this.xSize = object.get("size").getAsInt();
                 this.ySize = object.get("size").getAsInt();
             } else {
-                xSize = ySize = 2;
+                this.xSize = this.ySize = 2;
             }
 
             if (object.has("x_offset")) {
@@ -156,15 +156,15 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
                 this.yOffset = 0;
             }
         } else {
-            xOffset = yOffset = 0;
-            xSize = ySize = 2;
+            this.xOffset = this.yOffset = 0;
+            this.xSize = this.ySize = 2;
         }
 
-        Preconditions.checkArgument(xSize > 0 && ySize > 0, "Cannot have a dimension of 0!");
+        Preconditions.checkArgument(this.xSize > 0 && this.ySize > 0, "Cannot have a dimension of 0!");
     }
 
     @Override
     public List<BakedQuad> transformQuad(BakedQuad quad, ITextureContext context, int quadGoal) {
-        return map.transformQuad(this, quad, context, quadGoal);
+        return this.map.transformQuad(this, quad, context, quadGoal);
     }
 }

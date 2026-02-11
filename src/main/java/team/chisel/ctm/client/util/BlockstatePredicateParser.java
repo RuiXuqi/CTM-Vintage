@@ -68,7 +68,7 @@ public class BlockstatePredicateParser {
                                                               ComparisonType type) implements Predicate<IBlockState> {
         @Override
         public boolean test(IBlockState t) {
-            return t.getBlock() == block && type.compareFunc.test(t.getValue(prop).compareTo(value));
+            return t.getBlock() == this.block && this.type.compareFunc.test(t.getValue(this.prop).compareTo(this.value));
         }
     }
 
@@ -78,7 +78,7 @@ public class BlockstatePredicateParser {
 
         @Override
         public boolean test(IBlockState t) {
-            return t.getBlock() == block && validValues.contains(t.getValue(prop));
+            return t.getBlock() == this.block && this.validValues.contains(t.getValue(this.prop));
         }
     }
 
@@ -86,7 +86,7 @@ public class BlockstatePredicateParser {
     private record BlockPredicate(Block block) implements Predicate<IBlockState> {
         @Override
         public boolean test(IBlockState t) {
-            return t.getBlock() == block;
+            return t.getBlock() == this.block;
         }
     }
 
@@ -95,15 +95,15 @@ public class BlockstatePredicateParser {
                                         List<Predicate<IBlockState>> composed) implements Predicate<IBlockState> {
         @Override
         public boolean test(IBlockState t) {
-            if (type == Composition.AND) {
-                for (Predicate<IBlockState> p : composed) {
+            if (this.type == Composition.AND) {
+                for (Predicate<IBlockState> p : this.composed) {
                     if (!p.test(t)) {
                         return false;
                     }
                 }
                 return true;
             } else {
-                for (Predicate<IBlockState> p : composed) {
+                for (Predicate<IBlockState> p : this.composed) {
                     if (p.test(t)) {
                         return true;
                     }
@@ -131,7 +131,7 @@ public class BlockstatePredicateParser {
                 }
                 Composition composition = null;
                 if (obj.has("defer")) {
-                    if (defaultPredicate.get() == null) {
+                    if (this.defaultPredicate.get() == null) {
                         throw new JsonParseException("Cannot defer when no default is set!");
                     }
                     try {
@@ -141,21 +141,21 @@ public class BlockstatePredicateParser {
                     }
                 }
                 if (!obj.has("predicate")) {
-                    return compose(composition, new BlockPredicate(block));
+                    return this.compose(composition, new BlockPredicate(block));
                 }
                 JsonElement propsEle = obj.get("predicate");
                 if (propsEle.isJsonObject()) {
-                    return compose(composition, parsePredicate(block, propsEle.getAsJsonObject(), context));
+                    return this.compose(composition, this.parsePredicate(block, propsEle.getAsJsonObject(), context));
                 } else if (propsEle.isJsonArray()) {
                     List<Predicate<IBlockState>> predicates = new ArrayList<>();
                     for (JsonElement ele : propsEle.getAsJsonArray()) {
                         if (ele.isJsonObject()) {
-                            predicates.add(parsePredicate(block, ele.getAsJsonObject(), context));
+                            predicates.add(this.parsePredicate(block, ele.getAsJsonObject(), context));
                         } else {
                             throw new JsonSyntaxException("Predicate entry must be a JSON Object. Found: " + ele);
                         }
                     }
-                    return compose(composition, new PredicateComposition(Composition.AND, predicates));
+                    return this.compose(composition, new PredicateComposition(Composition.AND, predicates));
                 }
             } else if (json.isJsonArray()) {
                 List<Predicate<IBlockState>> predicates = new ArrayList<>();
@@ -174,7 +174,7 @@ public class BlockstatePredicateParser {
             if (composition == null) {
                 return child;
             }
-            return composition.composer.apply(defaultPredicate.get(), child);
+            return composition.composer.apply(this.defaultPredicate.get(), child);
         }
 
         @SuppressWarnings({"rawtypes", "unchecked"})
@@ -198,7 +198,7 @@ public class BlockstatePredicateParser {
             if (valueEle.isJsonArray()) {
                 return new MultiPropertyPredicate(block, prop.get(), StreamSupport.stream(valueEle.getAsJsonArray().spliterator(), false).map(e -> this.parseValue(prop.get(), e)).collect(Collectors.toSet()));
             } else {
-                return new PropertyPredicate(block, prop.get(), parseValue(prop.get(), valueEle), compareFunc);
+                return new PropertyPredicate(block, prop.get(), this.parseValue(prop.get(), valueEle), compareFunc);
             }
         }
 
@@ -220,7 +220,7 @@ public class BlockstatePredicateParser {
 
         @Override
         public boolean test(EnumFacing dir, IBlockState state) {
-            return predicates.get(dir).test(state);
+            return this.predicates.get(dir).test(state);
         }
     }
 
@@ -231,15 +231,15 @@ public class BlockstatePredicateParser {
             if (json.isJsonObject()) {
                 JsonObject obj = json.getAsJsonObject();
                 if (obj.has("default")) {
-                    predicateDeserializer.defaultPredicate.set(context.deserialize(obj.get("default"), PREDICATE_TYPE));
+                    BlockstatePredicateParser.this.predicateDeserializer.defaultPredicate.set(context.deserialize(obj.get("default"), PREDICATE_TYPE));
                     obj.remove("default");
                 }
                 PredicateMap ret = new PredicateMap();
                 ret.predicates.putAll(context.deserialize(obj, MAP_TYPE));
                 for (EnumFacing dir : EnumFacing.VALUES) {
-                    ret.predicates.putIfAbsent(dir, Optional.ofNullable(predicateDeserializer.defaultPredicate.get()).orElse(PredicateDeserializer.EMPTY));
+                    ret.predicates.putIfAbsent(dir, Optional.ofNullable(BlockstatePredicateParser.this.predicateDeserializer.defaultPredicate.get()).orElse(PredicateDeserializer.EMPTY));
                 }
-                predicateDeserializer.defaultPredicate.remove();
+                BlockstatePredicateParser.this.predicateDeserializer.defaultPredicate.remove();
                 return ret;
             } else if (json.isJsonArray()) {
                 Predicate<IBlockState> predicate = context.deserialize(json, PREDICATE_TYPE);
@@ -261,13 +261,13 @@ public class BlockstatePredicateParser {
     private final PredicateDeserializer predicateDeserializer = new PredicateDeserializer();
 
     private final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(PREDICATE_TYPE, predicateDeserializer)
+            .registerTypeAdapter(PREDICATE_TYPE, this.predicateDeserializer)
             .registerTypeAdapter(ComparisonType.class, new ComparisonType.Deserializer())
             .registerTypeAdapter(MAP_TYPE, (InstanceCreator<?>) type -> new EnumMap<>(EnumFacing.class))
             .registerTypeAdapter(PredicateMap.class, new MapDeserializer())
             .create();
 
     public @Nullable BiPredicate<EnumFacing, IBlockState> parse(JsonElement json) {
-        return GSON.fromJson(json, PredicateMap.class);
+        return this.GSON.fromJson(json, PredicateMap.class);
     }
 }

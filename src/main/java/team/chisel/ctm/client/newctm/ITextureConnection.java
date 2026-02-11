@@ -16,8 +16,8 @@ public interface ITextureConnection {
     Optional<Boolean> connectInside();
 
     default ConnectionCheck applyTo(ConnectionCheck check) {
-        check.ignoreStates(ignoreStates()).actualStates(actualStates()).stateComparator(this::connectTo);
-        check.disableObscuredFaceCheck = connectInside();
+        check.ignoreStates(this.ignoreStates()).actualStates(this.actualStates()).stateComparator(this::connectTo);
+        check.disableObscuredFaceCheck = this.connectInside();
         return check;
     }
 }

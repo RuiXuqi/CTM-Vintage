@@ -50,14 +50,14 @@ public class PartialTextureAtlasSprite extends TextureAtlasSprite {
 
     @Override
     public float getInterpolatedU(double u) {
-        float width = getMaxU() - getMinU();
-        return (float) (getMinU() + width * u / 16.0f);
+        float width = this.getMaxU() - this.getMinU();
+        return (float) (this.getMinU() + width * u / 16.0f);
     }
 
     @Override
     public float getUnInterpolatedU(float offset) {
-        float width = getMaxU() - getMinU();
-        return (offset - getMinU()) / width * 16.0f;
+        float width = this.getMaxU() - this.getMinU();
+        return (offset - this.getMinU()) / width * 16.0f;
     }
 
     @Override
@@ -72,18 +72,18 @@ public class PartialTextureAtlasSprite extends TextureAtlasSprite {
 
     @Override
     public float getInterpolatedV(double v) {
-        float height = getMaxV() - getMinV();
-        return (float) (getMinV() + height * v / 16.0f);
+        float height = this.getMaxV() - this.getMinV();
+        return (float) (this.getMinV() + height * v / 16.0f);
     }
 
     @Override
     public float getUnInterpolatedV(float offset) {
-        float height = getMaxV() - getMinV();
-        return (offset - getMinV()) / height * 16.0f;
+        float height = this.getMaxV() - this.getMinV();
+        return (offset - this.getMinV()) / height * 16.0f;
     }
 
     @Override
     public String toString() {
-        return "PartialTextureAtlasSprite{contents='" + getIconName() + "', u0=" + getMinU() + ", u1=" + getMaxU() + ", v0=" + getMinV() + ", v1=" + getMaxV() + "}";
+        return "PartialTextureAtlasSprite{contents='" + this.getIconName() + "', u0=" + this.getMinU() + ", u1=" + this.getMaxU() + ", v0=" + this.getMinV() + ", v1=" + this.getMaxV() + "}";
     }
 }

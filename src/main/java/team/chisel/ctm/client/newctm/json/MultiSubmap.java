@@ -44,7 +44,7 @@ public abstract class MultiSubmap {
 
         @Override
         public Iterable<Pair<String, ISubmap>> forName(String baseName) {
-            return Collections.singletonList(Pair.of(baseName, submap));
+            return Collections.singletonList(Pair.of(baseName, this.submap));
         }
     }
 
@@ -60,14 +60,14 @@ public abstract class MultiSubmap {
             var grid = Submap.grid(width, height);
             for (int i = 0; i < grid.length; i++) {
                 for (int j = 0; j < grid[i].length; j++) {
-                    submaps.add(Pair.of(j + "," + i, grid[i][j]));
+                    this.submaps.add(Pair.of(j + "," + i, grid[i][j]));
                 }
             }
         }
 
         @Override
         public Iterable<Pair<String, ISubmap>> forName(String baseName) {
-            return submaps.stream().map(p -> Pair.of(baseName + p.getLeft(), p.getRight())).collect(Collectors.toList());
+            return this.submaps.stream().map(p -> Pair.of(baseName + p.getLeft(), p.getRight())).collect(Collectors.toList());
         }
     }
 }

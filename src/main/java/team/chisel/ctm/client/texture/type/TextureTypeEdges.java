@@ -37,8 +37,8 @@ public class TextureTypeEdges extends TextureTypeCTM {
         @Override
         protected void fillSubmaps(int idx) {
             Dir[] dirs = submapMap[idx];
-            if (!connectedOr(dirs[0], dirs[1]) && connected(dirs[2])) {
-                submapCache[idx] = submapOffsets[idx];
+            if (!this.connectedOr(dirs[0], dirs[1]) && this.connected(dirs[2])) {
+                this.submapCache[idx] = submapOffsets[idx];
             } else {
                 super.fillSubmaps(idx);
             }
@@ -46,11 +46,11 @@ public class TextureTypeEdges extends TextureTypeCTM {
 
         @Override
         public long serialized() {
-            return isObscured() ? (super.serialized() | (1 << 8)) : super.serialized();
+            return this.isObscured() ? (super.serialized() | (1 << 8)) : super.serialized();
         }
 
         public boolean isObscured() {
-            return ((ConnectionCheckEdges) connectionCheck).isObscured();
+            return ((ConnectionCheckEdges) this.connectionCheck).isObscured();
         }
     }
 
@@ -62,19 +62,19 @@ public class TextureTypeEdges extends TextureTypeCTM {
 
         @Override
         public boolean isConnected(IBlockAccess world, BlockPos current, IBlockState currentState, BlockPos connection, EnumFacing dir, IBlockState state) {
-            if (isObscured()) {
+            if (this.isObscured()) {
                 return false;
             }
-            IBlockState obscuring = getConnectionState(world, current.offset(dir), dir, current, currentState);
-            if (stateComparator(state, obscuring, dir)) {
-                setObscured(true);
+            IBlockState obscuring = this.getConnectionState(world, current.offset(dir), dir, current, currentState);
+            if (this.stateComparator(state, obscuring, dir)) {
+                this.setObscured(true);
                 return false;
             }
 
-            IBlockState con = getConnectionState(world, connection, dir, current, currentState);
-            IBlockState obscuringcon = getConnectionState(world, connection.offset(dir), dir, current, currentState);
+            IBlockState con = this.getConnectionState(world, connection, dir, current, currentState);
+            IBlockState obscuringcon = this.getConnectionState(world, connection.offset(dir), dir, current, currentState);
 
-            if (stateComparator(state, con, dir) || stateComparator(state, obscuringcon, dir)) {
+            if (this.stateComparator(state, con, dir) || this.stateComparator(state, obscuringcon, dir)) {
                 Vec3d difference = new Vec3d(connection.subtract(current));
                 if (difference.lengthSquared() > 1) {
                     difference = difference.normalize();
@@ -92,8 +92,8 @@ public class TextureTypeEdges extends TextureTypeCTM {
                     }
                     BlockPos posA = new BlockPos(vA).add(current);
                     BlockPos posB = new BlockPos(vB).add(current);
-                    return (getConnectionState(world, posA, dir, current, currentState) == state && !stateComparator(state, getConnectionState(world, posA.offset(dir), dir, current, currentState), dir))
-                            || (getConnectionState(world, posB, dir, current, currentState) == state && !stateComparator(state, getConnectionState(world, posB.offset(dir), dir, current, currentState), dir));
+                    return (this.getConnectionState(world, posA, dir, current, currentState) == state && !this.stateComparator(state, this.getConnectionState(world, posA.offset(dir), dir, current, currentState), dir))
+                            || (this.getConnectionState(world, posB, dir, current, currentState) == state && !this.stateComparator(state, this.getConnectionState(world, posB.offset(dir), dir, current, currentState), dir));
                 } else {
                     return true;
                 }

@@ -24,14 +24,14 @@ public class TextureEdges extends TextureCTM<TextureTypeEdges> {
 
     @Override
     public List<BakedQuad> transformQuad(@NotNull BakedQuad bq, @NotNull ITextureContext context, int quadGoal) {
-        Quad quad = makeQuad(bq, context);
+        Quad quad = this.makeQuad(bq, context);
         if (context == null || Configurations.disableCTM) {
-            return Collections.singletonList(quad.transformUVs(sprites[0]).rebake());
+            return Collections.singletonList(quad.transformUVs(this.sprites[0]).rebake());
         }
 
         CTMLogicEdges logic = (CTMLogicEdges) ((TextureContextCTM) context).getCTM(bq.getFace());
         if (logic.isObscured()) {
-            return Arrays.stream(quad.transformUVs(sprites[2]).subdivide(4)).filter(Objects::nonNull).map(Quad::rebake).collect(Collectors.toList());
+            return Arrays.stream(quad.transformUVs(this.sprites[2]).subdivide(4)).filter(Objects::nonNull).map(Quad::rebake).collect(Collectors.toList());
         }
 
         return super.transformQuad(bq, context, quadGoal);

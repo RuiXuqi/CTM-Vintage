@@ -52,13 +52,13 @@ public class CTMExtendedState extends BlockStateBase implements IExtendedBlockSt
         this.world = world;
         this.pos = pos;
 
-        this.extended = wrapped instanceof IExtendedBlockState;
-        if (extended) {
-            extState = (IExtendedBlockState) wrapped;
-            clean = extState.getClean();
+        this.extended = this.wrapped instanceof IExtendedBlockState;
+        if (this.extended) {
+            this.extState = (IExtendedBlockState) this.wrapped;
+            this.clean = this.extState.getClean();
         } else {
-            extState = null;
-            clean = wrapped;
+            this.extState = null;
+            this.clean = this.wrapped;
         }
         ProfileUtil.end();
     }
@@ -68,51 +68,51 @@ public class CTMExtendedState extends BlockStateBase implements IExtendedBlockSt
     }
 
     public RenderContextList getContextList(IBlockState state, AbstractCTMBakedModel model) {
-        if (ctxCache == null) {
-            ctxCache = new RenderContextList(state, model.getCTMTextures(), world, pos);
+        if (this.ctxCache == null) {
+            this.ctxCache = new RenderContextList(state, model.getCTMTextures(), this.world, this.pos);
         }
-        return ctxCache;
+        return this.ctxCache;
     }
 
     @Override
     public @Nullable Collection<IUnlistedProperty<?>> getUnlistedNames() {
-        return extended ? extState.getUnlistedNames() : Collections.emptyList();
+        return this.extended ? this.extState.getUnlistedNames() : Collections.emptyList();
     }
 
     @Override
     public @Nullable <V> V getValue(@Nullable IUnlistedProperty<V> property) {
-        return extended ? extState.getValue(property) : null;
+        return this.extended ? this.extState.getValue(property) : null;
     }
 
     @Override
     public <V> IExtendedBlockState withProperty(@Nullable IUnlistedProperty<V> property, @Nullable V value) {
-        return extended ? new CTMExtendedState(extState.withProperty(property, value), this) : this;
+        return this.extended ? new CTMExtendedState(this.extState.withProperty(property, value), this) : this;
     }
 
     @Override
     public @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> getUnlistedProperties() {
-        return extended ? extState.getUnlistedProperties() : ImmutableMap.of();
+        return this.extended ? this.extState.getUnlistedProperties() : ImmutableMap.of();
     }
 
     @Override
     public IBlockState getClean() {
-        return clean;
+        return this.clean;
     }
 
     // Lombok chokes on these for some reason
 
     @Override
     public <T extends Comparable<T>> T getValue(IProperty<T> property) {
-        return wrapped.getValue(property);
+        return this.wrapped.getValue(property);
     }
 
     @Override
     public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value) {
-        return new CTMExtendedState(wrapped.withProperty(property, value), this);
+        return new CTMExtendedState(this.wrapped.withProperty(property, value), this);
     }
 
     @Override
     public <T extends Comparable<T>> IBlockState cycleProperty(IProperty<T> property) {
-        return new CTMExtendedState(wrapped.cycleProperty(property), this);
+        return new CTMExtendedState(this.wrapped.cycleProperty(property), this);
     }
 }

@@ -29,19 +29,19 @@ public class TextureContextCustomCTM implements ITextureContext {
         }
 
         for (EnumFacing face : EnumFacing.VALUES) {
-            ILogicCache ctm = createCTM(state, connectionCheckOverride);
+            ILogicCache ctm = this.createCTM(state, connectionCheckOverride);
             ctm.buildConnectionMap(world, pos, state, face);
-            ctmData.put(face, ctm);
+            this.ctmData.put(face, ctm);
             this.data |= ctm.serialized() << (face.ordinal() * 10);
         }
     }
 
     protected ILogicCache createCTM(@NotNull IBlockState state, @Nullable ConnectionCheck connectionCheckOverride) {
-        return logic.cached(connectionCheckOverride);
+        return this.logic.cached(connectionCheckOverride);
     }
 
     public ILogicCache getCTM(EnumFacing face) {
-        return ctmData.get(face);
+        return this.ctmData.get(face);
     }
 
     @Override

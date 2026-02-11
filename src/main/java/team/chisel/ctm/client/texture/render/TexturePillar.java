@@ -29,11 +29,11 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
     public List<BakedQuad> transformQuad(@NotNull BakedQuad quad, ITextureContext context, int quadGoal) {
         if (context == null) {
             if (quad.getFace().getAxis().isVertical()) {
-                return Lists.newArrayList(makeQuad(quad, context).transformUVs(sprites[0]).rebake());
+                return Lists.newArrayList(this.makeQuad(quad, context).transformUVs(this.sprites[0]).rebake());
             }
-            return Lists.newArrayList(makeQuad(quad, context).transformUVs(sprites[1], Submap.X2[0][0]).rebake());
+            return Lists.newArrayList(this.makeQuad(quad, context).transformUVs(this.sprites[1], Submap.X2[0][0]).rebake());
         }
-        return Lists.newArrayList(getQuad(quad, context));
+        return Lists.newArrayList(this.getQuad(quad, context));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
     }
 
     private BakedQuad getQuad(BakedQuad in, ITextureContext context) {
-        Quad q = makeQuad(in, context);
+        Quad q = this.makeQuad(in, context);
         ConnectionData data = ((TextureContextPillar) context).getData();
         Connections cons = data.getConnections();
 
@@ -54,10 +54,10 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
         } else if (cons.connectedOr(EAST, WEST)) {
             // If connected east or west, ignore any north/south connections, and any connections that are already connected up or down
             realConnections.removeIf(f -> f == NORTH || f == SOUTH);
-            realConnections.removeIf(f -> blockConnectionZ(f, data));
+            realConnections.removeIf(f -> this.blockConnectionZ(f, data));
         } else {
             // Otherwise, remove every connection that is already connected to something else
-            realConnections.removeIf(f -> blockConnectionY(f, data));
+            realConnections.removeIf(f -> this.blockConnectionY(f, data));
         }
 
         // Replace our initial connection data with the new info
@@ -66,12 +66,12 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
         int rotation = 0;
         ISubmap uvs = Submap.X2[0][0];
         if (in.getFace().getAxis().isHorizontal() && cons.connectedOr(UP, DOWN)) {
-            uvs = getUVs(UP, DOWN, cons);
+            uvs = this.getUVs(UP, DOWN, cons);
         } else if (cons.connectedOr(EAST, WEST)) {
             rotation = 1;
-            uvs = getUVs(EAST, WEST, cons);
+            uvs = this.getUVs(EAST, WEST, cons);
         } else if (cons.connectedOr(NORTH, SOUTH)) {
-            uvs = getUVs(NORTH, SOUTH, cons);
+            uvs = this.getUVs(NORTH, SOUTH, cons);
             if (in.getFace() == DOWN) {
                 rotation += 2;
             }
@@ -103,9 +103,9 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
 
         q = q.rotate(rotation);
         if (connected) {
-            return q.transformUVs(sprites[1], uvs).rebake();
+            return q.transformUVs(this.sprites[1], uvs).rebake();
         }
-        return q.transformUVs(sprites[0]).rebake();
+        return q.transformUVs(this.sprites[0]).rebake();
     }
 
     private ISubmap getUVs(EnumFacing face1, EnumFacing face2, Connections cons) {
@@ -123,11 +123,11 @@ public class TexturePillar extends AbstractTexture<TextureTypePillar> {
     }
 
     private boolean blockConnectionY(EnumFacing dir, ConnectionData data) {
-        return blockConnection(dir, Axis.Y, data) || blockConnection(dir, dir.rotateY().getAxis(), data);
+        return this.blockConnection(dir, Axis.Y, data) || this.blockConnection(dir, dir.rotateY().getAxis(), data);
     }
 
     private boolean blockConnectionZ(EnumFacing dir, ConnectionData data) {
-        return blockConnection(dir, Axis.Z, data);
+        return this.blockConnection(dir, Axis.Z, data);
     }
 
     private boolean blockConnection(EnumFacing dir, EnumFacing.Axis axis, ConnectionData data) {

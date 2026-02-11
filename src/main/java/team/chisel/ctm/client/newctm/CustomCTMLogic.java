@@ -40,21 +40,21 @@ public class CustomCTMLogic implements ICTMLogic {
 
         @Override
         public long serialized() {
-            int stride = directions.length;
-            int len = cachedSubmapIds.length;
+            int stride = CustomCTMLogic.this.directions.length;
+            int len = this.cachedSubmapIds.length;
             if (len * stride > 64) {
                 throw new IllegalStateException("Too many submaps to serialize");
             }
             long ret = 0L;
-            for (int i = 0; i < cachedSubmapIds.length; i++) {
-                ret |= ((long) cachedSubmapIds[i]) << (i * stride);
+            for (int i = 0; i < this.cachedSubmapIds.length; i++) {
+                ret |= ((long) this.cachedSubmapIds[i]) << (i * stride);
             }
             return ret;
         }
 
         @Override
         public void buildConnectionMap(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
-            this.cachedSubmapIds = CustomCTMLogic.this.getSubmapIds(world, pos, state, side, connectionCheckOverride);
+            this.cachedSubmapIds = CustomCTMLogic.this.getSubmapIds(world, pos, state, side, this.connectionCheckOverride);
             //Manually call with the computed submap ids to avoid having to calculate them a second type
             // like getSubmaps(IBlockAccess, BlockPos, EnumFacing) needs to do, and allows us to use
             // data that is based on our connection check override
@@ -64,31 +64,31 @@ public class CustomCTMLogic implements ICTMLogic {
 
     @Override
     public int[] getSubmapIds(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
-        return getSubmapIds(world, pos, state, side, connectionCheck);
+        return this.getSubmapIds(world, pos, state, side, this.connectionCheck);
     }
 
     private int[] getSubmapIds(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side, ConnectionCheck connectionCheck) {
         int key = 0;
-        for (int i = 0; i < directions.length; i++) {
-            boolean isConnected = directions[i].isConnected(connectionCheck, world, pos, state, side);
+        for (int i = 0; i < this.directions.length; i++) {
+            boolean isConnected = this.directions[i].isConnected(connectionCheck, world, pos, state, side);
             key |= (isConnected ? 1 : 0) << i;
         }
-        if (key >= lookups.length || lookups[key] == null) {
+        if (key >= this.lookups.length || this.lookups[key] == null) {
             throw new IllegalStateException("Input state found that is not in lookup table: " + Integer.toBinaryString(key));
         }
-        return lookups[key];
+        return this.lookups[key];
     }
 
     @Override
     public OutputFace[] getSubmaps(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
-        var tileIds = getSubmapIds(world, pos, state, side);
-        return getSubmaps(tileIds);
+        var tileIds = this.getSubmapIds(world, pos, state, side);
+        return this.getSubmaps(tileIds);
     }
 
     private OutputFace[] getSubmaps(int[] tileIds) {
         OutputFace[] ret = new OutputFace[tileIds.length];
         for (int i = 0; i < ret.length; i++) {
-            ret[i] = tiles[tileIds[i]];
+            ret[i] = this.tiles[tileIds[i]];
         }
         return ret;
     }
@@ -102,36 +102,36 @@ public class CustomCTMLogic implements ICTMLogic {
 
     @Override
     public List<ISubmap> outputSubmaps() {
-        if (outputSubmapCache == null) {
+        if (this.outputSubmapCache == null) {
             Set<ISubmap> seen = new HashSet<>();
-            for (var tile : tiles) {
+            for (var tile : this.tiles) {
                 seen.add(tile.face());
             }
-            outputSubmapCache = new ArrayList<>(seen);
+            this.outputSubmapCache = new ArrayList<>(seen);
         }
-        return outputSubmapCache;
+        return this.outputSubmapCache;
     }
 
     @Override
     public ISubmap getFallbackUvs() {
-        return tiles.length == 0 ? ICTMLogic.super.getFallbackUvs() : tiles[0].uvs();
+        return this.tiles.length == 0 ? ICTMLogic.super.getFallbackUvs() : this.tiles[0].uvs();
     }
 
     private int textureCountCache = -1;
 
     @Override
     public int requiredTextures() {
-        if (textureCountCache < 0) {
+        if (this.textureCountCache < 0) {
             BitSet seen = new BitSet();
-            for (var tile : tiles) {
+            for (var tile : this.tiles) {
                 seen.set(tile.tex());
             }
-            textureCountCache = seen.cardinality();
+            this.textureCountCache = seen.cardinality();
         }
-        return textureCountCache;
+        return this.textureCountCache;
     }
 
     public OutputFace getFallbackFace() {
-        return tiles.length > 0 ? tiles[0] : new OutputFace(0, ICTMLogic.super.getFallbackUvs(), Submap.X1);
+        return this.tiles.length > 0 ? this.tiles[0] : new OutputFace(0, ICTMLogic.super.getFallbackUvs(), Submap.X1);
     }
 }

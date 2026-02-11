@@ -14,13 +14,13 @@ import java.util.Optional;
 @ParametersAreNonnullByDefault
 public class TextureInfo {
 
-    private TextureAtlasSprite[] sprites;
+    private final TextureAtlasSprite[] sprites;
 
-    private Optional<JsonObject> info;
+    private final Optional<JsonObject> info;
 
-    private BlockRenderLayer renderLayer;
+    private final BlockRenderLayer renderLayer;
 
-    private boolean isProxy;
+    private final boolean isProxy;
 
     public TextureInfo(TextureAtlasSprite[] sprites, Optional<JsonObject> info, BlockRenderLayer layer) {
         this(sprites, info, layer, false);

@@ -31,7 +31,7 @@ public interface ITextureType extends IContextProvider {
      */
     @Deprecated
     default int getQuadsPerSide() {
-        return getOutputFaces().size();
+        return this.getOutputFaces().size();
     }
 
     default List<ISubmap> getOutputFaces() {

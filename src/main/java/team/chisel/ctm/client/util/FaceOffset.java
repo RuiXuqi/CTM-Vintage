@@ -14,12 +14,12 @@ public class FaceOffset {
     public static BlockPos getBlockPosOffsetFromFaceOffset(EnumFacing facing, int xOffset, int yOffset) {
         return switch (facing) {
             // UP
-            default -> new BlockPos(xOffset, 0, -yOffset);
             case DOWN -> new BlockPos(xOffset, 0, yOffset);
             case NORTH -> new BlockPos(-xOffset, yOffset, 0);
             case SOUTH -> new BlockPos(xOffset, yOffset, 0);
             case WEST -> new BlockPos(0, yOffset, xOffset);
             case EAST -> new BlockPos(0, yOffset, -xOffset);
+            default -> new BlockPos(xOffset, 0, -yOffset);
         };
     }
 }

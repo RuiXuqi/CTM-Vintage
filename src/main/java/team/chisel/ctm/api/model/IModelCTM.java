@@ -21,7 +21,7 @@ public interface IModelCTM extends IModel {
     Collection<ICTMTexture<?>> getChiselTextures();
 
     default Collection<ICTMTexture<?>> getCTMTextures() {
-        return getChiselTextures();
+        return this.getChiselTextures();
     }
 
     ICTMTexture<?> getTexture(String iconName);

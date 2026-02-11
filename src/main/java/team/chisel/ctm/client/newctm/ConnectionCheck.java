@@ -39,8 +39,8 @@ public class ConnectionCheck {
      */
     public final boolean isConnected(IBlockAccess world, BlockPos current, IBlockState currentState, BlockPos connection, EnumFacing dir) {
 
-        IBlockState state = getConnectionState(world, current, currentState, dir, connection, world.getBlockState(connection));
-        return isConnected(world, current, currentState, connection, dir, state);
+        IBlockState state = this.getConnectionState(world, current, currentState, dir, connection, world.getBlockState(connection));
+        return this.isConnected(world, current, currentState, connection, dir, state);
     }
 
     /**
@@ -60,13 +60,13 @@ public class ConnectionCheck {
 //          return false;
 //      }
 
-        IBlockState con = getConnectionState(world, connection, world.getBlockState(connection), dir, current, currentState);
+        IBlockState con = this.getConnectionState(world, connection, world.getBlockState(connection), dir, current, currentState);
         IBlockState obscuring;
-        if (disableObscuredFaceCheck.orElse(Configurations.connectInsideCTM)) {
+        if (this.disableObscuredFaceCheck.orElse(Configurations.connectInsideCTM)) {
             obscuring = null;
         } else {
             BlockPos obscuringPos = connection.offset(dir);
-            obscuring = getConnectionState(world, obscuringPos, world.getBlockState(obscuringPos), dir, current, currentState);
+            obscuring = this.getConnectionState(world, obscuringPos, world.getBlockState(obscuringPos), dir, current, currentState);
         }
 
         // bad API user
@@ -74,7 +74,7 @@ public class ConnectionCheck {
             throw new IllegalStateException("Error, received null blockstate appearance from block " + world.getBlockState(connection));
         }
 
-        boolean ret = stateComparator(state, con, dir);
+        boolean ret = this.stateComparator(state, con, dir);
 
         // no block obscuring this face
         if (obscuring == null) {
@@ -82,13 +82,13 @@ public class ConnectionCheck {
         }
 
         // check that we aren't already connected outwards from this side
-        ret &= !stateComparator(state, obscuring, dir);
+        ret &= !this.stateComparator(state, obscuring, dir);
 
         return ret;
     }
 
     public boolean stateComparator(IBlockState from, IBlockState to, EnumFacing dir) {
-        return stateComparator.connects(this, from, to, dir);
+        return this.stateComparator.connects(this, from, to, dir);
     }
 
 //    private boolean connectionBlocked(IBlockReader world, int x, int y, int z, int side) {
@@ -100,12 +100,12 @@ public class ConnectionCheck {
 //    }
 
     public IBlockState getConnectionState(IBlockAccess world, BlockPos pos, @Nullable EnumFacing side, BlockPos connection, IBlockState connectionState) {
-        return getConnectionState(world, pos, world.getBlockState(pos), side, connection, connectionState);
+        return this.getConnectionState(world, pos, world.getBlockState(pos), side, connection, connectionState);
     }
 
     public IBlockState getConnectionState(IBlockAccess world, BlockPos pos, IBlockState state, @Nullable EnumFacing side, BlockPos connection,
                                           IBlockState connectionState) {
-        if (actualStates()) {
+        if (this.actualStates()) {
             state = state.getActualState(world, pos);
         }
         if (state.getBlock() instanceof IFacade facade) {

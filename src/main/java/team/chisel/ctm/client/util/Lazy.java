@@ -42,14 +42,14 @@ public final class Lazy<T> implements Supplier<T> {
 
     @Override
     public T get() {
-        T ret = cachedValue;
+        T ret = this.cachedValue;
         if (ret == null) {
             synchronized (this) {
-                ret = cachedValue;
+                ret = this.cachedValue;
                 if (ret == null) {
-                    cachedValue = ret = delegate.get();
+                    this.cachedValue = ret = this.delegate.get();
                     if (ret == null) {
-                        throw new IllegalStateException("Lazy value cannot be null, but supplier returned null: " + delegate);
+                        throw new IllegalStateException("Lazy value cannot be null, but supplier returned null: " + this.delegate);
                     }
                 }
             }

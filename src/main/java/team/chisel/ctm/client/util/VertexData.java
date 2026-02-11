@@ -35,19 +35,19 @@ public class VertexData {
     private Map<VertexFormatElement.EnumUsage, float[]> miscData = new EnumMap<>(VertexFormatElement.EnumUsage.class);
 
     public Vector3f getPos() {
-        return new Vector3f(posX, posY, posZ);
+        return new Vector3f(this.posX, this.posY, this.posZ);
     }
 
     public Vector2f getUV() {
-        return new Vector2f(texU, texV);
+        return new Vector2f(this.texU, this.texV);
     }
 
     public int getBlockLight() {
-        return lightU >> 4;
+        return this.lightU >> 4;
     }
 
     public int getSkyLight() {
-        return lightV >> 4;
+        return this.lightV >> 4;
     }
 
     public VertexData color(int red, int green, int blue, int alpha) {
@@ -73,23 +73,23 @@ public class VertexData {
     }
 
     public VertexData texRaw(float u, float v) {
-        texU = u;
-        texV = v;
+        this.texU = u;
+        this.texV = v;
         return this;
     }
 
     public VertexData lightRaw(int u, int v) {
-        lightU = u;
-        lightV = v;
+        this.lightU = u;
+        this.lightV = v;
         return this;
     }
 
     public VertexData light(int u, int v) {
-        return lightRaw(u << 4, v << 4);
+        return this.lightRaw(u << 4, v << 4);
     }
 
     public VertexData misc(VertexFormatElement element, float... data) {
-        miscData.put(element.getUsage(), data);
+        this.miscData.put(element.getUsage(), data);
         return this;
     }
 
@@ -98,13 +98,13 @@ public class VertexData {
         if (deepCopy) {
             //Deep copy the misc data
             miscCopy = new HashMap<>();
-            for (Map.Entry<VertexFormatElement.EnumUsage, float[]> entry : miscData.entrySet()) {
+            for (Map.Entry<VertexFormatElement.EnumUsage, float[]> entry : this.miscData.entrySet()) {
                 miscCopy.put(entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
             }
         } else {
-            miscCopy = miscData;
+            miscCopy = this.miscData;
         }
-        return new VertexData(posX, posY, posZ, normalX, normalY, normalZ, red, green, blue, alpha, texU, texV, lightU, lightV, miscCopy);
+        return new VertexData(this.posX, this.posY, this.posZ, this.normalX, this.normalY, this.normalZ, this.red, this.green, this.blue, this.alpha, this.texU, this.texV, this.lightU, this.lightV, miscCopy);
     }
 
     public void pipe(IVertexConsumer consumer, VertexFormat format) {
@@ -114,25 +114,25 @@ public class VertexData {
             switch (usage) {
                 case UV:
                     if (ele.getIndex() == 0) {
-                        consumer.put(i, texU, texV, 0.0f, 1.0f);
+                        consumer.put(i, this.texU, this.texV, 0.0f, 1.0f);
                     } else if (ele.getIndex() == 1) {
                         //Stuff for fullbright
-                        float bl = ((float) (lightU >> 4) * 32.0f) / 65535.0f;
-                        float sl = ((float) (lightV >> 4) * 32.0f) / 65535.0f;
+                        float bl = ((float) (this.lightU >> 4) * 32.0f) / 65535.0f;
+                        float sl = ((float) (this.lightV >> 4) * 32.0f) / 65535.0f;
                         consumer.put(i, bl, sl);
                     }
                     break;
                 case POSITION:
-                    consumer.put(i, posX, posY, posZ, 1.0f);
+                    consumer.put(i, this.posX, this.posY, this.posZ, 1.0f);
                     break;
                 case COLOR:
-                    consumer.put(i, red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f);
+                    consumer.put(i, this.red / 255.0f, this.green / 255.0f, this.blue / 255.0f, this.alpha / 255.0f);
                     break;
                 case NORMAL:
-                    consumer.put(i, normalX, normalY, normalZ, 0.0f);
+                    consumer.put(i, this.normalX, this.normalY, this.normalZ, 0.0f);
                     break;
                 default:
-                    float[] data = miscData.get(usage);
+                    float[] data = this.miscData.get(usage);
                     if (data != null) consumer.put(i, data);
                     else consumer.put(i, new float[ele.getElementCount()]);
                     break;

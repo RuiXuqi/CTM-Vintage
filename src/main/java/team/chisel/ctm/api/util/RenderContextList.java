@@ -42,13 +42,13 @@ public class RenderContextList {
             ITextureType type = tex.getType();
             ITextureContext ctx = type.getBlockRenderContext(state, cachedWorld, pos, tex);
             if (ctx != null) {
-                contextMap.put(tex, ctx);
+                this.contextMap.put(tex, ctx);
             }
         }
 
         ProfileUtil.endAndStart("ctm_context_serialize");
-        for (Entry<ICTMTexture<?>, ITextureContext> e : contextMap.entrySet()) {
-            serialized.put(e.getKey(), e.getValue().getCompressedData());
+        for (Entry<ICTMTexture<?>, ITextureContext> e : this.contextMap.entrySet()) {
+            this.serialized.put(e.getKey(), e.getValue().getCompressedData());
         }
         ProfileUtil.end();
     }
@@ -58,10 +58,10 @@ public class RenderContextList {
     }
 
     public boolean contains(ICTMTexture<?> tex) {
-        return getRenderContext(tex) != null;
+        return this.getRenderContext(tex) != null;
     }
 
     public Object2LongMap<ICTMTexture<?>> serialized() {
-        return serialized;
+        return this.serialized;
     }
 }

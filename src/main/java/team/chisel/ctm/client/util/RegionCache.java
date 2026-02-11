@@ -45,7 +45,7 @@ public class RegionCache implements IBlockAccess {
     }
 
     private IBlockAccess getPassthrough() {
-        IBlockAccess ret = passthrough.get();
+        IBlockAccess ret = this.passthrough.get();
         Preconditions.checkNotNull(ret);
         return ret;
     }
@@ -53,7 +53,7 @@ public class RegionCache implements IBlockAccess {
     public @NotNull RegionCache updateWorld(IBlockAccess passthrough) {
         // We do NOT use getPassthrough() here so as to skip the null-validation - it's obviously valid to be null here
         if (this.passthrough.get() != passthrough) {
-            stateCache.clear();
+            this.stateCache.clear();
             this.passthrough = new WeakReference<>(passthrough);
         }
         return this;
@@ -62,24 +62,24 @@ public class RegionCache implements IBlockAccess {
     @Override
     @Nullable
     public TileEntity getTileEntity(BlockPos pos) {
-        return getPassthrough().getTileEntity(pos);
+        return this.getPassthrough().getTileEntity(pos);
     }
 
     @Override
     public int getCombinedLight(BlockPos pos, int lightValue) {
         // In cases with direct passthroughs, these are never used by our code.
         // But in case something out there does use them, this will work
-        return getPassthrough().getCombinedLight(pos, lightValue);
+        return this.getPassthrough().getCombinedLight(pos, lightValue);
     }
 
     @Override
     public IBlockState getBlockState(BlockPos pos) {
         long address = pos.toLong();
-        var state = stateCache.get(address);
+        var state = this.stateCache.get(address);
 
         if (state == null) {
-            state = getPassthrough().getBlockState(pos);
-            stateCache.put(address, state);
+            state = this.getPassthrough().getBlockState(pos);
+            this.stateCache.put(address, state);
         }
 
         return state;
@@ -87,27 +87,27 @@ public class RegionCache implements IBlockAccess {
 
     @Override
     public boolean isAirBlock(BlockPos pos) {
-        IBlockState state = getBlockState(pos);
+        IBlockState state = this.getBlockState(pos);
         return state.getBlock().isAir(state, this, pos);
     }
 
     @Override
     public Biome getBiome(BlockPos pos) {
-        return getPassthrough().getBiome(pos);
+        return this.getPassthrough().getBiome(pos);
     }
 
     @Override
     public int getStrongPower(BlockPos pos, EnumFacing direction) {
-        return getPassthrough().getStrongPower(pos, direction);
+        return this.getPassthrough().getStrongPower(pos, direction);
     }
 
     @Override
     public WorldType getWorldType() {
-        return getPassthrough().getWorldType();
+        return this.getPassthrough().getWorldType();
     }
 
     @Override
     public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-        return getPassthrough().isSideSolid(pos, side, _default);
+        return this.getPassthrough().isSideSolid(pos, side, _default);
     }
 }

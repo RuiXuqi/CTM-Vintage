@@ -44,15 +44,15 @@ public interface IMetadataSectionCTM extends IMetadataSection {
 
     default ICTMTexture<?> makeTexture(TextureAtlasSprite sprite, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
         IMetadataSectionCTM meta = this;
-        boolean hasProxy = getProxy() != null;
+        boolean hasProxy = this.getProxy() != null;
         if (hasProxy) {
-            TextureAtlasSprite proxySprite = bakedTextureGetter.apply(new ResourceLocation(getProxy()));
+            TextureAtlasSprite proxySprite = bakedTextureGetter.apply(new ResourceLocation(this.getProxy()));
             try {
                 meta = ResourceUtil.getMetadata(proxySprite);
                 if (meta == null) meta = new V1();
                 sprite = proxySprite;
             } catch (IOException e) {
-                CTM.logger.error("Could not parse metadata of proxy, ignoring proxy and using base texture. {}", getProxy(), e);
+                CTM.logger.error("Could not parse metadata of proxy, ignoring proxy and using base texture. {}", this.getProxy(), e);
                 meta = this;
                 hasProxy = false;
             }

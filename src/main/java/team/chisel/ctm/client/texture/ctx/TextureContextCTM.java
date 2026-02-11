@@ -23,21 +23,21 @@ public class TextureContextCTM implements ITextureContext {
         this.tex = tex;
 
         for (EnumFacing face : EnumFacing.VALUES) {
-            CTMLogic ctm = createCTM(state);
+            CTMLogic ctm = this.createCTM(state);
             ctm.getSubmapIds(world, pos, state, face);
-            ctmData.put(face, ctm);
+            this.ctmData.put(face, ctm);
             this.data |= ctm.serialized() << (face.ordinal() * 10);
         }
     }
 
     protected CTMLogic createCTM(@NotNull IBlockState state) {
         CTMLogic ret = CTMLogic.getInstance();
-        tex.applyTo(ret.connectionCheck);
+        this.tex.applyTo(ret.connectionCheck);
         return ret;
     }
 
     public CTMLogic getCTM(EnumFacing face) {
-        return ctmData.get(face);
+        return this.ctmData.get(face);
     }
 
     @Override
