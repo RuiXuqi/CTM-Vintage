@@ -68,9 +68,9 @@ public class ModelCTM implements IModelCTM {
 
     private final Collection<ResourceLocation> textureDependencies;
 
-    private final EnumSet<BlockRenderLayer> extraLayers = EnumSet.noneOf(BlockRenderLayer.class);
-
     private final Map<String, ICTMTexture<?>> textures = new HashMap<>();
+
+    private transient byte layers;
 
     public ModelCTM(ModelBlock modelinfo, IModel vanillamodel, Int2ObjectMap<JsonElement> overrides) throws IOException {
         this.modelinfo = modelinfo;
@@ -173,10 +173,8 @@ public class ModelCTM implements IModelCTM {
             } else {
                 tex = meta.makeTexture(sprite, spriteGetter);
             }
-            BlockRenderLayer renderLayer = tex.getLayer();
-            if (renderLayer != null) {
-                this.extraLayers.add(renderLayer);
-            }
+            BlockRenderLayer layer = tex.getLayer();
+            this.layers |= (byte) (1 << (layer == null ? 7 : layer.ordinal()));
             return tex;
         });
         return sprite;
@@ -217,7 +215,7 @@ public class ModelCTM implements IModelCTM {
                     if (sprite == null) sprite = spriteGetter.apply(texLoc);
                     ICTMTexture<?> tex = e.getValue().makeTexture(sprite, spriteGetter);
                     BlockRenderLayer layer = tex.getLayer();
-                    if (layer != null) this.extraLayers.add(layer);
+                    this.layers |= (byte) (1 << (layer == null ? 7 : layer.ordinal()));
                     this.textureOverrides.put(Pair.of(e.getKey(), texLoc), tex);
                 }
             }
@@ -253,9 +251,8 @@ public class ModelCTM implements IModelCTM {
 
     @Override
     public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
-        // Check if the layer is in the enum set, or if it matches the block's default layer.
-        // If extraLayers is empty, it means no CTM texture requested a specific layer, so we default to the block's layer.
-        return this.extraLayers.contains(layer) || state.getBlock().getRenderLayer() == layer;
+        // sign bit is used to signify that a layer-less (vanilla) texture is present
+        return (this.layers < 0 && state.getBlock().getRenderLayer() == layer) || ((this.layers >> layer.ordinal()) & 1) == 1;
     }
 
     @Override
