@@ -6,8 +6,6 @@ Now you can use some new ctm types like ctm\_horizontal in 1.12.2. The json load
 
 For developers, there should not be any resource format changes needed. But you may need to update java codes since some logic is moved to ConnectionCheck. Also, IFacade now supports custom connection block state. Implement it if needed.
 
-It is incompatible with Chisel now. A fork to fix is planned.
-
 Sadly Chisel Team haven't updated their Wiki yet. Here are some examples for reference.
 
 # Json Logic
