@@ -80,7 +80,7 @@ public enum TextureMetadataHandler {
             }
         } catch (FileNotFoundException ignored) { // Ignore these, they are reported by vanilla
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
