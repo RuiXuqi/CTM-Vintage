@@ -112,7 +112,7 @@ public class VertexData {
             VertexFormatElement ele = format.getElement(i);
             VertexFormatElement.EnumUsage usage = ele.getUsage();
             switch (usage) {
-                case UV:
+                case UV -> {
                     if (ele.getIndex() == 0) {
                         consumer.put(i, this.texU, this.texV, 0.0f, 1.0f);
                     } else if (ele.getIndex() == 1) {
@@ -121,21 +121,15 @@ public class VertexData {
                         float sl = ((float) (this.lightV >> 4) * 32.0f) / 65535.0f;
                         consumer.put(i, bl, sl);
                     }
-                    break;
-                case POSITION:
-                    consumer.put(i, this.posX, this.posY, this.posZ, 1.0f);
-                    break;
-                case COLOR:
-                    consumer.put(i, this.red / 255.0f, this.green / 255.0f, this.blue / 255.0f, this.alpha / 255.0f);
-                    break;
-                case NORMAL:
-                    consumer.put(i, this.normalX, this.normalY, this.normalZ, 0.0f);
-                    break;
-                default:
+                }
+                case POSITION -> consumer.put(i, this.posX, this.posY, this.posZ, 1.0f);
+                case COLOR -> consumer.put(i, this.red / 255.0f, this.green / 255.0f, this.blue / 255.0f, this.alpha / 255.0f);
+                case NORMAL -> consumer.put(i, this.normalX, this.normalY, this.normalZ, 0.0f);
+                default -> {
                     float[] data = this.miscData.get(usage);
                     if (data != null) consumer.put(i, data);
                     else consumer.put(i, new float[ele.getElementCount()]);
-                    break;
+                }
             }
         }
     }

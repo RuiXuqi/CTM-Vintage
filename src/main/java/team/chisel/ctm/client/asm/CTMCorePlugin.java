@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@IFMLLoadingPlugin.Name("EarlyMixin")
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 public class CTMCorePlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override

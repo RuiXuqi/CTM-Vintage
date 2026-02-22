@@ -36,9 +36,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public enum TextureMetadataHandler {
-
-    INSTANCE;
+public class TextureMetadataHandler {
+    public static final TextureMetadataHandler INSTANCE = new TextureMetadataHandler();
 
     private final Set<ResourceLocation> registeredTextures = new HashSet<>();
     private final Object2BooleanMap<ResourceLocation> wrappedModels = new Object2BooleanLinkedOpenHashMap<>();

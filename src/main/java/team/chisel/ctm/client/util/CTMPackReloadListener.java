@@ -9,8 +9,8 @@ import team.chisel.ctm.client.model.AbstractCTMBakedModel;
 
 import java.util.function.Predicate;
 
-public enum CTMPackReloadListener implements ISelectiveResourceReloadListener {
-    INSTANCE;
+public class CTMPackReloadListener implements ISelectiveResourceReloadListener {
+    public static final CTMPackReloadListener INSTANCE = new CTMPackReloadListener();
 
     @Override
     public void onResourceManagerReload(@NotNull IResourceManager resourceManager, @NotNull Predicate<IResourceType> resourcePredicate) {

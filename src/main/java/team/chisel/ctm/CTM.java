@@ -5,7 +5,6 @@ import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,15 +21,16 @@ import team.chisel.ctm.client.util.TextureMetadataHandler;
         version = Tags.VERSION,
         dependencies = "required-after:mixinbooter@[8.0,);before:chisel;after:forge@[14.23.5.2807,)",
         clientSideOnly = true,
-        acceptableRemoteVersions = "*"
+        acceptableRemoteVersions = "*",
+        customProperties = {
+                @Mod.CustomProperty(k = "license", v = "GPL-2.0"),
+                @Mod.CustomProperty(k = "issueTrackerUrl", v = "https://github.com/RuiXuqi/CTM-Vintage/issues")
+        }
 )
 public class CTM {
     public static final Logger logger = LogManager.getLogger("CTM");
 
-    @Mod.Instance(Tags.MOD_ID)
-    public static CTM instance;
-
-    @EventHandler
+    @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         TextureTypeRegistry.preInit(event);
 

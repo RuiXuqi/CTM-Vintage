@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
-public enum OffsetProviderRegistry {
+public class OffsetProviderRegistry {
 
-    INSTANCE;
+    public static final OffsetProviderRegistry INSTANCE = new OffsetProviderRegistry();
 
     private final List<IOffsetProvider> providers = new ArrayList<>();
 

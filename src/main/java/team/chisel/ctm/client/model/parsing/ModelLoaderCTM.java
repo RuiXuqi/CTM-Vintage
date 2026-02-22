@@ -29,9 +29,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public enum ModelLoaderCTM implements ICustomModelLoader {
-
-    INSTANCE;
+public class ModelLoaderCTM implements ICustomModelLoader {
+    public static final ModelLoaderCTM INSTANCE = new ModelLoaderCTM();
 
     private static final Map<Integer, IModelParser> parserVersions = ImmutableMap.of(1, new ModelParserV1());
 

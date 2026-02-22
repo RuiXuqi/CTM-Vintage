@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 @Log4j2
-public enum CTMDefinitionManager implements ISelectiveResourceReloadListener {
-    INSTANCE;
+public class CTMDefinitionManager implements ISelectiveResourceReloadListener {
+    public static final CTMDefinitionManager INSTANCE = new CTMDefinitionManager();
 
     private final Gson gson = new Gson();
     private final Map<String, ICTMLogic> logicDefinitions = new HashMap<>();

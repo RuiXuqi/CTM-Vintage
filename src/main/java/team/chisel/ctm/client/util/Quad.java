@@ -580,10 +580,8 @@ public class Quad {
             VertexFormatElement element = this.vertexFormat.getElement(elementId);
 
             switch (element.getUsage()) {
-                case POSITION:
-                    currentVertex.pos(data[0], data[1], data[2]);
-                    break;
-                case COLOR:
+                case POSITION -> currentVertex.pos(data[0], data[1], data[2]);
+                case COLOR ->
                     // float[0..1] -> int[0..255]
                     currentVertex.color(
                             (int) (data[0] * 255f),
@@ -591,20 +589,15 @@ public class Quad {
                             (int) (data[2] * 255f),
                             (int) (data[3] * 255f)
                     );
-                    break;
-                case UV:
+                case UV -> {
                     if (element.getIndex() == 0) {
                         currentVertex.texRaw(data[0], data[1]);
                     } else if (element.getIndex() == 1) {
                         currentVertex.lightRaw((int) data[0], (int) data[1]);
                     }
-                    break;
-                case NORMAL:
-                    currentVertex.normal(data[0], data[1], data[2]);
-                    break;
-                default:
-                    currentVertex.misc(element, data);
-                    break;
+                }
+                case NORMAL -> currentVertex.normal(data[0], data[1], data[2]);
+                default -> currentVertex.misc(element, data);
             }
 
             this.elementsInCurrentVertex++;

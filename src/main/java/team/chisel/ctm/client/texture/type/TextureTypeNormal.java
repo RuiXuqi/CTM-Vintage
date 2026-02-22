@@ -14,10 +14,10 @@ import team.chisel.ctm.client.texture.render.TextureNormal;
 /**
  * Normal Block Render Type
  */
-public enum TextureTypeNormal implements ITextureType {
+public class TextureTypeNormal implements ITextureType {
 
     @TextureType("normal")
-    INSTANCE;
+    public static final TextureTypeNormal INSTANCE = new TextureTypeNormal();
 
     @NotNull
     private static final ITextureContext EMPTY_CONTEXT = () -> 0L;
