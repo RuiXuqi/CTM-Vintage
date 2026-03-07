@@ -50,7 +50,7 @@ public class CTMDefinitionManager implements ISelectiveResourceReloadListener {
                 // Load all ctm.json like sounds.json
                 List<String> logics = new ArrayList<>();
                 try {
-                    for (IResource ctmFile : resourceManager.getAllResources(new net.minecraft.util.ResourceLocation(domain, "ctm.json"))) {
+                    for (IResource ctmFile : resourceManager.getAllResources(new ResourceLocation(domain, "ctm.json"))) {
                         try (BufferedReader reader = new BufferedReader(new InputStreamReader(ctmFile.getInputStream()))) {
                             JsonObject json = this.gson.fromJson(reader, JsonObject.class);
                             CTMFileDefinition def = CTMFileDefinition.fromJson(json);
