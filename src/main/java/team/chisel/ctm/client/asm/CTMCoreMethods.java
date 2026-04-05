@@ -11,6 +11,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.CTM;
 import team.chisel.ctm.api.event.TextureCollectedEvent;
 import team.chisel.ctm.api.model.IModelCTM;
@@ -20,6 +21,7 @@ import team.chisel.ctm.client.util.ProfileUtil;
 public class CTMCoreMethods {
 
     @SneakyThrows
+    @Nullable
     public static Boolean canRenderInLayer(@NotNull IBlockState state, @NotNull BlockRenderLayer layer) {
         ProfileUtil.start("ctm_render_in_layer");
         IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);

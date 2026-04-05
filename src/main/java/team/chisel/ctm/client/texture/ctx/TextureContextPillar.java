@@ -9,6 +9,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.client.util.ConnectionLocations;
 
@@ -62,7 +63,7 @@ public class TextureContextPillar implements ITextureContext {
             return forPos(world, state, pos);
         }
 
-        public static Connections forData(long data, EnumFacing offset) {
+        public static Connections forData(long data, @Nullable EnumFacing offset) {
             EnumSet<EnumFacing> connections = EnumSet.noneOf(EnumFacing.class);
             if (offset == null) {
                 for (ConnectionLocations loc : MAIN_VALUES) {

@@ -24,6 +24,7 @@ public interface IModelCTM extends IModel {
         return this.getChiselTextures();
     }
 
+    @Nullable
     ICTMTexture<?> getTexture(String iconName);
 
     @Nullable

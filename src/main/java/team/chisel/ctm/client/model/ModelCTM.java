@@ -245,6 +245,7 @@ public class ModelCTM implements IModelCTM {
     }
 
     @Override
+    @Nullable
     public ICTMTexture<?> getTexture(String iconName) {
         return this.textures.get(iconName);
     }

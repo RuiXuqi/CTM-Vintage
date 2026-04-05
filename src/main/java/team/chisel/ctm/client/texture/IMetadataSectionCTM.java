@@ -34,7 +34,7 @@ public interface IMetadataSectionCTM extends IMetadataSection {
 
     ITextureType getType();
 
-    BlockRenderLayer getLayer();
+    @Nullable BlockRenderLayer getLayer();
 
     ResourceLocation[] getAdditionalTextures();
 
@@ -72,8 +72,8 @@ public interface IMetadataSectionCTM extends IMetadataSection {
     class V1 implements IMetadataSectionCTM {
 
         private ITextureType type = TextureTypeRegistry.getType("NORMAL");
-        private BlockRenderLayer layer = null;
-        private String proxy;
+        private @Nullable BlockRenderLayer layer = null;
+        private @Nullable String proxy;
         private ResourceLocation[] additionalTextures = new ResourceLocation[0];
         private JsonObject extraData = new JsonObject();
 
