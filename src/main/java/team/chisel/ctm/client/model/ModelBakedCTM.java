@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.texture.ICTMTexture;
@@ -21,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public class ModelBakedCTM extends AbstractCTMBakedModel {
@@ -33,7 +31,7 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
     private static final EnumFacing[] FACINGS = ObjectArrays.concat(EnumFacing.VALUES, (EnumFacing) null);
 
     @Override
-    protected AbstractCTMBakedModel createModel(@Nullable IBlockState state, @NotNull IModelCTM model, IBakedModel parent, @Nullable RenderContextList ctx, long rand, @Nullable BlockRenderLayer layer) {
+    protected AbstractCTMBakedModel createModel(@Nullable IBlockState state, IModelCTM model, IBakedModel parent, @Nullable RenderContextList ctx, long rand, @Nullable BlockRenderLayer layer) {
         while (parent instanceof ModelBakedCTM castParent) {
             parent = castParent.getParent(rand);
         }
@@ -97,13 +95,9 @@ public class ModelBakedCTM extends AbstractCTMBakedModel {
     }
 
     @Override
-    public @NotNull TextureAtlasSprite getParticleTexture() {
-        return this.wrapParticleIcon(super.getParticleTexture());
-    }
-
-    private @NotNull TextureAtlasSprite wrapParticleIcon(@NotNull TextureAtlasSprite particleIcon) {
-        return Optional.ofNullable(this.getModel().getTexture(particleIcon.getIconName()))
-                .map(ICTMTexture::getParticle)
-                .orElse(particleIcon);
+    public TextureAtlasSprite getParticleTexture() {
+        TextureAtlasSprite particleIcon = super.getParticleTexture();
+        ICTMTexture<?> ctmTexture = this.getModel().getTexture(particleIcon.getIconName());
+        return ctmTexture != null ? ctmTexture.getParticle() : particleIcon;
     }
 }

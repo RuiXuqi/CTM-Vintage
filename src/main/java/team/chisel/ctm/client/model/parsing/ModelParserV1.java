@@ -12,7 +12,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.model.IModelParser;
 import team.chisel.ctm.client.model.ModelCTM;
@@ -38,7 +37,6 @@ public class ModelParserV1 implements IModelParser {
     }
 
     @Override
-    @NotNull
     @SneakyThrows
     public IModelCTM fromJson(ResourceLocation res, JsonObject json) {
         ModelBlock modelinfo = ModelBlock.deserialize(json.toString());

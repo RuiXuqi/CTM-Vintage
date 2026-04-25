@@ -58,7 +58,7 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
             }
 
             @Override
-            public @NotNull ITextureContext getContext(@NotNull IBlockAccess world, @NotNull BlockPos pos, @NotNull TextureMap tex) {
+            public ITextureContext getContext(@NotNull IBlockAccess world, @NotNull BlockPos pos, @NotNull TextureMap tex) {
                 return new TextureContextGrid.Random(world, pos, tex, true);
             }
         },
@@ -100,7 +100,6 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
 
         protected abstract List<BakedQuad> transformQuad(TextureMap tex, BakedQuad quad, @Nullable ITextureContext context, int quadGoal);
 
-        @NotNull
         public ITextureContext getContext(@NotNull IBlockAccess world, @NotNull BlockPos pos, @NotNull TextureMap tex) {
             return new TextureContextPosition(pos);
         }
@@ -164,7 +163,7 @@ public class TextureMap extends AbstractTexture<TextureTypeMap> {
     }
 
     @Override
-    public List<BakedQuad> transformQuad(BakedQuad quad, ITextureContext context, int quadGoal) {
+    public List<BakedQuad> transformQuad(@NotNull BakedQuad quad, ITextureContext context, int quadGoal) {
         return this.map.transformQuad(this, quad, context, quadGoal);
     }
 }

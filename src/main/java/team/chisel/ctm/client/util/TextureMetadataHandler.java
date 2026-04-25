@@ -21,7 +21,6 @@ import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.CTM;
 import team.chisel.ctm.api.event.TextureCollectedEvent;
 import team.chisel.ctm.api.model.IModelCTM;
@@ -178,7 +177,7 @@ public class TextureMetadataHandler {
         }
     }
 
-    private @NotNull IBakedModel wrap(IModel model, IBakedModel object) throws IOException {
+    private IBakedModel wrap(IModel model, IBakedModel object) throws IOException {
         ModelCTM modelchisel = new ModelCTM(null, model, Int2ObjectMaps.emptyMap());
         modelchisel.bake(TRSRTransformation.identity(), DefaultVertexFormats.ITEM, rl -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(rl.toString()));
         return new ModelBakedCTM(modelchisel, object, null);

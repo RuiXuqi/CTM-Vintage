@@ -3,6 +3,7 @@ package team.chisel.ctm.api.util;
 import com.google.gson.JsonObject;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.BlockRenderLayer;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.texture.ICTMTexture;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -26,7 +27,7 @@ public class TextureInfo {
         this(sprites, info, layer, false);
     }
 
-    public TextureInfo(TextureAtlasSprite[] sprites, Optional<JsonObject> info, BlockRenderLayer layer, boolean isProxy) {
+    public TextureInfo(TextureAtlasSprite[] sprites, Optional<JsonObject> info, @Nullable BlockRenderLayer layer, boolean isProxy) {
         this.sprites = sprites;
         this.info = info;
         this.renderLayer = layer;
@@ -51,7 +52,7 @@ public class TextureInfo {
     /**
      * Returns the render layer for this texture
      */
-    public BlockRenderLayer getRenderLayer() {
+    public @Nullable BlockRenderLayer getRenderLayer() {
         return this.renderLayer;
     }
 

@@ -144,7 +144,7 @@ public class Quad {
             return this.data == null ? new Vector2f[]{new Vector2f(this.minU, this.minV), new Vector2f(this.minU, this.maxV), new Vector2f(this.maxU, this.maxV), new Vector2f(this.maxU, this.minV)} : this.data;
         }
 
-        private Vector2f[] normalize(Vector2f min, Vector2f max, @NotNull Vector2f... vecs) {
+        private Vector2f[] normalize(Vector2f min, Vector2f max, Vector2f... vecs) {
             Vector2f[] ret = new Vector2f[vecs.length];
             for (int i = 0; i < ret.length; i++) {
                 ret[i] = this.normalize(min, max, vecs[i]);
@@ -156,7 +156,7 @@ public class Quad {
             return new Vector2f(Quad.normalize(min.x, max.x, vec.x), Quad.normalize(min.y, max.y, vec.y));
         }
 
-        private Vector2f[] lerp(Vector2f min, Vector2f max, @NotNull Vector2f... vecs) {
+        private Vector2f[] lerp(Vector2f min, Vector2f max, Vector2f... vecs) {
             Vector2f[] ret = new Vector2f[vecs.length];
             for (int i = 0; i < ret.length; i++) {
                 ret[i] = this.lerp(min, max, vecs[i]);

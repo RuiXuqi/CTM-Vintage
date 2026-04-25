@@ -66,7 +66,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
 
         @Override
         @SneakyThrows
-        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
             Block block = null;
             if (stack.getItem() instanceof ItemBlock) {
                 block = ((ItemBlock) stack.getItem()).getBlock();
@@ -94,8 +94,8 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
     }
 
     @Desugar
-    private record State(@NotNull IBlockState cleanState, @Nullable Object2LongMap<ICTMTexture<?>> serializedContext,
-                         @NotNull IBakedModel parent, @Nullable BlockRenderLayer layer) {
+    private record State(IBlockState cleanState, @Nullable Object2LongMap<ICTMTexture<?>> serializedContext,
+                         IBakedModel parent, @Nullable BlockRenderLayer layer) {
 
         @Override
         public boolean equals(@Nullable Object obj) {
@@ -137,7 +137,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
 
     @Override
     @SneakyThrows
-    public @NotNull List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (CTMCoreMethods.renderingDamageModel.get()) {
             return this.getParent().getQuads(state, side, rand);
         }
@@ -197,7 +197,6 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
     /**
      * Random sensitive parent, will proxy to {@link WeightedBakedModel} if possible.
      */
-    @NotNull
     public IBakedModel getParent(long rand) {
         if (this.getParent() instanceof WeightedBakedModel weightedBakedModel) {
             return weightedBakedModel.getRandomModel(rand);
@@ -205,7 +204,6 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
         return this.getParent();
     }
 
-    @NotNull
     public IBakedModel getParent() {
         return this.originalModel;
     }
@@ -217,7 +215,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
 
     @SuppressWarnings("deprecation")
     @Override
-    public @NotNull TextureAtlasSprite getParticleTexture() {
+    public TextureAtlasSprite getParticleTexture() {
         IChiselFace face = this.model.getDefaultFace();
         return face != null ? face.getParticle() : super.getParticleTexture();
     }
@@ -272,9 +270,9 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<IBakedMode
 
     public Collection<ICTMTexture<?>> getCTMTextures() {
         ImmutableList.Builder<ICTMTexture<?>> builder = ImmutableList.builder();
-        builder.addAll(this.getModel().getCTMTextures());
-        if (this.getParent() instanceof AbstractCTMBakedModel) {
-            builder.addAll(((AbstractCTMBakedModel) this.getParent()).getCTMTextures());
+        builder.addAll(this.getModel().getChiselTextures());
+        if (this.getParent() instanceof AbstractCTMBakedModel bakedModel) {
+            builder.addAll(bakedModel.getCTMTextures());
         }
         return builder.build();
     }

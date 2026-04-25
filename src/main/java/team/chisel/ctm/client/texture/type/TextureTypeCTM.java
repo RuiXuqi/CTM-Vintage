@@ -16,6 +16,7 @@ import team.chisel.ctm.client.texture.render.TextureCTM;
 @TextureType("ctm")
 public class TextureTypeCTM implements ITextureType {
 
+    @SuppressWarnings("unchecked")
     @Override
     public ICTMTexture<? extends TextureTypeCTM> makeTexture(@NotNull TextureInfo info) {
         return new TextureCTM<>(this, info);

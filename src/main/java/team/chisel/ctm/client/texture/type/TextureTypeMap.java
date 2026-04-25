@@ -20,6 +20,7 @@ public class TextureTypeMap implements ITextureType {
 
     private final MapType type;
 
+    @SuppressWarnings("unchecked")
     @Override
     public TextureMap makeTexture(@NotNull TextureInfo info) {
         return new TextureMap(this, info, this.type);

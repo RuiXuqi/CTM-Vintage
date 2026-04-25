@@ -1,9 +1,5 @@
 package team.chisel.ctm.client.texture.render;
 
-import com.github.bsideup.jabel.Desugar;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.state.IBlockState;
@@ -43,32 +39,6 @@ public class TextureCTM<T extends TextureTypeCTM> extends AbstractTexture<T> imp
 
     @Nullable
     private final BiPredicate<EnumFacing, IBlockState> connectionChecks;
-
-    @Desugar
-    private record CacheKey(IBlockState from, EnumFacing dir) {
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + this.dir.hashCode();
-            result = prime * result + System.identityHashCode(this.from);
-            return result;
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (this == obj) {
-                return true;
-            } else if (obj == null || this.getClass() != obj.getClass()) {
-                return false;
-            }
-            CacheKey other = (CacheKey) obj;
-            return this.dir == other.dir && this.from == other.from;
-        }
-    }
-
-    private final Cache<CacheKey, Object2ByteMap<IBlockState>> connectionCache = CacheBuilder.newBuilder().build();
 
     public TextureCTM(T type, TextureInfo info) {
         super(type, info);

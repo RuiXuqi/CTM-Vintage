@@ -3,6 +3,7 @@ package team.chisel.ctm.client.texture.render;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.util.EnumFacing;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.texture.ISubmap;
 import team.chisel.ctm.api.texture.ITextureContext;
 import team.chisel.ctm.api.util.TextureInfo;
@@ -19,30 +20,30 @@ import java.util.List;
 public class TexturePlane extends TextureCTM<TextureTypePlane> {
     private final EnumFacing.Plane plane;
 
-    public TexturePlane(final TextureTypePlane type, final TextureInfo info) {
+    public TexturePlane(TextureTypePlane type, TextureInfo info) {
         super(type, info);
         this.plane = type.getPlane();
     }
 
     @Override
-    public List<BakedQuad> transformQuad(final @NotNull BakedQuad bakedQuad, final @NotNull ITextureContext context, final int quads) {
-        final Quad quad = this.makeQuad(bakedQuad, context);
-        final CTMLogic logic = (context instanceof TextureContextCTM ctmContext) ? ctmContext.getCTM(bakedQuad.getFace()) : null;
+    public List<BakedQuad> transformQuad(@NotNull BakedQuad bakedQuad, @Nullable ITextureContext context, int quads) {
+        Quad quad = this.makeQuad(bakedQuad, context);
+        CTMLogic logic = (context instanceof TextureContextCTM ctmContext) ? ctmContext.getCTM(bakedQuad.getFace()) : null;
         return Collections.singletonList(quad.transformUVs(this.sprites[0], this.getQuad(logic)).rebake());
     }
 
-    private ISubmap getQuad(final CTMLogic logic) {
+    private ISubmap getQuad(CTMLogic logic) {
         if (logic == null) {
             return Submap.X2[0][0];
         }
-        final int u;
-        final int v;
+        int u;
+        int v;
         if (this.plane == EnumFacing.Plane.VERTICAL) {
-            final boolean top = logic.connected(Dir.TOP);
+            boolean top = logic.connected(Dir.TOP);
             u = (top == logic.connected(Dir.BOTTOM)) ? 0 : 1;
             v = top ? 1 : 0;
         } else {
-            final boolean left = logic.connected(Dir.LEFT);
+            boolean left = logic.connected(Dir.LEFT);
             u = left ? 1 : 0;
             v = (left == logic.connected(Dir.RIGHT)) ? 0 : 1;
         }

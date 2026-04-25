@@ -17,27 +17,11 @@ public interface IModelCTM extends IModel {
 
     void load();
 
-    @Deprecated
+    // Kept since old versions of Chisel implements it
     Collection<ICTMTexture<?>> getChiselTextures();
-
-    default Collection<ICTMTexture<?>> getCTMTextures() {
-        return this.getChiselTextures();
-    }
 
     @Nullable
     ICTMTexture<?> getTexture(String iconName);
-
-    @Nullable
-    @Deprecated
-    default IChiselFace getFace(EnumFacing facing) {
-        return null;
-    }
-
-    @Nullable
-    @Deprecated
-    default IChiselFace getDefaultFace() {
-        return null;
-    }
 
     boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer);
 
@@ -46,4 +30,32 @@ public interface IModelCTM extends IModel {
 
     @Nullable
     ICTMTexture<?> getOverrideTexture(int tintIndex, String sprite);
+
+    /**
+     * @deprecated Simply call or implement {@link #getChiselTextures()}. The name is the only difference.
+     */
+    @Deprecated
+    default Collection<ICTMTexture<?>> getCTMTextures() {
+        return this.getChiselTextures();
+    }
+
+    /**
+     * @deprecated Outdated API used by old versions of Chisel
+     */
+    @SuppressWarnings("unused")
+    @Nullable
+    @Deprecated
+    default IChiselFace getFace(EnumFacing facing) {
+        return null;
+    }
+
+    /**
+     * @deprecated Outdated API used by old versions of Chisel
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Nullable
+    @Deprecated
+    default IChiselFace getDefaultFace() {
+        return null;
+    }
 }

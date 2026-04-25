@@ -16,6 +16,7 @@ import team.chisel.ctm.client.texture.render.TexturePillar;
 @TextureType("pillar")
 public class TextureTypePillar implements ITextureType {
 
+    @SuppressWarnings("unchecked")
     @Override
     public ICTMTexture<TextureTypePillar> makeTexture(@NotNull TextureInfo info) {
         return new TexturePillar(this, info);

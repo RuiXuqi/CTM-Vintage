@@ -22,6 +22,7 @@ public class TextureTypeNormal implements ITextureType {
     @NotNull
     private static final ITextureContext EMPTY_CONTEXT = () -> 0L;
 
+    @SuppressWarnings("unchecked")
     @Override
     public ICTMTexture<TextureTypeNormal> makeTexture(@NotNull TextureInfo info) {
         return new TextureNormal(this, info);

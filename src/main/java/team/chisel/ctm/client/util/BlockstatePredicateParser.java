@@ -12,7 +12,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -126,7 +125,7 @@ public class BlockstatePredicateParser {
             if (json.isJsonObject()) {
                 JsonObject obj = json.getAsJsonObject();
                 Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(JsonUtils.getString(obj, "block")));
-                if (block == Blocks.AIR) {
+                if (block == null || block == Blocks.AIR) {
                     return EMPTY;
                 }
                 Composition composition = null;
@@ -170,7 +169,7 @@ public class BlockstatePredicateParser {
             throw new JsonSyntaxException("Predicate deserialization expects an object or an array. Found: " + json);
         }
 
-        private Predicate<IBlockState> compose(@Nullable Composition composition, @NotNull Predicate<IBlockState> child) {
+        private Predicate<IBlockState> compose(@Nullable Composition composition, Predicate<IBlockState> child) {
             if (composition == null) {
                 return child;
             }
@@ -178,7 +177,7 @@ public class BlockstatePredicateParser {
         }
 
         @SuppressWarnings({"rawtypes", "unchecked"})
-        private Predicate<IBlockState> parsePredicate(@NotNull Block block, JsonObject obj, JsonDeserializationContext context) {
+        private Predicate<IBlockState> parsePredicate(Block block, JsonObject obj, JsonDeserializationContext context) {
             ComparisonType compareFunc = JsonUtils.deserializeClass(obj, "compare_func", ComparisonType.EQUAL, context, ComparisonType.class);
             obj.remove("compare_func");
 

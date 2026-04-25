@@ -137,7 +137,6 @@ public enum Dir implements LocalDirection {
      * @return The offset BlockPos
      */
     @SuppressWarnings("null")
-    @NotNull
     public BlockPos applyConnection(BlockPos pos, EnumFacing side) {
         return pos.add(this.getOffset(side));
     }
@@ -163,7 +162,6 @@ public enum Dir implements LocalDirection {
     }
 
     @Override
-    @NotNull
     public BlockPos getOffset(EnumFacing normal) {
         return this.offsets[normal.ordinal()];
     }

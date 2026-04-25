@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -50,7 +49,7 @@ public class RegionCache implements IBlockAccess {
         return ret;
     }
 
-    public @NotNull RegionCache updateWorld(IBlockAccess passthrough) {
+    public RegionCache updateWorld(IBlockAccess passthrough) {
         // We do NOT use getPassthrough() here so as to skip the null-validation - it's obviously valid to be null here
         if (this.passthrough.get() != passthrough) {
             this.stateCache.clear();

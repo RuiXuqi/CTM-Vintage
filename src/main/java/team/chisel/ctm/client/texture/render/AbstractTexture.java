@@ -32,9 +32,8 @@ public abstract class AbstractTexture<T extends ITextureType> implements ICTMTex
     @Getter
     protected T type;
     @Getter
-    protected BlockRenderLayer layer;
+    protected @Nullable BlockRenderLayer layer;
 
-    @SuppressWarnings("null")
     protected @NotNull TextureAtlasSprite @NotNull [] sprites;
     protected boolean isProxy;
 

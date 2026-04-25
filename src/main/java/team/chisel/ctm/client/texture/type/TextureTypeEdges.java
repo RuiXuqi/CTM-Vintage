@@ -107,7 +107,7 @@ public class TextureTypeEdges extends TextureTypeCTM {
         return new TextureContextCTM(state, world, pos, (TextureEdges) tex) {
 
             @Override
-            protected @NotNull CTMLogic createCTM(@NotNull IBlockState state) {
+            protected CTMLogic createCTM(@NotNull IBlockState state) {
                 CTMLogic parent = super.createCTM(state);
                 // FIXME
                 CTMLogic ret = new CTMLogicEdges();

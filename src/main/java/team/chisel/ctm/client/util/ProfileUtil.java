@@ -1,9 +1,10 @@
 package team.chisel.ctm.client.util;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
-import org.jetbrains.annotations.NotNull;
 
+@UtilityClass
 public class ProfileUtil {
 
     /**
@@ -19,7 +20,7 @@ public class ProfileUtil {
         }
     });
 
-    public static void start(@NotNull String section) {
+    public static void start(String section) {
         profiler.get().startSection(section);
     }
 
@@ -27,7 +28,7 @@ public class ProfileUtil {
         profiler.get().endSection();
     }
 
-    public static void endAndStart(@NotNull String section) {
+    public static void endAndStart(String section) {
         profiler.get().endStartSection(section);
     }
 }

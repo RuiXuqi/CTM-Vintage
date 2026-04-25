@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.api.model.IModelCTM;
 import team.chisel.ctm.api.model.IModelParser;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
@@ -86,12 +85,9 @@ public class ModelLoaderCTM implements ICustomModelLoader {
     }
 
     @Override
-    public IModel loadModel(@NotNull ResourceLocation modelLocation) throws IOException {
-        this.loadedModels.computeIfAbsent(modelLocation, res -> this.loadFromFile(res, true));
-        IModelCTM model = this.loadedModels.get(modelLocation);
-        if (model != null) {
-            model.load();
-        }
+    public IModel loadModel(@NotNull ResourceLocation modelLocation) {
+        IModelCTM model = this.loadedModels.computeIfAbsent(modelLocation, res -> this.loadFromFile(res, true));
+        model.load();
         return model;
     }
 

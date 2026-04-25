@@ -9,7 +9,6 @@ import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.IMetadataSectionSerializer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.CTM;
 import team.chisel.ctm.api.texture.ICTMTexture;
@@ -53,13 +52,12 @@ public interface IMetadataSectionCTM extends IMetadataSection {
                 sprite = proxySprite;
             } catch (IOException e) {
                 CTM.logger.error("Could not parse metadata of proxy, ignoring proxy and using base texture. {}", this.getProxy(), e);
-                meta = this;
                 hasProxy = false;
             }
         }
         return meta.getType().makeTexture(new TextureInfo(
                 Arrays.stream(ObjectArrays.concat(new ResourceLocation(sprite.getIconName()), meta.getAdditionalTextures()))
-                        .map(bakedTextureGetter::apply)
+                        .map(bakedTextureGetter)
                         .toArray(TextureAtlasSprite[]::new),
                 Optional.of(meta.getExtraData()),
                 meta.getLayer(),
@@ -162,7 +160,7 @@ public interface IMetadataSectionCTM extends IMetadataSection {
         }
 
         @Override
-        public @NotNull String getSectionName() {
+        public String getSectionName() {
             return SECTION_NAME;
         }
     }
